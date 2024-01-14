@@ -1,11 +1,21 @@
+ENABLERS=enablers input_output inliner
 TUNING=autotuner_doall_filter autotuner_search_space
-HEURISTICS=parallelization_planner heuristics parallelizer_plan_info
+HEURISTICS=parallelization_planner heuristics parallelizer_plan_info time_saved
 PARALLELIZATION_TECHNIQUES=doall helix dswp 
-ALL=$(HEURISTICS) $(PARALLELIZATION_TECHNIQUES) $(TUNING) parallelizer
+ALL=$(ENABLERS) $(HEURISTICS) $(PARALLELIZATION_TECHNIQUES) $(TUNING) parallelizer
 
 all: $(ALL)
 
 parallelizer:
+	cd $@ ; ../../scripts/run_me.sh
+
+enablers:
+	cd $@ ; ../../scripts/run_me.sh
+
+inliner:
+	cd $@ ; ../../scripts/run_me.sh
+
+input_output:
 	cd $@ ; ../../scripts/run_me.sh
 
 doall:
@@ -21,6 +31,9 @@ parallelization_planner:
 	cd $@ ; ../../scripts/run_me.sh
 
 heuristics:
+	cd $@ ; ../../scripts/run_me.sh
+
+time_saved:
 	cd $@ ; ../../scripts/run_me.sh
 
 parallelizer_plan_info:
