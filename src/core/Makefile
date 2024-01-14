@@ -2,9 +2,12 @@ ENABLERS=enablers input_output inliner
 TUNING=autotuner_doall_filter autotuner_search_space
 HEURISTICS=parallelization_planner heuristics parallelizer_plan_info time_saved
 PARALLELIZATION_TECHNIQUES=doall helix dswp 
-ALL=$(ENABLERS) $(HEURISTICS) $(PARALLELIZATION_TECHNIQUES) $(TUNING) parallelizer
+ALL=$(ENABLERS) $(HEURISTICS) $(PARALLELIZATION_TECHNIQUES) $(TUNING) parallelizer scripts
 
 all: $(ALL)
+
+scripts:
+	./scripts/installGINO.sh
 
 parallelizer:
 	cd $@ ; ../../scripts/run_me.sh
@@ -49,4 +52,4 @@ clean:
 	rm -rf */build */*.json ; 
 	rm -rf */build */*/*.json ; 
 
-.PHONY: $(ALL) clean
+.PHONY: $(ALL) clean scripts
