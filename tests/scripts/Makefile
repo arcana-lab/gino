@@ -68,10 +68,10 @@ $(OPTIMIZED_AUTOTUNED): test_parallelized_autotuned.bc
 	$(CPP) -std=c++14 -pthreads $(OPT_LEVEL) $< $(LIBS) -o $@
 
 test_parallelized.bc: baseline_with_metadata.bc Parallelizer_utils.bc
-	noelle-parallelizer $< -o $@ $(NOELLE_OPTIONS) $(PARALLELIZATION_OPTIONS)
+	gino $< -o $@ $(NOELLE_OPTIONS) $(PARALLELIZATION_OPTIONS)
 
 test_parallelized_autotuned.bc: baseline_with_metadata.bc input.txt Parallelizer_utils.bc
-	noelle-parallelizer-autotuner --parallelizer-args="$< -o $@ $(NOELLE_OPTIONS) $(PARALLELIZATION_OPTIONS)" --libs="$(LIBS)" --input="$(INPUT)" --autotuner-time="$(TIME)" --autotuner-numconf="$(NUM_CONF)" --autotuner-seedconf="$(SEED_CONF)" $(NOSEARCHSPACE) $(NODOALLFILTERING) $(NODOALLTIMEFILTERING)
+	gino-autotuner --parallelizer-args="$< -o $@ $(NOELLE_OPTIONS) $(PARALLELIZATION_OPTIONS)" --libs="$(LIBS)" --input="$(INPUT)" --autotuner-time="$(TIME)" --autotuner-numconf="$(NUM_CONF)" --autotuner-seedconf="$(SEED_CONF)" $(NOSEARCHSPACE) $(NODOALLFILTERING) $(NODOALLTIMEFILTERING)
 
 baseline.bc: test.bc
 	$(CPP) $(OPT_LEVEL) -c -emit-llvm $^ -o $@
@@ -89,7 +89,7 @@ pre_profiles.profraw: baseline_with_runtime_prof input.txt
 
 baseline_pre.bc: pre_profiles.profraw test.bc
 	noelle-meta-prof-embed $^ -o $@
-	noelle-pre $@ $(NOELLE_OPTIONS) $(TOOLS_OPTIONS)
+	gino-pre $@ $(NOELLE_OPTIONS) $(TOOLS_OPTIONS)
 
 default.profraw: baseline_pre_prof input.txt
 	./$< `cat input.txt` 

@@ -1,7 +1,7 @@
 ENABLERS=enablers input_output inliner
 TUNING=autotuner_doall_filter autotuner_search_space
 HEURISTICS=parallelization_planner heuristics parallelizer_plan_info time_saved
-PARALLELIZATION_TECHNIQUES=doall helix dswp 
+PARALLELIZATION_TECHNIQUES=parallelization_technique doall helix dswp 
 ALL=$(ENABLERS) $(HEURISTICS) $(PARALLELIZATION_TECHNIQUES) $(TUNING) parallelizer scripts
 
 all: $(ALL)
@@ -19,6 +19,9 @@ inliner:
 	cd $@ ; ../../scripts/run_me.sh
 
 input_output:
+	cd $@ ; ../../scripts/run_me.sh
+
+parallelization_technique:
 	cd $@ ; ../../scripts/run_me.sh
 
 doall:
