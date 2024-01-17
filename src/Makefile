@@ -1,4 +1,5 @@
 all: 
+	./scripts/check_noelle.sh
 	cd core ; make ;
 	cd tools ; make ;
 	./scripts/generate_enable_file.sh
