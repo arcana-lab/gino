@@ -10,7 +10,7 @@ done
 installDir=$(realpath $( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd )/..)
 
 # Set the command to execute
-cmdToExecute="noelle-parallel-load -load ${installDir}/lib/TimeSaved.so -TimeSaved ${@}"
+cmdToExecute="gino-load -load ${installDir}/lib/TimeSaved.so -TimeSaved ${@}"
 echo $cmdToExecute ;
 
 # Execute

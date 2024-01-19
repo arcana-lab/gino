@@ -33,7 +33,7 @@ echo $cmdToExecute ;
 eval $cmdToExecute ;
 
 # Step 3: Run loop parallelization on bitcode with parallel plan
-cmdToExecute="gino-loop code_to_parallelize.bc -o ${intermediateResult_unoptimized} ${@:4}" ;
+cmdToExecute="gino-loops code_to_parallelize.bc -o ${intermediateResult_unoptimized} ${@:4}" ;
 echo $cmdToExecute ;
 eval $cmdToExecute ;
 

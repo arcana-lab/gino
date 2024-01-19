@@ -111,7 +111,7 @@ echo "$loopsInfo"
 
 for ((i=0; i<numLoops; i++)); do
   echo -e "${prefix} \033[1;37mloop index ${i}\033[0m"
-  echo "${prefix}   running gino-loop"
+  echo "${prefix}   running gino-loops"
 
   i_pad=`printf "%0${digitCount}i" $i`
   outputName="${outputPrefix}${i_pad}"
@@ -119,7 +119,7 @@ for ((i=0; i<numLoops; i++)); do
   # Creating the parallelized bitcode.
   # Only loop number $i will be parallelized.
   #
-  gino-loop $inputBC \
+  gino-loops $inputBC \
     -o ${outputName}.bc \
     -noelle-loops-white-list=$i \
     -noelle-parallelizer-force \

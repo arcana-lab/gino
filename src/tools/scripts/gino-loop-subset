@@ -101,7 +101,7 @@ for num in "${loopList[@]}"; do
 done
 
 echo -e "${prefix} \033[1;37m${listName} list of loop indexes: ${list}\033[0m"
-echo "${prefix}   running gino-loop"
+echo "${prefix}   running gino-loops"
 
 loops=`echo "$list" | sed "s/,/_/g"`
 outputName="parallelized.loop.subset.${listName}.${loops}"
@@ -109,7 +109,7 @@ outputName="parallelized.loop.subset.${listName}.${loops}"
 # Creating the parallelized bitcode.
 # Only loop numbers in $list will be parallelized.
 #
-gino-loop $inputBC \
+gino-loops $inputBC \
   -o ${outputName}.bc \
   -noelle-loops-${listName}-list="\"$list\"" \
   -noelle-parallelizer-force \

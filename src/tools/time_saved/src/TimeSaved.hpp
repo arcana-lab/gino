@@ -22,32 +22,32 @@
 #ifndef NOELLE_SRC_TOOLS_TIME_SAVED_TIMESAVED_H_
 #define NOELLE_SRC_TOOLS_TIME_SAVED_TIMESAVED_H_
 
-#include "llvm/Pass.h"
-#include "llvm/IR/Function.h"
+#include "llvm/Analysis/AssumptionCache.h"
+#include "llvm/Analysis/LoopInfo.h"
+#include "llvm/Analysis/ScalarEvolution.h"
+#include "llvm/Analysis/ScalarEvolutionExpressions.h"
 #include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Instructions.h"
 #include "llvm/IR/DerivedUser.h"
-#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/IR/Dominators.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Instructions.h"
 #include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/IR/Mangler.h"
+#include "llvm/Pass.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "llvm/Transforms/Utils/Cloning.h"
 #include "llvm/Transforms/Utils/LoopUtils.h"
-#include "llvm/Analysis/LoopInfo.h"
-#include "llvm/Analysis/ScalarEvolution.h"
-#include "llvm/Analysis/ScalarEvolutionExpressions.h"
-#include "llvm/IR/Dominators.h"
-#include "llvm/Analysis/AssumptionCache.h"
-#include "llvm/IR/Mangler.h"
-#include "llvm/IR/IRBuilder.h"
 
-#include "noelle/core/SystemHeaders.hpp"
 #include "noelle/core/LoopContent.hpp"
+#include "noelle/core/MetadataManager.hpp"
+#include "noelle/core/Noelle.hpp"
 #include "noelle/core/PDG.hpp"
 #include "noelle/core/SCC.hpp"
 #include "noelle/core/SCCDAG.hpp"
-#include "noelle/core/Noelle.hpp"
-#include "noelle/core/MetadataManager.hpp"
+#include "noelle/core/SystemHeaders.hpp"
 #include "noelle/tools/DOALL.hpp"
 
 namespace arcana::noelle {
@@ -78,20 +78,15 @@ private:
    */
 
   std::vector<LoopContent *> selectTheOrderOfLoopsToParallelize(
-      Noelle &noelle,
-      Hot *profiles,
-      noelle::LoopTree *tree,
-      uint64_t &maxTimeSaved,
-      uint64_t &maxTimeSavedWithDOALLOnly);
+      Noelle &noelle, Hot *profiles, noelle::LoopTree *tree,
+      uint64_t &maxTimeSaved, uint64_t &maxTimeSavedWithDOALLOnly);
 
-  std::pair<uint64_t, uint64_t> evaluateSavings(
-      Noelle &noelle,
-      noelle::LoopTree *tree,
-      const std::map<LoopStructure *, uint64_t> &timeSaved,
-      const std::map<LoopStructure *, bool> &doallLoops);
+  std::pair<uint64_t, uint64_t>
+  evaluateSavings(Noelle &noelle, noelle::LoopTree *tree,
+                  const std::map<LoopStructure *, uint64_t> &timeSaved,
+                  const std::map<LoopStructure *, bool> &doallLoops);
 
-  uint64_t evaluateSavings(Noelle &noelle,
-                           noelle::LoopTree *tree,
+  uint64_t evaluateSavings(Noelle &noelle, noelle::LoopTree *tree,
                            const std::map<LoopStructure *, uint64_t> &timeSaved,
                            std::function<bool(LoopStructure *)> considerLoop);
 };

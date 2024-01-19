@@ -19,14 +19,13 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "TimeSaved.hpp"
 #include "TimingModel.hpp"
+#include "TimeSaved.hpp"
 
 namespace arcana::noelle {
 
 LoopTimingModel::LoopTimingModel(Noelle &noelle, LoopContent &ldi)
-  : n{ noelle },
-    loop{ ldi } {
+    : n{noelle}, loop{ldi} {
   return;
 }
 

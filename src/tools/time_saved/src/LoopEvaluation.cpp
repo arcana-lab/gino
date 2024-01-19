@@ -23,11 +23,10 @@
 
 namespace arcana::noelle {
 
-std::pair<uint64_t, uint64_t> TimeSaved::evaluateSavings(
-    Noelle &noelle,
-    noelle::LoopTree *tree,
-    const std::map<LoopStructure *, uint64_t> &timeSaved,
-    const std::map<LoopStructure *, bool> &doallLoops) {
+std::pair<uint64_t, uint64_t>
+TimeSaved::evaluateSavings(Noelle &noelle, noelle::LoopTree *tree,
+                           const std::map<LoopStructure *, uint64_t> &timeSaved,
+                           const std::map<LoopStructure *, bool> &doallLoops) {
 
   /*
    * Fetch the maximum time saved by any combination of loops nested from @tree
@@ -53,18 +52,16 @@ std::pair<uint64_t, uint64_t> TimeSaved::evaluateSavings(
   return make_pair(rootLoopMaxTimeSaved, rootLoopMaxTimeSavedWithDOALL);
 }
 
-uint64_t TimeSaved::evaluateSavings(
-    Noelle &noelle,
-    noelle::LoopTree *tree,
-    const std::map<LoopStructure *, uint64_t> &timeSaved,
-    std::function<bool(LoopStructure *)> considerLoop) {
+uint64_t
+TimeSaved::evaluateSavings(Noelle &noelle, noelle::LoopTree *tree,
+                           const std::map<LoopStructure *, uint64_t> &timeSaved,
+                           std::function<bool(LoopStructure *)> considerLoop) {
 
   /*
    * Find the maximum savings per internal node up to the root of the tree.
    */
   std::map<LoopStructure *, uint64_t> maxTimeSaved;
-  auto f = [&maxTimeSaved,
-            &timeSaved,
+  auto f = [&maxTimeSaved, &timeSaved,
             &considerLoop](LoopTree *n, uint32_t treeLevel) -> bool {
     /*
      * Check if we should consider this loop.

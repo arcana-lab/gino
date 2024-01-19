@@ -23,15 +23,10 @@
 #include "PlanInfo.hpp"
 
 static cl::opt<bool> PrintAllHeaders(
-    "info-print-all-headers",
-    cl::ZeroOrMore,
-    cl::Hidden,
+    "info-print-all-headers", cl::ZeroOrMore, cl::Hidden,
     cl::desc("Print the header of all loops with a parallel plan"));
 static cl::list<int> PrintHeaders(
-    "info-print-headers",
-    cl::ZeroOrMore,
-    cl::Hidden,
-    cl::CommaSeparated,
+    "info-print-headers", cl::ZeroOrMore, cl::Hidden, cl::CommaSeparated,
     cl::desc("Print the headers of some loops with a parallel plan"));
 
 namespace arcana::noelle {
@@ -61,12 +56,12 @@ static RegisterStandardPasses _RegPass1(PassManagerBuilder::EP_OptimizerLast,
                                             PM.add(_PassMaker = new PlanInfo());
                                           }
                                         }); // ** for -Ox
-static RegisterStandardPasses _RegPass2(
-    PassManagerBuilder::EP_EnabledOnOptLevel0,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new PlanInfo());
-      }
-    }); // ** for -O0
+static RegisterStandardPasses
+    _RegPass2(PassManagerBuilder::EP_EnabledOnOptLevel0,
+              [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
+                if (!_PassMaker) {
+                  PM.add(_PassMaker = new PlanInfo());
+                }
+              }); // ** for -O0
 
 } // namespace arcana::noelle
