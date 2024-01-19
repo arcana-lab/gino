@@ -35,13 +35,13 @@ The only documentation available for GINO is:
 
 
 ## Logo
-![alt text](https://github.com/scampanoni/threadpool/blob/master/doc/figs/Gino.jpg)
+![alt text](doc/figs/Gino.jpg)
 
 Gino is the name of our cat we have taken home from the [Tree house cat shelter](https://treehouseanimals.org) when we moved to Chicago.
 
 It was surprisingly hard to find a picture of Gino by himself. 
 He is always playing and cuddling with his brother Gigi like here:
-![alt text](https://github.com/scampanoni/threadpool/blob/master/doc/figs/Gino.jpg)
+![alt text](doc/figs/Gino.jpg)
 
 A future project may or may not be called Gigi.
 
