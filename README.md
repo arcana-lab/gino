@@ -41,7 +41,7 @@ Gino is the name of our cat we have taken home from the [Tree house cat shelter]
 
 It was surprisingly hard to find a picture of Gino by himself. 
 He is always playing and cuddling with his brother Gigi like here:
-![alt text](doc/figs/Gino.jpg)
+![alt text](doc/figs/GinoGigi.jpg)
 
 A future project may or may not be called Gigi.
 
