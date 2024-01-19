@@ -32,14 +32,29 @@ The only documentation available for GINO is:
 - the comments within the code
 - the slides we use in the class [Advanced Topics in Compilers](http://www.cs.northwestern.edu/~simonec/ATC.html)
 
+
+## Logo
+![alt text](https://github.com/scampanoni/threadpool/blob/master/doc/figs/Gino.jpg)
+
+Gino is the name of our cat we have taken home from the [Tree house cat shelter](https://treehouseanimals.org) when we moved to Chicago.
+
+It was surprisingly hard to find a picture of Gino by himself. 
+He is always playing and cuddling with his brother Gigi like here:
+![alt text](https://github.com/scampanoni/threadpool/blob/master/doc/figs/Gino.jpg)
+
+A future project may or may not be called Gigi.
+
+
 ## Version
 The latest stable version is 9.1.0 (tag = `v9.1.0`).
+
 
 ### Version Numbering Scheme
 The version number is in the form of \[v _Major.Minor.Revision_ \]
 - **Major**: Each major version matches a specific LLVM version (e.g., version 9 matches LLVM 9, version 11 matches LLVM 11)
 - **Minor**: Starts from 0, each minor version represents either one or more API replacements/removals that might impact the users OR a forced update every six months (the minimum minor update frequency)
 - **Revision**: Starts from 0; each revision version may include bug fixes or incremental improvements
+
 
 #### Update Frequency
 - **Major**: Matches the LLVM releases on a best-effort basis
@@ -112,6 +127,8 @@ Also, `src/tools` includes tools that can be used to diagnose GINO (e.g., to und
 
 The directory `tests` includes integration tests, and performance tests.
 Furthermore, this directory includes the scripts to run all these tests in parallel via condor.
+
+Finally, the directory `doc` includes the documentation of GINO.
 
 
 ### Contributing to GINO
