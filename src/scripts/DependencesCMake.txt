@@ -23,4 +23,3 @@ list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 include(AddLLVM)
 
 # Include NOELLE
-include_directories("/nfs-scratch/simonec/parallelism/parallelization/NOELLEs/13/install/include")
