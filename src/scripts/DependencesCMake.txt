@@ -12,7 +12,6 @@ add_definitions(
 )
 
 include_directories(${LLVM_INCLUDE_DIRS})
-include_directories("/nfs-scratch/simonec/parallelism/parallelization/NOELLEs/13/install/include")
 link_directories(${LLVM_LIBRARY_DIRS})
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
@@ -23,3 +22,5 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 include(AddLLVM)
 
+# Include NOELLE
+include_directories("/nfs-scratch/simonec/parallelism/parallelization/NOELLEs/13/install/include")
