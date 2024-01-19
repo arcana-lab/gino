@@ -2,6 +2,7 @@
 
 ## Table of Contents
 - [Description](#description)
+- [Logo](#logo)
 - [Version](#version)
 - [Prerequisites](#prerequisites)
 - [Building GINO](#building-gino)
