@@ -14,7 +14,7 @@
 
 ## Description
 GINO is a parallelizing compiler for LLVM IR.
-GINO is built upon [NOELLE](https://github.com/arcana-lab/noelle), [VIRGIL](https://github.com/arcana-lab/virgil), [SVF](https://svf-tools.github.io/SVF/), [SCAF](https://github.com/PrincetonUniversity/SCAF.git), and [LLVM](http://llvm.org).
+GINO is built upon [NOELLE](https://github.com/arcana-lab/noelle), [VIRGIL](https://github.com/arcana-lab/virgil), and [LLVM](http://llvm.org).
 
 We release GINO's source code in the hope of benefiting others. 
 You are kindly asked to acknowledge usage of the tool by citing the following paper:
