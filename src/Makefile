@@ -12,5 +12,6 @@ clean:
 	find ./ -name .ycm_extra_conf.py -delete ;
 	find ./ -name compile_commands.json -delete ;
 	find ./ -name .clangd -exec rm -rv {} +
+	rm -f scripts/DependencesCMake.txt ;
 
 .PHONY: clean uninstall

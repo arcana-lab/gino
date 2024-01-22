@@ -13,4 +13,5 @@ rootGitRepo="`git rev-parse --show-toplevel`" ;
 noelleInstallDir="`noelle-config --prefix`";
 
 # Specify to CMake which NOELLE to use for compiling GINO
+cp  ${rootGitRepo}/src/scripts/DependencesCMake.txt.in  ${rootGitRepo}/src/scripts/DependencesCMake.txt ;
 echo "include_directories(\"${noelleInstallDir}/include\")" >> ${rootGitRepo}/src/scripts/DependencesCMake.txt ;
