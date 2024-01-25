@@ -9,6 +9,11 @@ while [ -L "${SOURCE}" ]; do # resolve $SOURCE until the file is no longer a sym
 done
 installDir=$(realpath $( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd )/..)
 
+if test $# -lt 3 ; then
+  echo "USAGE: `basename $0` INPUT_BITCODE -o OUTPUT_BITCODE"
+  exit 1
+fi
+
 inputIR=$1
 afterLoopMetadata="afterLoopMetadata.bc"
 intermediateResult="baseline_with_parallel_plan.bc" ;
@@ -38,7 +43,7 @@ echo $cmdToExecute ;
 eval $cmdToExecute ;
 
 # Step 4: cleaning the metadata that are now disaligned with the code
-cmdToExecute="noelle-meta-clean ${intermediateResult_unoptimized} ${intermediateResult_unoptimized}" ;
+cmdToExecute="noelle-meta-clean ${intermediateResult_unoptimized} -o ${intermediateResult_unoptimized}" ;
 echo $cmdToExecute ;
 eval $cmdToExecute ;
 
