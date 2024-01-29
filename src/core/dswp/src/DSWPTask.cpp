@@ -19,7 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/tools/DSWPTask.hpp"
+#include "arcana/gino/core/DSWPTask.hpp"
 
 namespace arcana::gino {
 

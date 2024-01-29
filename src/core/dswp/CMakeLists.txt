@@ -11,8 +11,8 @@ add_subdirectory(src)
 # Install
 install(
   FILES
-  include/noelle/tools/DSWP.hpp 
-  include/noelle/tools/DSWPTask.hpp 
+  include/arcana/gino/core/DSWP.hpp 
+  include/arcana/gino/core/DSWPTask.hpp 
   DESTINATION 
-  include/noelle/tools
+  include/arcana/gino/core
   )

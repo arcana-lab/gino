@@ -20,7 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "noelle/core/SystemHeaders.hpp"
-#include "noelle/tools/SpilledLoopCarriedDependence.hpp"
+#include "arcana/gino/core/SpilledLoopCarriedDependence.hpp"
 
 namespace arcana::gino {
 

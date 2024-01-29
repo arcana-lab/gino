@@ -21,7 +21,7 @@
  */
 #include "noelle/core/ReductionSCC.hpp"
 #include "noelle/core/InductionVariableSCC.hpp"
-#include "noelle/tools/HELIX.hpp"
+#include "arcana/gino/core/HELIX.hpp"
 
 namespace arcana::gino {
 

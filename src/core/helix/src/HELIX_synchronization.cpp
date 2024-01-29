@@ -20,7 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "noelle/core/Architecture.hpp"
-#include "noelle/tools/HELIX.hpp"
+#include "arcana/gino/core/HELIX.hpp"
 
 namespace arcana::gino {
 

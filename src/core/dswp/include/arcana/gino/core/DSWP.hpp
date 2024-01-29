@@ -22,16 +22,10 @@
 #ifndef NOELLE_SRC_TOOLS_DSWP_H_
 #define NOELLE_SRC_TOOLS_DSWP_H_
 
-#include "noelle/core/SystemHeaders.hpp"
-#include "noelle/core/PDG.hpp"
-#include "noelle/core/SCC.hpp"
-#include "noelle/core/SCCDAG.hpp"
-#include "noelle/core/PDGAnalysis.hpp"
 #include "noelle/core/Noelle.hpp"
 #include "arcana/gino/core/HeuristicsPass.hpp"
 #include "arcana/gino/core/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp"
-#include "DSWPTask.hpp"
-#include "noelle/core/LoopContent.hpp"
+#include "arcana/gino/core/DSWPTask.hpp"
 
 namespace arcana::gino {
 

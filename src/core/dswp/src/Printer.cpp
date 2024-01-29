@@ -20,7 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "noelle/core/SCCDAG.hpp"
-#include "noelle/tools/DSWP.hpp"
+#include "arcana/gino/core/DSWP.hpp"
 
 using namespace llvm;
 using namespace arcana::gino;

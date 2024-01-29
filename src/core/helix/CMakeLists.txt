@@ -11,10 +11,10 @@ add_subdirectory(src)
 # Install
 install(
   FILES
-  include/noelle/tools/HELIX.hpp 
-  include/noelle/tools/HELIXTask.hpp 
-  include/noelle/tools/SequentialSegment.hpp 
-  include/noelle/tools/SpilledLoopCarriedDependence.hpp
+  include/arcana/gino/core/HELIX.hpp 
+  include/arcana/gino/core/HELIXTask.hpp 
+  include/arcana/gino/core/SequentialSegment.hpp 
+  include/arcana/gino/core/SpilledLoopCarriedDependence.hpp
   DESTINATION 
-  include/noelle/tools
+  include/arcana/gino/core
   )

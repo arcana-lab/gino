@@ -19,10 +19,11 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/tools/DSWP.hpp"
+#include "arcana/gino/core/DSWP.hpp"
 
 using namespace llvm;
-using namespace arcana::gino;
+
+namespace arcana::gino {
 
 void DSWP::registerQueue(Noelle &par,
                          LoopContent *LDI,
@@ -444,4 +445,6 @@ void DSWP::pushValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
     queueInstrs->queueCall =
         builder.CreateCall(queuePushFunction, queueCallArgs);
   }
+}
+
 }

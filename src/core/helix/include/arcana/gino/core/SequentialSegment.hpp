@@ -22,9 +22,9 @@
 #ifndef NOELLE_SRC_TOOLS_HELIX_SEQUENTIALSEGMENT_H_
 #define NOELLE_SRC_TOOLS_HELIX_SEQUENTIALSEGMENT_H_
 
-#include "HELIX.hpp"
-#include "noelle/core/SCCDAGPartition.hpp"
 #include "llvm/ADT/iterator_range.h"
+#include "noelle/core/SCCDAGPartition.hpp"
+#include "arcana/gino/core/HELIX.hpp"
 
 namespace arcana::gino {
 

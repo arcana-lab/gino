@@ -20,7 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "llvm/IR/CFG.h"
-#include "noelle/tools/HELIX.hpp"
+#include "arcana/gino/core/HELIX.hpp"
 #include "noelle/core/SCCPartitionScheduler.hpp"
 
 using namespace llvm;

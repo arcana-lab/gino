@@ -32,10 +32,10 @@
 #include "noelle/core/Noelle.hpp"
 #include "noelle/core/ControlFlowEquivalence.hpp"
 #include "arcana/gino/core/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp"
-#include "noelle/tools/SequentialSegment.hpp"
-#include "noelle/tools/HELIXTask.hpp"
-#include "noelle/tools/SpilledLoopCarriedDependence.hpp"
 #include "arcana/gino/core/HeuristicsPass.hpp"
+#include "arcana/gino/core/SequentialSegment.hpp"
+#include "arcana/gino/core/HELIXTask.hpp"
+#include "arcana/gino/core/SpilledLoopCarriedDependence.hpp"
 
 namespace arcana::gino {
 

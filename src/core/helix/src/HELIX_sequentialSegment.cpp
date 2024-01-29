@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/tools/HELIX.hpp"
-#include "noelle/tools/SequentialSegment.hpp"
+#include "arcana/gino/core/HELIX.hpp"
+#include "arcana/gino/core/SequentialSegment.hpp"
 
 namespace arcana::gino {
 

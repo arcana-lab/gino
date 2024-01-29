@@ -21,7 +21,7 @@
  */
 #include "noelle/core/Architecture.hpp"
 #include "noelle/core/ReductionSCC.hpp"
-#include "noelle/tools/HELIX.hpp"
+#include "arcana/gino/core/HELIX.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 
 namespace arcana::gino {
