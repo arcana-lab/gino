@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2022  Kevin McAfee, Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Kevin McAfee, Angelo Matni, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,8 @@
 #ifndef NOELLE_SRC_TOOLS_PARALLELIZATION_PLANNER_PLANNER_H_
 #define NOELLE_SRC_TOOLS_PARALLELIZATION_PLANNER_PLANNER_H_
 
-#include "noelle/core/SystemHeaders.hpp"
-#include "noelle/core/LoopContent.hpp"
-#include "noelle/core/PDG.hpp"
-#include "noelle/core/SCC.hpp"
-#include "noelle/core/SCCDAG.hpp"
-#include "noelle/core/Noelle.hpp"
-#include "noelle/core/MetadataManager.hpp"
 #include "arcana/gino/core/DOALL.hpp"
+#include "noelle/core/Noelle.hpp"
 
 namespace arcana::gino {
 
@@ -60,25 +54,19 @@ private:
 
   std::vector<LoopContent *> getLoopsToParallelize(Module &M, Noelle &par);
 
-  void removeLoopsNotWorthParallelizing(Noelle &noelle,
-                                        Hot *profiles,
+  void removeLoopsNotWorthParallelizing(Noelle &noelle, Hot *profiles,
                                         LoopForest *f);
 
   std::vector<LoopContent *> selectTheOrderOfLoopsToParallelize(
-      Noelle &noelle,
-      Hot *profiles,
-      noelle::LoopTree *tree,
-      uint64_t &maxTimeSaved,
-      uint64_t &maxTimeSavedWithDOALLOnly);
+      Noelle &noelle, Hot *profiles, noelle::LoopTree *tree,
+      uint64_t &maxTimeSaved, uint64_t &maxTimeSavedWithDOALLOnly);
 
-  std::pair<uint64_t, uint64_t> evaluateSavings(
-      Noelle &noelle,
-      noelle::LoopTree *tree,
-      const std::map<LoopStructure *, uint64_t> &timeSaved,
-      const std::map<LoopStructure *, bool> &doallLoops);
+  std::pair<uint64_t, uint64_t>
+  evaluateSavings(Noelle &noelle, noelle::LoopTree *tree,
+                  const std::map<LoopStructure *, uint64_t> &timeSaved,
+                  const std::map<LoopStructure *, bool> &doallLoops);
 
-  uint64_t evaluateSavings(Noelle &noelle,
-                           noelle::LoopTree *tree,
+  uint64_t evaluateSavings(Noelle &noelle, noelle::LoopTree *tree,
                            const std::map<LoopStructure *, uint64_t> &timeSaved,
                            std::function<bool(LoopStructure *)> considerLoop);
 };

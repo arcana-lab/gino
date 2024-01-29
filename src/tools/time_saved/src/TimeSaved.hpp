@@ -23,13 +23,6 @@
 #define NOELLE_SRC_TOOLS_TIME_SAVED_TIMESAVED_H_
 
 #include "arcana/gino/core/DOALL.hpp"
-#include "noelle/core/LoopContent.hpp"
-#include "noelle/core/MetadataManager.hpp"
-#include "noelle/core/Noelle.hpp"
-#include "noelle/core/PDG.hpp"
-#include "noelle/core/SCC.hpp"
-#include "noelle/core/SCCDAG.hpp"
-#include "noelle/core/SystemHeaders.hpp"
 
 using namespace arcana::noelle;
 

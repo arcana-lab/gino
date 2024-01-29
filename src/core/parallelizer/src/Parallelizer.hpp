@@ -22,17 +22,11 @@
 #ifndef NOELLE_SRC_TOOLS_PARALLELIZER_H_
 #define NOELLE_SRC_TOOLS_PARALLELIZER_H_
 
-#include "noelle/core/SystemHeaders.hpp"
-#include "noelle/core/LoopContent.hpp"
-#include "noelle/core/PDG.hpp"
-#include "noelle/core/SCC.hpp"
-#include "noelle/core/SCCDAG.hpp"
-#include "noelle/core/Noelle.hpp"
-#include "noelle/core/MetadataManager.hpp"
-#include "arcana/gino/core/HeuristicsPass.hpp"
 #include "arcana/gino/core/DOALL.hpp"
-#include "arcana/gino/core/HELIX.hpp"
 #include "arcana/gino/core/DSWP.hpp"
+#include "arcana/gino/core/HELIX.hpp"
+#include "arcana/gino/core/HeuristicsPass.hpp"
+#include "noelle/core/Noelle.hpp"
 
 namespace arcana::gino {
 

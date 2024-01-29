@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2022  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,13 @@
 #ifndef NOELLE_SRC_TOOLS_PARALLELIZATION_TECHNIQUE_PARALLELIZATIONTECHNIQUE_H_
 #define NOELLE_SRC_TOOLS_PARALLELIZATION_TECHNIQUE_PARALLELIZATIONTECHNIQUE_H_
 
-#include "llvm/Analysis/ScalarEvolution.h"
-#include "llvm/Analysis/ScalarEvolutionExpressions.h"
-#include "noelle/core/SystemHeaders.hpp"
+#include "arcana/gino/core/Heuristics.hpp"
 #include "noelle/core/Noelle.hpp"
-#include "noelle/core/LoopContent.hpp"
-#include "noelle/core/Task.hpp"
-#include "noelle/core/Hot.hpp"
 #include "noelle/core/PDGPrinter.hpp"
 #include "noelle/core/SubCFGs.hpp"
-#include "arcana/gino/core/Heuristics.hpp"
+#include "noelle/core/Task.hpp"
+#include "llvm/Analysis/ScalarEvolution.h"
+#include "llvm/Analysis/ScalarEvolutionExpressions.h"
 
 namespace arcana::gino {
 
@@ -84,15 +81,14 @@ protected:
    * - one basic block per loop exit, which will jump to the exit block
    */
   virtual void addPredecessorAndSuccessorsBasicBlocksToTasks(
-      LoopContent *loopContent,
-      std::vector<Task *> taskStructs);
+      LoopContent *loopContent, std::vector<Task *> taskStructs);
 
   /*
    * Loop's environment
    */
-  virtual void initializeEnvironmentBuilder(
-      LoopContent *loopContent,
-      std::set<uint32_t> nonReducableVars);
+  virtual void
+  initializeEnvironmentBuilder(LoopContent *loopContent,
+                               std::set<uint32_t> nonReducableVars);
 
   virtual void initializeEnvironmentBuilder(LoopContent *loopContent,
                                             std::set<uint32_t> simpleVars,
@@ -117,8 +113,7 @@ protected:
   virtual void populateLiveInEnvironment(LoopContent *loopContent);
 
   virtual BasicBlock *performReductionToAllReducableLiveOutVariables(
-      LoopContent *loopContent,
-      Value *numberOfThreadsExecuted);
+      LoopContent *loopContent, Value *numberOfThreadsExecuted);
 
   /*
    * Task helpers for manipulating loop body clones
@@ -128,13 +123,12 @@ protected:
                                          int taskIndex,
                                          std::set<Instruction *> subset);
 
-  virtual void cloneMemoryLocationsLocallyAndRewireLoop(
-      LoopContent *loopContent,
-      int taskIndex);
+  virtual void
+  cloneMemoryLocationsLocallyAndRewireLoop(LoopContent *loopContent,
+                                           int taskIndex);
 
   virtual std::unordered_map<InductionVariable *, Value *>
-  cloneIVStepValueComputation(LoopContent *loopContent,
-                              int taskIndex,
+  cloneIVStepValueComputation(LoopContent *loopContent, int taskIndex,
                               IRBuilder<> &insertBlock);
 
   virtual void adjustStepValueOfPointerTypeIVToReflectPointerArithmetic(
@@ -152,42 +146,33 @@ protected:
 
   virtual Instruction *
   fetchOrCreatePHIForIntermediateProducerValueOfReducibleLiveOutVariable(
-      LoopContent *loopContent,
-      int taskIndex,
-      int envID,
-      BasicBlock *insertBasicBlock,
-      DominatorSummary &taskDS);
+      LoopContent *loopContent, int taskIndex, int envID,
+      BasicBlock *insertBasicBlock, DominatorSummary &taskDS);
 
   virtual void generateCodeToStoreExitBlockIndex(LoopContent *loopContent,
                                                  int taskIndex);
 
   virtual std::set<BasicBlock *> determineLatestPointsToInsertLiveOutStore(
-      LoopContent *loopContent,
-      int taskIndex,
-      Instruction *liveOut,
-      bool isReduced,
-      DominatorSummary &taskDS);
+      LoopContent *loopContent, int taskIndex, Instruction *liveOut,
+      bool isReduced, DominatorSummary &taskDS);
 
-  virtual void setReducableVariablesToBeginAtIdentityValue(
-      LoopContent *loopContent,
-      int taskIndex);
+  virtual void
+  setReducableVariablesToBeginAtIdentityValue(LoopContent *loopContent,
+                                              int taskIndex);
 
-  virtual Value *castToCorrectReducibleType(IRBuilder<> &builder,
-                                            Value *value,
+  virtual Value *castToCorrectReducibleType(IRBuilder<> &builder, Value *value,
                                             Type *targetType);
 
   virtual BasicBlock *getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
-      LoopContent *loopContent,
-      uint32_t taskIndex,
-      BasicBlock &bb) = 0;
+      LoopContent *loopContent, uint32_t taskIndex, BasicBlock &bb) = 0;
 
   /*
    * General purpose helpers (that should be moved to parallelization_utils)
    */
   virtual void doNestedInlineOfCalls(Function *F, std::set<CallInst *> &calls);
 
-  virtual float computeSequentialFractionOfExecution(
-      LoopContent *loopContent) const;
+  virtual float
+  computeSequentialFractionOfExecution(LoopContent *loopContent) const;
 
   virtual float computeSequentialFractionOfExecution(
       LoopContent *loopContent,

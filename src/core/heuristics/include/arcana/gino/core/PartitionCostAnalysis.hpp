@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2019  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,6 @@
 #define NOELLE_SRC_TOOLS_HEURISTICS_PARTITIONCOSTANALYSIS_H_
 
 #include "noelle/core/Noelle.hpp"
-#include "noelle/core/SCC.hpp"
-#include "noelle/core/SCCDAGPartition.hpp"
 
 #include "arcana/gino/core/InvocationLatency.hpp"
 

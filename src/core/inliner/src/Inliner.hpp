@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2021  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -22,17 +22,10 @@
 #ifndef NOELLE_SRC_TOOLS_INLINER_H_
 #define NOELLE_SRC_TOOLS_INLINER_H_
 
-#include "noelle/core/SystemHeaders.hpp"
-#include "noelle/core/DGBase.hpp"
-#include "noelle/core/DGGraphTraits.hpp"
-#include "noelle/core/PDG.hpp"
-#include "noelle/core/PDGAnalysis.hpp"
-#include "noelle/core/SCCDAG.hpp"
-#include "noelle/core/LoopContent.hpp"
 #include "noelle/core/Noelle.hpp"
 #include <fstream>
 
-using namespace arcana::noelle ;
+using namespace arcana::noelle;
 
 namespace arcana::gino {
 
@@ -62,10 +55,7 @@ private:
   bool inlineCallsInvolvedInLoopCarriedDataDependences(Noelle &noelle,
                                                        noelle::CallGraph *pcg);
   bool inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
-      Function *F,
-      LoopContent *LDI,
-      noelle::CallGraph *pcg,
-      Noelle &noelle);
+      Function *F, LoopContent *LDI, noelle::CallGraph *pcg, Noelle &noelle);
 
   void getFunctionsToInline(std::string filename);
 
@@ -78,9 +68,7 @@ private:
    */
   bool canInlineWithoutRecursiveLoop(Function *parentF, Function *childF);
 
-  bool inlineFunctionCall(Hot *p,
-                          Function *F,
-                          Function *childF,
+  bool inlineFunctionCall(Hot *p, Function *F, Function *childF,
                           CallInst *call);
 
   int getNextPreorderLoopAfter(Function *F, CallInst *call);

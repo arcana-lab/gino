@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2019  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,10 @@
 #ifndef NOELLE_SRC_TOOLS_HEURISTICS_INVOCATIONLATENCY_H_
 #define NOELLE_SRC_TOOLS_HEURISTICS_INVOCATIONLATENCY_H_
 
-#include "noelle/core/SystemHeaders.hpp"
-#include "noelle/core/SCC.hpp"
-#include "noelle/core/SCCDAGAttrs.hpp"
+#include "noelle/core/Noelle.hpp"
 #include "noelle/core/SCCDAGPartition.hpp"
-#include "noelle/core/Hot.hpp"
 
-using namespace arcana::noelle ;
+using namespace arcana::noelle;
 
 namespace arcana::gino {
 
@@ -39,23 +36,20 @@ public:
   uint64_t latencyPerInvocation(SCC *scc);
 
   uint64_t latencyPerInvocation(
-      SCCDAGAttrs *,
-      std::unordered_set<SCCSet *> &subsets,
+      SCCDAGAttrs *, std::unordered_set<SCCSet *> &subsets,
       std::function<bool(GenericSCC *scc)> canBeRematerialized);
 
   uint64_t latencyPerInvocation(Instruction *inst);
 
   uint64_t queueLatency(Value *queueVal);
 
-  std::set<Value *> &memoizeExternals(
-      SCCDAGAttrs *,
-      SCC *,
-      std::function<bool(GenericSCC *scc)> canBeRematerialized);
+  std::set<Value *> &
+  memoizeExternals(SCCDAGAttrs *, SCC *,
+                   std::function<bool(GenericSCC *scc)> canBeRematerialized);
 
-  std::set<SCC *> &memoizeParents(
-      SCCDAGAttrs *,
-      SCC *,
-      std::function<bool(GenericSCC *scc)> canBeRematerialized);
+  std::set<SCC *> &
+  memoizeParents(SCCDAGAttrs *, SCC *,
+                 std::function<bool(GenericSCC *scc)> canBeRematerialized);
 
 private:
   Hot *profiles;

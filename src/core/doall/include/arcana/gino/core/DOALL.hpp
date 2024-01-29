@@ -22,18 +22,12 @@
 #ifndef NOELLE_SRC_TOOLS_DOALL_H_
 #define NOELLE_SRC_TOOLS_DOALL_H_
 
-#include "noelle/core/SystemHeaders.hpp"
-#include "noelle/core/LoopContent.hpp"
-#include "noelle/core/PDG.hpp"
-#include "noelle/core/SCC.hpp"
-#include "noelle/core/SCCDAG.hpp"
-#include "noelle/core/PDGAnalysis.hpp"
-#include "noelle/core/Noelle.hpp"
 #include "noelle/core/IVStepperUtility.hpp"
+#include "noelle/core/Noelle.hpp"
 
-#include "arcana/gino/core/ParallelizationTechnique.hpp"
 #include "arcana/gino/core/DOALLTask.hpp"
 #include "arcana/gino/core/HeuristicsPass.hpp"
+#include "arcana/gino/core/ParallelizationTechnique.hpp"
 
 namespace arcana::gino {
 
@@ -74,9 +68,7 @@ protected:
    * Interface
    */
   BasicBlock *getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
-      LoopContent *LDI,
-      uint32_t taskIndex,
-      BasicBlock &bb) override;
+      LoopContent *LDI, uint32_t taskIndex, BasicBlock &bb) override;
 };
 
 } // namespace arcana::gino
