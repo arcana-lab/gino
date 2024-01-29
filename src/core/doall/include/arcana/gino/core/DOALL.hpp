@@ -30,9 +30,10 @@
 #include "noelle/core/PDGAnalysis.hpp"
 #include "noelle/core/Noelle.hpp"
 #include "noelle/core/IVStepperUtility.hpp"
-#include "noelle/tools/ParallelizationTechnique.hpp"
-#include "noelle/tools/DOALLTask.hpp"
-#include "HeuristicsPass.hpp"
+
+#include "arcana/gino/core/ParallelizationTechnique.hpp"
+#include "arcana/gino/core/DOALLTask.hpp"
+#include "arcana/gino/core/HeuristicsPass.hpp"
 
 namespace arcana::gino {
 

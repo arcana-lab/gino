@@ -22,8 +22,8 @@
 #include "noelle/core/LoopIterationSCC.hpp"
 #include "noelle/core/ReductionSCC.hpp"
 #include "noelle/core/SingleAccumulatorRecomputableSCC.hpp"
-#include "noelle/tools/DOALL.hpp"
-#include "noelle/tools/DOALLTask.hpp"
+#include "arcana/gino/core/DOALL.hpp"
+#include "arcana/gino/core/DOALLTask.hpp"
 
 namespace arcana::gino {
 

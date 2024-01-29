@@ -11,12 +11,12 @@ add_subdirectory(src)
 # Install
 install(
   FILES
-  include/HeuristicsPass.hpp 
-  include/Heuristics.hpp
-  include/InvocationLatency.hpp
-  include/PartitionCostAnalysis.hpp
-  include/SmallestSizePartitionAnalysis.hpp
-  include/MinMaxSizePartitionAnalysis.hpp
+  include/arcana/gino/core/HeuristicsPass.hpp 
+  include/arcana/gino/core/Heuristics.hpp
+  include/arcana/gino/core/InvocationLatency.hpp
+  include/arcana/gino/core/PartitionCostAnalysis.hpp
+  include/arcana/gino/core/SmallestSizePartitionAnalysis.hpp
+  include/arcana/gino/core/MinMaxSizePartitionAnalysis.hpp
   DESTINATION 
-  include/noelle/tools
+  include/arcana/gino/core
   )

@@ -32,7 +32,7 @@
 
 #include "llvm/ADT/iterator_range.h"
 
-#include "noelle/tools/HeuristicsPass.hpp"
+#include "arcana/gino/core/HeuristicsPass.hpp"
 
 using namespace llvm;
 using namespace arcana::gino;

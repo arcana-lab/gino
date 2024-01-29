@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/tools/DOALL.hpp"
-#include "noelle/tools/DOALLTask.hpp"
+#include "arcana/gino/core/DOALL.hpp"
+#include "arcana/gino/core/DOALLTask.hpp"
 
 namespace arcana::gino {
 

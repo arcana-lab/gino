@@ -19,7 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/tools/ParallelizationTechnique.hpp"
+#include "arcana/gino/core/ParallelizationTechnique.hpp"
 #include "noelle/core/ReductionSCC.hpp"
 #include "noelle/core/BinaryReductionSCC.hpp"
 #include "noelle/core/LoopCarriedUnknownSCC.hpp"

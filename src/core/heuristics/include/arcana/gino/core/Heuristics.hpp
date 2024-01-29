@@ -29,12 +29,10 @@
 #include "noelle/core/SCCDAGPartition.hpp"
 #include "noelle/core/Noelle.hpp"
 
-#include "InvocationLatency.hpp"
-#include "PartitionCostAnalysis.hpp"
-#include "SmallestSizePartitionAnalysis.hpp"
-#include "MinMaxSizePartitionAnalysis.hpp"
-
-using namespace std;
+#include "arcana/gino/core/InvocationLatency.hpp"
+#include "arcana/gino/core/PartitionCostAnalysis.hpp"
+#include "arcana/gino/core/SmallestSizePartitionAnalysis.hpp"
+#include "arcana/gino/core/MinMaxSizePartitionAnalysis.hpp"
 
 using namespace arcana::noelle ;
 

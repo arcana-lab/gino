@@ -30,7 +30,7 @@
 #include "noelle/core/SCCDAGPartition.hpp"
 #include "noelle/core/SCCDAGAttrs.hpp"
 
-#include "PartitionCostAnalysis.hpp"
+#include "arcana/gino/core/PartitionCostAnalysis.hpp"
 
 using namespace std;
 

@@ -48,7 +48,7 @@
 #include "noelle/core/SCC.hpp"
 #include "noelle/core/SCCDAG.hpp"
 #include "noelle/core/SystemHeaders.hpp"
-#include "noelle/tools/DOALL.hpp"
+#include "arcana/gino/core/DOALL.hpp"
 
 using namespace arcana::noelle ;
 

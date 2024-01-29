@@ -21,7 +21,7 @@
  */
 #include "EnablersManager.hpp"
 #include "noelle/core/LoopCarriedUnknownSCC.hpp"
-#include "noelle/tools/DOALL.hpp"
+#include "arcana/gino/core/DOALL.hpp"
 
 namespace arcana::gino {
 

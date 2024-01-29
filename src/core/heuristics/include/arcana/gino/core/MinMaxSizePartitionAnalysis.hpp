@@ -19,32 +19,39 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_HEURISTICS_HEURISTICSPASS_H_
-#define NOELLE_SRC_TOOLS_HEURISTICS_HEURISTICSPASS_H_
+#ifndef NOELLE_SRC_TOOLS_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_
+#define NOELLE_SRC_TOOLS_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_
 
-#include "llvm/IR/Module.h"
+#include "llvm/IR/Function.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Instructions.h"
 
-#include "Heuristics.hpp"
+#include "noelle/core/SCC.hpp"
+#include "noelle/core/SCCDAGPartition.hpp"
+#include "noelle/core/SCCDAGAttrs.hpp"
 
-using namespace llvm;
+#include "arcana/gino/core/PartitionCostAnalysis.hpp"
+
+using namespace std;
 
 namespace arcana::gino {
-struct HeuristicsPass : public ModulePass {
+
+class MinMaxSizePartitionAnalysis : public PartitionCostAnalysis {
 public:
-  static char ID;
+  MinMaxSizePartitionAnalysis(
+      InvocationLatency &IL,
+      SCCDAGPartitioner &p,
+      SCCDAGAttrs &attrs,
+      int cores,
+      std::function<bool(GenericSCC *scc)> canBeRematerialized,
+      Verbosity v)
+    : PartitionCostAnalysis{ IL, p, attrs, cores, canBeRematerialized, v } {};
 
-  HeuristicsPass();
-
-  bool doInitialization(Module &M) override;
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
-
-  bool runOnModule(Module &M) override;
-
-  Heuristics *getHeuristics(Noelle &noelle);
+  void checkIfShouldMerge(
+      SCCSet *sA,
+      SCCSet *sB,
+      std::function<bool(GenericSCC *scc)> canBeRematerialized);
 };
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_HEURISTICS_HEURISTICSPASS_H_
+#endif // NOELLE_SRC_TOOLS_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_

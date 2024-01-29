@@ -22,16 +22,16 @@
 #ifndef NOELLE_SRC_TOOLS_PARALLELIZATION_TECHNIQUE_PARALLELIZATIONTECHNIQUE_H_
 #define NOELLE_SRC_TOOLS_PARALLELIZATION_TECHNIQUE_PARALLELIZATIONTECHNIQUE_H_
 
-#include "noelle/core/SystemHeaders.hpp"
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
+#include "noelle/core/SystemHeaders.hpp"
 #include "noelle/core/Noelle.hpp"
 #include "noelle/core/LoopContent.hpp"
-#include "Heuristics.hpp"
 #include "noelle/core/Task.hpp"
 #include "noelle/core/Hot.hpp"
 #include "noelle/core/PDGPrinter.hpp"
 #include "noelle/core/SubCFGs.hpp"
+#include "arcana/gino/core/Heuristics.hpp"
 
 namespace arcana::gino {
 

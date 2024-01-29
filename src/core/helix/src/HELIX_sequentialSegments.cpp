@@ -23,7 +23,7 @@
 #include "noelle/core/LoopCarriedUnknownSCC.hpp"
 #include "noelle/core/UnknownClosedFormSCC.hpp"
 #include "noelle/tools/HELIX.hpp"
-#include "noelle/tools/DOALL.hpp"
+#include "arcana/gino/core/DOALL.hpp"
 
 namespace arcana::gino {
 

@@ -11,8 +11,8 @@ add_subdirectory(src)
 # Install
 install(
   FILES
-  include/noelle/tools/DOALL.hpp 
-  include/noelle/tools/DOALLTask.hpp
+  include/arcana/gino/core/DOALL.hpp 
+  include/arcana/gino/core/DOALLTask.hpp
   DESTINATION 
-  include/noelle/tools
+  include/arcana/gino/core
   )

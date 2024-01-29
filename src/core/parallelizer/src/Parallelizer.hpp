@@ -29,9 +29,9 @@
 #include "noelle/core/SCCDAG.hpp"
 #include "noelle/core/Noelle.hpp"
 #include "noelle/core/MetadataManager.hpp"
-#include "noelle/tools/DOALL.hpp"
+#include "arcana/gino/core/HeuristicsPass.hpp"
+#include "arcana/gino/core/DOALL.hpp"
 #include "noelle/tools/HELIX.hpp"
-#include "HeuristicsPass.hpp"
 #include "noelle/tools/DSWP.hpp"
 
 namespace arcana::gino {

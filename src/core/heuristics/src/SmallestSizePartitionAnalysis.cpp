@@ -19,10 +19,9 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/tools/SmallestSizePartitionAnalysis.hpp"
+#include "arcana/gino/core/SmallestSizePartitionAnalysis.hpp"
 
-using namespace llvm;
-using namespace arcana::gino;
+namespace arcana::gino {
 
 /*
  * Prioritize merge that best lowers overall cost without yielding a too costly
@@ -57,4 +56,6 @@ void SmallestSizePartitionAnalysis::checkIfShouldMerge(
   //  * Only merge if it is the smallest of equally cost effective merges
   //  */
   // if (lowered == loweredCost && insts > instCount) return ;
-};
+}
+
+}

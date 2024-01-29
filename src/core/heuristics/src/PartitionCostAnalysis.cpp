@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2019  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -19,10 +19,9 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/tools/PartitionCostAnalysis.hpp"
+#include "arcana/gino/core/PartitionCostAnalysis.hpp"
 
-using namespace llvm;
-using namespace arcana::gino;
+namespace arcana::gino {
 
 const std::string PartitionCostAnalysis::prefix = "Heuristic:   PCA: ";
 
@@ -124,4 +123,6 @@ void PartitionCostAnalysis::printCandidate(raw_ostream &stream) {
   stream << prefix << "Saved cost: " << savedCostByMerging
          << " Merged set cost: " << costOfMergedSet
          << " Instruction count: " << numInstructionsInSetsBeingMerged << "\n";
+}
+
 }

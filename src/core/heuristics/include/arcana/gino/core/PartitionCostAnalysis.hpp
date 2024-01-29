@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_HEURISTICS_SMALLESTSIZEPARTITIONANALYSIS_H_
-#define NOELLE_SRC_TOOLS_HEURISTICS_SMALLESTSIZEPARTITIONANALYSIS_H_
+#ifndef NOELLE_SRC_TOOLS_HEURISTICS_PARTITIONCOSTANALYSIS_H_
+#define NOELLE_SRC_TOOLS_HEURISTICS_PARTITIONCOSTANALYSIS_H_
 
 #include "llvm/IR/Function.h"
 #include "llvm/IR/BasicBlock.h"
@@ -28,31 +28,57 @@
 
 #include "noelle/core/SCC.hpp"
 #include "noelle/core/SCCDAGPartition.hpp"
-#include "noelle/core/SCCDAGAttrs.hpp"
-
-#include "PartitionCostAnalysis.hpp"
+#include "noelle/core/Noelle.hpp"
+#include "arcana/gino/core/InvocationLatency.hpp"
 
 using namespace std;
 
 namespace arcana::gino {
 
-class SmallestSizePartitionAnalysis : public PartitionCostAnalysis {
+class PartitionCostAnalysis {
 public:
-  SmallestSizePartitionAnalysis(
+  PartitionCostAnalysis(
       InvocationLatency &IL,
       SCCDAGPartitioner &p,
-      SCCDAGAttrs &attrs,
-      int cores,
+      SCCDAGAttrs &,
+      int numCores,
       std::function<bool(GenericSCC *scc)> canBeRematerialized,
-      Verbosity v)
-    : PartitionCostAnalysis{ IL, p, attrs, cores, canBeRematerialized, v } {};
+      Verbosity verbose);
 
-  void checkIfShouldMerge(
+  void traverseAllPartitionSubsets();
+
+  virtual void checkIfShouldMerge(
       SCCSet *sA,
       SCCSet *sB,
-      std::function<bool(GenericSCC *scc)> canBeRematerialized) override;
+      std::function<bool(GenericSCC *scc)> canBeRematerialized) = 0;
+
+  void resetCandidateSubsetInfo();
+
+  bool mergeCandidateSubsets(void);
+
+  void printCandidate(raw_ostream &stream);
+
+  const static std::string prefix;
+
+protected:
+  InvocationLatency &IL;
+  SCCDAGPartitioner &partitioner;
+  SCCDAGAttrs &dagAttrs;
+  int numCores;
+  std::function<bool(GenericSCC *scc)> canBeRematerialized;
+
+  std::unordered_map<SCC *, uint64_t> sccToInstructionCountMap;
+  uint64_t costIfAllSetsRunOnSeparateCores;
+  uint64_t totalInstructionCount;
+
+  std::unordered_set<SCCSet *> minSetsToMerge;
+  uint64_t numInstructionsInSetsBeingMerged;
+  uint64_t savedCostByMerging;
+  uint64_t costOfMergedSet;
+
+  Verbosity verbose;
 };
 
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_HEURISTICS_SMALLESTSIZEPARTITIONANALYSIS_H_
+#endif // NOELLE_SRC_TOOLS_HEURISTICS_PARTITIONCOSTANALYSIS_H_

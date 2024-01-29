@@ -19,7 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/tools/Heuristics.hpp"
+#include "arcana/gino/core/Heuristics.hpp"
 
 using namespace llvm;
 using namespace arcana::gino;

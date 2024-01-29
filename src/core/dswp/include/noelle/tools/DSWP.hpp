@@ -28,8 +28,8 @@
 #include "noelle/core/SCCDAG.hpp"
 #include "noelle/core/PDGAnalysis.hpp"
 #include "noelle/core/Noelle.hpp"
-#include "HeuristicsPass.hpp"
-#include "noelle/tools/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp"
+#include "arcana/gino/core/HeuristicsPass.hpp"
+#include "arcana/gino/core/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp"
 #include "DSWPTask.hpp"
 #include "noelle/core/LoopContent.hpp"
 

@@ -11,8 +11,8 @@ add_subdirectory(src)
 # Install
 install(
   FILES
-  include/noelle/tools/ParallelizationTechnique.hpp 
-  include/noelle/tools/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp 
+  include/arcana/gino/core/ParallelizationTechnique.hpp 
+  include/arcana/gino/core/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp 
   DESTINATION 
-  include/noelle/tools
+  include/arcana/gino/core
   )

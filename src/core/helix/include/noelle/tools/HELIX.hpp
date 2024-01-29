@@ -31,11 +31,11 @@
 #include "noelle/core/PDGAnalysis.hpp"
 #include "noelle/core/Noelle.hpp"
 #include "noelle/core/ControlFlowEquivalence.hpp"
-#include "noelle/tools/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp"
+#include "arcana/gino/core/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp"
 #include "noelle/tools/SequentialSegment.hpp"
 #include "noelle/tools/HELIXTask.hpp"
 #include "noelle/tools/SpilledLoopCarriedDependence.hpp"
-#include "HeuristicsPass.hpp"
+#include "arcana/gino/core/HeuristicsPass.hpp"
 
 namespace arcana::gino {
 
