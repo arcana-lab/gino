@@ -22,19 +22,14 @@
 #ifndef NOELLE_SRC_TOOLS_HEURISTICS_H_
 #define NOELLE_SRC_TOOLS_HEURISTICS_H_
 
-#include "llvm/IR/Function.h"
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Instructions.h"
-
-#include "noelle/core/SCCDAGPartition.hpp"
 #include "noelle/core/Noelle.hpp"
 
 #include "arcana/gino/core/InvocationLatency.hpp"
+#include "arcana/gino/core/MinMaxSizePartitionAnalysis.hpp"
 #include "arcana/gino/core/PartitionCostAnalysis.hpp"
 #include "arcana/gino/core/SmallestSizePartitionAnalysis.hpp"
-#include "arcana/gino/core/MinMaxSizePartitionAnalysis.hpp"
 
-using namespace arcana::noelle ;
+using namespace arcana::noelle;
 
 namespace arcana::gino {
 
@@ -46,24 +41,19 @@ public:
   Heuristics(Noelle &noelle);
 
   void adjustParallelizationPartitionForDSWP(
-      SCCDAGPartitioner *partitioner,
-      SCCDAGAttrs &attrs,
-      uint64_t numThreads,
+      SCCDAGPartitioner *partitioner, SCCDAGAttrs &attrs, uint64_t numThreads,
       std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity verbose);
 
 private:
-  void minMaxMergePartition(
-      SCCDAGPartitioner &partitioner,
-      SCCDAGAttrs &attrs,
-      uint64_t numThreads,
-      std::function<bool(GenericSCC *scc)> canBeRematerialized,
-      Verbosity verbose);
+  void
+  minMaxMergePartition(SCCDAGPartitioner &partitioner, SCCDAGAttrs &attrs,
+                       uint64_t numThreads,
+                       std::function<bool(GenericSCC *scc)> canBeRematerialized,
+                       Verbosity verbose);
 
   void smallestSizeMergePartition(
-      SCCDAGPartitioner &partitioner,
-      SCCDAGAttrs &attrs,
-      uint64_t numThreads,
+      SCCDAGPartitioner &partitioner, SCCDAGAttrs &attrs, uint64_t numThreads,
       std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity verbose);
 
