@@ -22,13 +22,10 @@
 #ifndef NOELLE_SRC_TOOLS_HEURISTICS_PARTITIONCOSTANALYSIS_H_
 #define NOELLE_SRC_TOOLS_HEURISTICS_PARTITIONCOSTANALYSIS_H_
 
-#include "llvm/IR/Function.h"
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Instructions.h"
-
+#include "noelle/core/Noelle.hpp"
 #include "noelle/core/SCC.hpp"
 #include "noelle/core/SCCDAGPartition.hpp"
-#include "noelle/core/Noelle.hpp"
+
 #include "arcana/gino/core/InvocationLatency.hpp"
 
 using namespace std;
@@ -38,18 +35,14 @@ namespace arcana::gino {
 class PartitionCostAnalysis {
 public:
   PartitionCostAnalysis(
-      InvocationLatency &IL,
-      SCCDAGPartitioner &p,
-      SCCDAGAttrs &,
-      int numCores,
+      InvocationLatency &IL, SCCDAGPartitioner &p, SCCDAGAttrs &, int numCores,
       std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity verbose);
 
   void traverseAllPartitionSubsets();
 
   virtual void checkIfShouldMerge(
-      SCCSet *sA,
-      SCCSet *sB,
+      SCCSet *sA, SCCSet *sB,
       std::function<bool(GenericSCC *scc)> canBeRematerialized) = 0;
 
   void resetCandidateSubsetInfo();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2019  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,13 @@
 #ifndef NOELLE_SRC_TOOLS_HEURISTICS_HEURISTICSPASS_H_
 #define NOELLE_SRC_TOOLS_HEURISTICS_HEURISTICSPASS_H_
 
-#include "llvm/IR/Module.h"
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Instructions.h"
-
-#include "Heuristics.hpp"
+#include "arcana/gino/core/Heuristics.hpp"
 
 using namespace llvm;
 
 namespace arcana::gino {
-struct HeuristicsPass : public ModulePass {
+
+class HeuristicsPass : public ModulePass {
 public:
   static char ID;
 
@@ -45,6 +42,7 @@ public:
 
   Heuristics *getHeuristics(Noelle &noelle);
 };
+
 } // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_HEURISTICS_HEURISTICSPASS_H_
