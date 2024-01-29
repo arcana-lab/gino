@@ -33,7 +33,7 @@
 #include "DSWPTask.hpp"
 #include "noelle/core/LoopContent.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class DSWP
   : public ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences {
@@ -153,6 +153,6 @@ private:
   void printStageClonedValues(const LoopContent &LDI, int taskIndex) const;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_DSWP_H_

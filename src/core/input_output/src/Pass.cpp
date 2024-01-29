@@ -22,7 +22,7 @@
 #include "noelle/core/Noelle.hpp"
 #include "InputOutput.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 bool InputOutput::doInitialization(Module &M) {
   return false;
@@ -59,4 +59,4 @@ static RegisterStandardPasses _RegPass2(
       }
     }); // ** for -O0
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2022  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Enrico A. Deiana, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,9 @@
 #include <fstream>
 #include <string>
 
-namespace arcana::noelle {
+using namespace arcana::noelle ;
+
+namespace arcana::gino {
 
 AutotunerSearchSpace::AutotunerSearchSpace() : ModulePass(this->ID) {}
 
@@ -110,27 +112,27 @@ void AutotunerSearchSpace::getAnalysisUsage(AnalysisUsage &AU) const {
   return;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 // Next there is code to register your pass to "opt"
-char arcana::noelle::AutotunerSearchSpace::ID = 0;
-static RegisterPass<arcana::noelle::AutotunerSearchSpace> X(
+char arcana::gino::AutotunerSearchSpace::ID = 0;
+static RegisterPass<arcana::gino::AutotunerSearchSpace> X(
     "autotunersearchspace",
     "Generate file with number of loops that can be parallelized");
 
 // Next there is code to register your pass to "clang"
-static arcana::noelle::AutotunerSearchSpace *_PassMaker = NULL;
+static arcana::gino::AutotunerSearchSpace *_PassMaker = NULL;
 static RegisterStandardPasses _RegPass1(
     PassManagerBuilder::EP_OptimizerLast,
     [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
       if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::noelle::AutotunerSearchSpace());
+        PM.add(_PassMaker = new arcana::gino::AutotunerSearchSpace());
       }
     }); // ** for -Ox
 static RegisterStandardPasses _RegPass2(
     PassManagerBuilder::EP_EnabledOnOptLevel0,
     [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
       if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::noelle::AutotunerSearchSpace());
+        PM.add(_PassMaker = new arcana::gino::AutotunerSearchSpace());
       }
     }); // ** for -O0

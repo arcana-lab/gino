@@ -24,7 +24,7 @@
 #include <cstdlib>
 #include <fstream>
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 AutotunerDoallFilter::AutotunerDoallFilter() : ModulePass(this->ID) {}
 
@@ -120,27 +120,27 @@ void AutotunerDoallFilter::getAnalysisUsage(AnalysisUsage &AU) const {
   return;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 // Next there is code to register your pass to "opt"
-char arcana::noelle::AutotunerDoallFilter::ID = 0;
-static RegisterPass<arcana::noelle::AutotunerDoallFilter> X(
+char arcana::gino::AutotunerDoallFilter::ID = 0;
+static RegisterPass<arcana::gino::AutotunerDoallFilter> X(
     "autotunerdoallfilter",
     "Reduce search space of DOALL loops.");
 
 // Next there is code to register your pass to "clang"
-static arcana::noelle::AutotunerDoallFilter *_PassMaker = NULL;
+static arcana::gino::AutotunerDoallFilter *_PassMaker = NULL;
 static RegisterStandardPasses _RegPass1(
     PassManagerBuilder::EP_OptimizerLast,
     [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
       if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::noelle::AutotunerDoallFilter());
+        PM.add(_PassMaker = new arcana::gino::AutotunerDoallFilter());
       }
     }); // ** for -Ox
 static RegisterStandardPasses _RegPass2(
     PassManagerBuilder::EP_EnabledOnOptLevel0,
     [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
       if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::noelle::AutotunerDoallFilter());
+        PM.add(_PassMaker = new arcana::gino::AutotunerDoallFilter());
       }
     }); // ** for -O0

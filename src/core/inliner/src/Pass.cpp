@@ -22,7 +22,7 @@
 #include "Inliner.hpp"
 
 using namespace llvm;
-using namespace arcana::noelle;
+using namespace arcana::gino;
 
 /*
  * Options of the dependence graph simplifier pass.

@@ -22,7 +22,7 @@
 #include "Inliner.hpp"
 
 using namespace llvm;
-using namespace arcana::noelle;
+using namespace arcana::gino;
 
 void Inliner::printFnCallGraph() {
   if (this->verbose == Verbosity::Disabled)

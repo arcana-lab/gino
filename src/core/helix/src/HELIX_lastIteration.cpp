@@ -21,7 +21,7 @@
  */
 #include "noelle/tools/HELIX.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 BasicBlock *HELIX::getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
     LoopContent *LDI,
@@ -155,4 +155,4 @@ BasicBlock *HELIX::getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
   return newBB;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

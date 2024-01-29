@@ -22,7 +22,7 @@
 #include "noelle/tools/Heuristics.hpp"
 
 using namespace llvm;
-using namespace arcana::noelle;
+using namespace arcana::gino;
 
 Heuristics::Heuristics(Noelle &noelle)
   : invocationLatency{ noelle.getProfiles() } {

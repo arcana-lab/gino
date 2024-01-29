@@ -34,7 +34,7 @@
 #include "noelle/tools/DOALLTask.hpp"
 #include "HeuristicsPass.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class DOALL : public ParallelizationTechnique {
 public:
@@ -78,6 +78,6 @@ protected:
       BasicBlock &bb) override;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_DOALL_H_

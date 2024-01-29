@@ -21,7 +21,7 @@
  */
 #include "Planner.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 /*
  * Options of the Planner pass.
@@ -171,27 +171,27 @@ void Planner::getAnalysisUsage(AnalysisUsage &AU) const {
   return;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 // Next there is code to register your pass to "opt"
-char arcana::noelle::Planner::ID = 0;
-static RegisterPass<arcana::noelle::Planner> X(
+char arcana::gino::Planner::ID = 0;
+static RegisterPass<arcana::gino::Planner> X(
     "planner",
     "Automatic parallelization planner");
 
 // Next there is code to register your pass to "clang"
-static arcana::noelle::Planner *_PassMaker = NULL;
+static arcana::gino::Planner *_PassMaker = NULL;
 static RegisterStandardPasses _RegPass1(
     PassManagerBuilder::EP_OptimizerLast,
     [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
       if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::noelle::Planner());
+        PM.add(_PassMaker = new arcana::gino::Planner());
       }
     }); // ** for -Ox
 static RegisterStandardPasses _RegPass2(
     PassManagerBuilder::EP_EnabledOnOptLevel0,
     [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
       if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::noelle::Planner());
+        PM.add(_PassMaker = new arcana::gino::Planner());
       }
     }); // ** for -O0

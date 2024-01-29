@@ -21,7 +21,7 @@
  */
 #include "TimeSaved.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 TimeSaved::TimeSaved() : ModulePass{ID}, forceParallelization{true} { return; }
 
@@ -124,26 +124,26 @@ void TimeSaved::getAnalysisUsage(AnalysisUsage &AU) const {
   return;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 // Next there is code to register your pass to "opt"
-char arcana::noelle::TimeSaved::ID = 0;
-static RegisterPass<arcana::noelle::TimeSaved>
+char arcana::gino::TimeSaved::ID = 0;
+static RegisterPass<arcana::gino::TimeSaved>
     X("TimeSaved", "Print estimated time saved by parallelization");
 
 // Next there is code to register your pass to "clang"
-static arcana::noelle::TimeSaved *_PassMaker = NULL;
+static arcana::gino::TimeSaved *_PassMaker = NULL;
 static RegisterStandardPasses
     _RegPass1(PassManagerBuilder::EP_OptimizerLast,
               [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
                 if (!_PassMaker) {
-                  PM.add(_PassMaker = new arcana::noelle::TimeSaved());
+                  PM.add(_PassMaker = new arcana::gino::TimeSaved());
                 }
               }); // ** for -Ox
 static RegisterStandardPasses
     _RegPass2(PassManagerBuilder::EP_EnabledOnOptLevel0,
               [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
                 if (!_PassMaker) {
-                  PM.add(_PassMaker = new arcana::noelle::TimeSaved());
+                  PM.add(_PassMaker = new arcana::gino::TimeSaved());
                 }
               }); // ** for -O0

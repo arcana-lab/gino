@@ -22,7 +22,7 @@
 #include "noelle/core/SystemHeaders.hpp"
 #include "noelle/tools/SpilledLoopCarriedDependence.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 SpilledLoopCarriedDependence::SpilledLoopCarriedDependence(PHINode *orig,
                                                            PHINode *taskClone)
@@ -39,4 +39,4 @@ PHINode *SpilledLoopCarriedDependence::getClone(void) const {
   return this->loopCarriedPHI;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

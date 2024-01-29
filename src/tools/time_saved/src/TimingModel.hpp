@@ -1,5 +1,5 @@
 /*
- * Copyright 2022  Simone Campanoni
+ * Copyright 2022 - 2024  Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,9 @@
 
 #include "noelle/core/Noelle.hpp"
 
-namespace arcana::noelle {
+using namespace arcana::noelle ;
+
+namespace arcana::gino {
 
 class LoopTimingModel {
 public:
@@ -39,6 +41,6 @@ protected:
   LoopContent &loop;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_TIME_SAVED_TIMINGMODEL_H_

@@ -21,7 +21,7 @@
  */
 #include "noelle/tools/DOALL.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 DOALL::DOALL(Noelle &noelle)
   : ParallelizationTechnique{ noelle },
@@ -57,4 +57,4 @@ Transformation DOALL::getParallelizationID(void) const {
   return Transformation::DOALL_ID;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

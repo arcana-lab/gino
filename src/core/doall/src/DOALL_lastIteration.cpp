@@ -22,7 +22,7 @@
 #include "noelle/tools/DOALL.hpp"
 #include "noelle/tools/DOALLTask.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 BasicBlock *DOALL::getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
     LoopContent *LDI,
@@ -219,4 +219,4 @@ BasicBlock *DOALL::getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
   return newBB;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

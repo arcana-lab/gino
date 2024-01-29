@@ -22,7 +22,7 @@
 #include "TimeSaved.hpp"
 #include "TimingModel.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 std::vector<LoopContent *> TimeSaved::selectTheOrderOfLoopsToParallelize(
     Noelle &noelle, Hot *profiles, noelle::LoopTree *tree,
@@ -206,4 +206,4 @@ std::vector<LoopContent *> TimeSaved::selectTheOrderOfLoopsToParallelize(
 
   return selectedLoops;
 }
-} // namespace arcana::noelle
+} // namespace arcana::gino

@@ -21,7 +21,7 @@
  */
 #include "Parallelizer.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 /*
  * Options of the Parallelizer pass.
@@ -90,27 +90,27 @@ void Parallelizer::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.addRequired<HeuristicsPass>();
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 // Next there is code to register your pass to "opt"
-char arcana::noelle::Parallelizer::ID = 0;
-static RegisterPass<arcana::noelle::Parallelizer> X(
+char arcana::gino::Parallelizer::ID = 0;
+static RegisterPass<arcana::gino::Parallelizer> X(
     "parallelizer",
     "Automatic parallelization of sequential code");
 
 // Next there is code to register your pass to "clang"
-static arcana::noelle::Parallelizer *_PassMaker = NULL;
+static arcana::gino::Parallelizer *_PassMaker = NULL;
 static RegisterStandardPasses _RegPass1(
     PassManagerBuilder::EP_OptimizerLast,
     [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
       if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::noelle::Parallelizer());
+        PM.add(_PassMaker = new arcana::gino::Parallelizer());
       }
     }); // ** for -Ox
 static RegisterStandardPasses _RegPass2(
     PassManagerBuilder::EP_EnabledOnOptLevel0,
     [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
       if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::noelle::Parallelizer());
+        PM.add(_PassMaker = new arcana::gino::Parallelizer());
       }
     }); // ** for -O0

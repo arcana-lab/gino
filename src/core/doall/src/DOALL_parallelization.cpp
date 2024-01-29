@@ -24,7 +24,7 @@
 #include "noelle/tools/DOALL.hpp"
 #include "noelle/tools/DOALLTask.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 bool DOALL::apply(LoopContent *LDI, Heuristics *h) {
 
@@ -253,4 +253,4 @@ bool DOALL::apply(LoopContent *LDI, Heuristics *h) {
   return true;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

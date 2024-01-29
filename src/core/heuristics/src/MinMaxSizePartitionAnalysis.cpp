@@ -22,7 +22,7 @@
 #include "noelle/tools/MinMaxSizePartitionAnalysis.hpp"
 
 using namespace llvm;
-using namespace arcana::noelle;
+using namespace arcana::gino;
 
 void MinMaxSizePartitionAnalysis::checkIfShouldMerge(
     SCCSet *sA,

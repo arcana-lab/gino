@@ -22,7 +22,9 @@
 #include "noelle/tools/InvocationLatency.hpp"
 
 using namespace llvm;
-using namespace arcana::noelle;
+using namespace arcana::noelle ;
+
+namespace arcana::gino {
 
 InvocationLatency::InvocationLatency(Hot *hot) : profiles{ hot } {
   return;
@@ -160,4 +162,6 @@ std::set<SCC *> &InvocationLatency::memoizeParents(
     }
   }
   return clonableParents[scc];
+}
+
 }

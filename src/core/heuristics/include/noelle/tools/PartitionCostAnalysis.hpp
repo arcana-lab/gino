@@ -33,7 +33,7 @@
 
 using namespace std;
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class PartitionCostAnalysis {
 public:
@@ -79,6 +79,6 @@ protected:
   Verbosity verbose;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_HEURISTICS_PARTITIONCOSTANALYSIS_H_

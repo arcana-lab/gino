@@ -24,7 +24,7 @@
 
 #include "noelle/core/SystemHeaders.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class SpilledLoopCarriedDependence {
 public:
@@ -43,6 +43,6 @@ private:
   PHINode *loopCarriedPHI;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_HELIX_SPILLEDLOOPCARRIEDDEPENDENCE_H_

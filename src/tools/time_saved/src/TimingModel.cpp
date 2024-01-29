@@ -22,7 +22,7 @@
 #include "TimingModel.hpp"
 #include "TimeSaved.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 LoopTimingModel::LoopTimingModel(Noelle &noelle, LoopContent &ldi)
     : n{noelle}, loop{ldi} {
@@ -100,4 +100,4 @@ uint64_t LoopTimingModel::getTimeSpentInCriticalPathPerIteration(void) {
   return biggestSCCTime;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

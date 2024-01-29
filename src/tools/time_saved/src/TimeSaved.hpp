@@ -1,5 +1,5 @@
 /*
- * Copyright 2022  Kevin McAfee, Simone Campanoni
+ * Copyright 2022 - 2024  Kevin McAfee, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -50,7 +50,9 @@
 #include "noelle/core/SystemHeaders.hpp"
 #include "noelle/tools/DOALL.hpp"
 
-namespace arcana::noelle {
+using namespace arcana::noelle ;
+
+namespace arcana::gino {
 
 class TimeSaved : public ModulePass {
 public:
@@ -91,6 +93,6 @@ private:
                            std::function<bool(LoopStructure *)> considerLoop);
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_TIME_SAVED_TIMESAVED_H_

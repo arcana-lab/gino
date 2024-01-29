@@ -21,7 +21,7 @@
  */
 #include "noelle/tools/DSWP.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 void DSWP::generateLoopSubsetForStage(LoopContent *LDI, int taskIndex) {
   auto task = (DSWPTask *)this->tasks[taskIndex];
@@ -140,4 +140,4 @@ void DSWP::generateLoopSubsetForStage(LoopContent *LDI, int taskIndex) {
   return;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

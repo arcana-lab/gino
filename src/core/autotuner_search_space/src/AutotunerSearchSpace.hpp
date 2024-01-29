@@ -24,7 +24,7 @@
 
 #include "noelle/core/Noelle.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class AutotunerSearchSpace : public ModulePass {
 public:
@@ -42,6 +42,6 @@ public:
   static char ID;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_AUTOTUNER_SEARCH_SPACE_AUTOTUNERSEARCHSPACE_H_

@@ -23,7 +23,7 @@
 #include "noelle/core/InductionVariableSCC.hpp"
 #include "noelle/tools/HELIX.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 void HELIX::rewireLoopForIVsToIterateNthIterations(LoopContent *LDI) {
 
@@ -580,4 +580,4 @@ void HELIX::rewireLoopForPeriodicVariables(LoopContent *LDI) {
   }
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

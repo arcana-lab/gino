@@ -24,7 +24,7 @@
 #include "noelle/tools/HELIX.hpp"
 #include "noelle/tools/DOALL.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 HELIX::HELIX(Noelle &n, bool forceParallelization)
   : ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences{ n,
@@ -81,4 +81,4 @@ HELIX::~HELIX() {
   return;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

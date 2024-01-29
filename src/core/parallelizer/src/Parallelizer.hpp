@@ -34,7 +34,7 @@
 #include "HeuristicsPass.hpp"
 #include "noelle/tools/DSWP.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class Parallelizer : public ModulePass {
 public:
@@ -72,6 +72,6 @@ private:
   bool collectThreadPoolHelperFunctionsAndTypes(Module &M, Noelle &par);
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_PARALLELIZER_H_

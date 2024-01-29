@@ -24,7 +24,9 @@
 
 #include "noelle/core/Noelle.hpp"
 
-namespace arcana::noelle {
+using namespace arcana::noelle ;
+
+namespace arcana::gino {
 
 class PlanInfo : public ModulePass {
 public:
@@ -44,6 +46,6 @@ private:
   std::vector<int> printHeaders;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_PARALLELIZER_PLAN_INFO_PLANINFO_H_

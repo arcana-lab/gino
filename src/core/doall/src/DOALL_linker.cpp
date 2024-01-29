@@ -24,7 +24,7 @@
 #include "noelle/tools/DOALL.hpp"
 #include "noelle/tools/DOALLTask.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 void DOALL::invokeParallelizedLoop(LoopContent *LDI) {
 
@@ -83,4 +83,4 @@ void DOALL::invokeParallelizedLoop(LoopContent *LDI) {
   afterDOALLBuilder.CreateBr(this->exitPointOfParallelizedLoop);
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

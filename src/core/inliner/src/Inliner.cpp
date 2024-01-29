@@ -21,7 +21,7 @@
  */
 #include "Inliner.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 Inliner::Inliner()
   : ModulePass{ ID },
@@ -805,4 +805,4 @@ Inliner::~Inliner() {
   }
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

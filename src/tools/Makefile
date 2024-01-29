@@ -1,4 +1,6 @@
-all: parallelizer_plan_info time_saved scripts
+ALL=parallelizer_plan_info time_saved
+
+all: $(ALL) scripts
 
 scripts:
 	./scripts/installGINOTools.sh
@@ -15,4 +17,4 @@ clean:
 	rm -rf */build */*.json ; 
 	rm -rf */build */*/*.json ; 
 
-.PHONY: scripts clean uninstall
+.PHONY: $(ALL) scripts clean uninstall

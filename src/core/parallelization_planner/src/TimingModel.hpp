@@ -24,7 +24,7 @@
 
 #include "noelle/core/Noelle.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class LoopTimingModel {
 public:
@@ -39,6 +39,6 @@ protected:
   LoopContent &loop;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_PARALLELIZATION_PLANNER_TIMINGMODEL_H_

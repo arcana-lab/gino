@@ -22,7 +22,7 @@
 #include "noelle/core/Architecture.hpp"
 #include "noelle/tools/HELIX.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 void HELIX::addSynchronizations(LoopContent *LDI,
                                 std::vector<SequentialSegment *> *sss,
@@ -454,4 +454,4 @@ void HELIX::computeAndCachePointerOfFutureSequentialSegment(
   this->ssFuturePtrs.push_back(ptr);
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

@@ -21,7 +21,7 @@
  */
 #include "noelle/tools/DOALLTask.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 DOALLTask::DOALLTask(FunctionType *taskSignature, Module &M)
   : Task{ taskSignature, M } {
@@ -54,4 +54,4 @@ void DOALLTask::initializeTask(Function *F) {
   this->chunkSizeArg->setName("chunkSize");
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

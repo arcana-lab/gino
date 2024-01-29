@@ -22,7 +22,7 @@
 
 #include "PlanInfo.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 PlanInfo::PlanInfo() : ModulePass{ID}, printAllHeaders{false} { return; }
 
@@ -89,4 +89,4 @@ bool PlanInfo::runOnModule(Module &M) {
   return false;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

@@ -21,7 +21,7 @@
  */
 #include "noelle/tools/DSWP.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 BasicBlock *DSWP::getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
     LoopContent *LDI,
@@ -30,4 +30,4 @@ BasicBlock *DSWP::getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
   return &bb;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

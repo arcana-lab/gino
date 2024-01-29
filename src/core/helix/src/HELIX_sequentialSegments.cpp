@@ -25,7 +25,7 @@
 #include "noelle/tools/HELIX.hpp"
 #include "noelle/tools/DOALL.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 std::vector<SequentialSegment *> HELIX::identifySequentialSegments(
     LoopContent *originalLDI,
@@ -230,4 +230,4 @@ std::vector<SequentialSegment *> HELIX::identifySequentialSegments(
   return sss;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

@@ -24,7 +24,7 @@
 #include "noelle/tools/HELIX.hpp"
 #include "noelle/tools/DOALL.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 bool HELIX::apply(LoopContent *LDI, Heuristics *h) {
 
@@ -529,4 +529,4 @@ bool HELIX::synchronizeTask(LoopContent *LDI,
   return true;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

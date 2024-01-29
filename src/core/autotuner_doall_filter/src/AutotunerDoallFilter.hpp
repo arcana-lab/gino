@@ -25,7 +25,7 @@
 #include "noelle/core/Noelle.hpp"
 #include "noelle/tools/DOALL.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class AutotunerDoallFilter : public ModulePass {
 public:
@@ -43,6 +43,6 @@ public:
   static char ID;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_AUTOTUNER_DOALL_FILTER_AUTOTUNERDOALLFILTER_H_

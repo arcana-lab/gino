@@ -27,9 +27,9 @@
 #include "noelle/core/PDG.hpp"
 #include "noelle/core/SCC.hpp"
 
-using namespace std;
+using namespace arcana::noelle;
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 struct QueueInfo;
 struct QueueInstrs;
@@ -55,12 +55,12 @@ public:
   /*
    * Maps from producer to the queues they push to
    */
-  unordered_map<Instruction *, std::set<int>> producerToQueues;
+  std::unordered_map<Instruction *, std::set<int>> producerToQueues;
 
   /*
    * Maps from other stage's producer to this stage's queues
    */
-  unordered_map<Instruction *, int> producedPopQueue;
+  std::unordered_map<Instruction *, int> producedPopQueue;
 
   /*
    * Stores queue indices and pointers for the stage
@@ -70,7 +70,7 @@ public:
   /*
    * Stores information on queue/env usage within stage
    */
-  unordered_map<int, std::unique_ptr<QueueInstrs>> queueInstrMap;
+  std::unordered_map<int, std::unique_ptr<QueueInstrs>> queueInstrMap;
 };
 
 struct QueueInfo {
@@ -81,7 +81,7 @@ struct QueueInfo {
 
   Instruction *producer;
   std::set<Instruction *> consumers;
-  unordered_map<Instruction *, int> consumerToPushIndex;
+  std::unordered_map<Instruction *, int> consumerToPushIndex;
 
   QueueInfo(Instruction *p, Instruction *c, Type *type, bool isMemoryDependence)
     : producer{ p },
@@ -116,6 +116,6 @@ struct QueueInstrs {
   Value *allocaCast;
   Value *load;
 };
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_DSWP_DSWPTASK_H_

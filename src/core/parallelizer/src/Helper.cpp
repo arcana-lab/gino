@@ -21,7 +21,7 @@
  */
 #include "Parallelizer.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 bool Parallelizer::collectThreadPoolHelperFunctionsAndTypes(Module &M,
                                                             Noelle &par) {
@@ -71,4 +71,4 @@ bool Parallelizer::collectThreadPoolHelperFunctionsAndTypes(Module &M,
   return true;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

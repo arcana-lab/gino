@@ -22,7 +22,7 @@
 #include "Planner.hpp"
 #include "TimingModel.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 void Planner::removeLoopsNotWorthParallelizing(Noelle &noelle,
                                                Hot *profiles,
@@ -391,4 +391,4 @@ std::vector<LoopContent *> Planner::selectTheOrderOfLoopsToParallelize(
 
   return selectedLoops;
 }
-} // namespace arcana::noelle
+} // namespace arcana::gino

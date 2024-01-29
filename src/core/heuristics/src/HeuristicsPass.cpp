@@ -35,7 +35,7 @@
 #include "noelle/tools/HeuristicsPass.hpp"
 
 using namespace llvm;
-using namespace arcana::noelle;
+using namespace arcana::gino;
 
 bool HeuristicsPass::doInitialization(Module &M) {
   return false;

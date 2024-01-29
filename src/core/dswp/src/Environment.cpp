@@ -21,7 +21,7 @@
  */
 #include "noelle/tools/DSWP.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 void DSWP::collectLiveInEnvInfo(LoopContent *LDI) {
 
@@ -136,4 +136,4 @@ void DSWP::collectLiveOutEnvInfo(LoopContent *LDI) {
   }
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

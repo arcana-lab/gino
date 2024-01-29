@@ -25,9 +25,9 @@
 #include "noelle/core/Task.hpp"
 #include "noelle/core/SCCDAGAttrs.hpp"
 
-using namespace std;
+using namespace arcana::noelle ;
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class HELIXTask : public Task {
 public:
@@ -57,6 +57,6 @@ public:
   std::set<CallInst *> signals;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_HELIX_HELIXTASK_H_

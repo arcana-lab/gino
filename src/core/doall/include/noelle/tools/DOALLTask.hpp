@@ -25,7 +25,9 @@
 #include "noelle/core/Task.hpp"
 #include "noelle/core/SCCDAGAttrs.hpp"
 
-namespace arcana::noelle {
+using namespace arcana::noelle ;
+
+namespace arcana::gino {
 
 class DOALLTask : public Task {
 public:
@@ -57,6 +59,6 @@ protected:
   void initializeTask(Function *F);
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_DOALL_DOALLTASK_H_

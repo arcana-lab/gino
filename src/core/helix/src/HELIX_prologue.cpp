@@ -23,7 +23,7 @@
 #include "noelle/core/LoopCarriedUnknownSCC.hpp"
 #include "noelle/tools/HELIX.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 bool HELIX::doesHaveASequentialPrologue(LoopContent *LDI) const {
 
@@ -113,4 +113,4 @@ SCC *HELIX::getTheSequentialSCCThatCreatesTheSequentialPrologue(
   return nullptr;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

@@ -31,7 +31,7 @@
 #include "noelle/core/MetadataManager.hpp"
 #include "noelle/tools/DOALL.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class Planner : public ModulePass {
 public:
@@ -83,6 +83,6 @@ private:
                            std::function<bool(LoopStructure *)> considerLoop);
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_PARALLELIZATION_PLANNER_PLANNER_H_

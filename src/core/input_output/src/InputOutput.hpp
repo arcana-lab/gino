@@ -24,7 +24,9 @@
 
 #include "noelle/core/SystemHeaders.hpp"
 
-namespace arcana::noelle {
+using namespace arcana::noelle ;
+
+namespace arcana::gino {
 
 class InputOutput : public ModulePass {
 public:
@@ -49,6 +51,6 @@ private:
       stdioUnlockedFunctionMapping;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_INPUT_OUTPUT_INPUTOUTPUT_H_

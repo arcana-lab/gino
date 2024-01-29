@@ -23,7 +23,7 @@
 #include "noelle/core/UnknownClosedFormSCC.hpp"
 #include "noelle/tools/DOALL.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 std::set<SCC *> DOALL::getSCCsThatBlockDOALLToBeApplicable(LoopContent *LDI,
                                                            Noelle &par) {
@@ -91,4 +91,4 @@ std::set<SCC *> DOALL::getSCCsThatBlockDOALLToBeApplicable(LoopContent *LDI,
   return sccs;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

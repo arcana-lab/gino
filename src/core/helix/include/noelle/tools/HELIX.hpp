@@ -37,7 +37,7 @@
 #include "noelle/tools/SpilledLoopCarriedDependence.hpp"
 #include "HeuristicsPass.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class HELIX
   : public ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences {
@@ -181,6 +181,6 @@ private:
   std::vector<Value *> ssFuturePtrs;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_HELIX_H_

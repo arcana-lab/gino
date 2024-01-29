@@ -21,7 +21,7 @@
  */
 #include "noelle/tools/HELIX.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 static void constructEdgesFromUseDefs(PDG *pdg);
 
@@ -281,4 +281,4 @@ static void constructEdgesFromControlForFunction(
   }
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

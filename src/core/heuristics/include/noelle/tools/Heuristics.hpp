@@ -36,7 +36,7 @@
 
 using namespace std;
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class Heuristics {
 public:
@@ -70,6 +70,6 @@ private:
   InvocationLatency invocationLatency;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_HEURISTICS_H_

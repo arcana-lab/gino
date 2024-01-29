@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 - 2020 Angelo Matni, Simone Campanoni
+ * Copyright 2019 - 2024 Angelo Matni, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,9 @@
 #include "noelle/tools/LoopInvariantCodeMotion.hpp"
 #include "noelle/tools/SCEVSimplification.hpp"
 
-namespace arcana::noelle {
+using namespace arcana::noelle ;
+
+namespace arcana::gino {
 
 class EnablersManager : public ModulePass {
 public:
@@ -71,6 +73,6 @@ private:
   bool applyDevirtualizer(LoopContent *LDI, Noelle &par, LoopTransformer &lt);
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_ENABLERS_ENABLERSMANAGER_H_

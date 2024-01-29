@@ -26,7 +26,7 @@
 #include "noelle/core/SCCDAGPartition.hpp"
 #include "llvm/ADT/iterator_range.h"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class SequentialSegment {
 public:
@@ -86,6 +86,6 @@ private:
       std::unordered_set<Instruction *> &ssInstructions);
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_HELIX_SEQUENTIALSEGMENT_H_

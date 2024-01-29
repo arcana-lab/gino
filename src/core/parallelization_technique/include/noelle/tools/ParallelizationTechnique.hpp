@@ -33,7 +33,7 @@
 #include "noelle/core/PDGPrinter.hpp"
 #include "noelle/core/SubCFGs.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class ParallelizationTechnique {
 public:
@@ -213,6 +213,6 @@ protected:
   std::map<uint64_t, uint64_t> fromTaskIDToUserID;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_PARALLELIZATION_TECHNIQUE_PARALLELIZATIONTECHNIQUE_H_

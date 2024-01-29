@@ -22,7 +22,7 @@
 #include "Planner.hpp"
 #include "TimingModel.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 LoopTimingModel::LoopTimingModel(Noelle &noelle, LoopContent &ldi)
   : n{ noelle },
@@ -108,4 +108,4 @@ uint64_t LoopTimingModel::getTimeSpentInCriticalPathPerIteration(void) {
   return biggestSCCTime;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

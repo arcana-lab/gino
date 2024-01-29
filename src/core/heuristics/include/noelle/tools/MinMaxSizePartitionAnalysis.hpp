@@ -34,7 +34,7 @@
 
 using namespace std;
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 class MinMaxSizePartitionAnalysis : public PartitionCostAnalysis {
 public:
@@ -52,6 +52,6 @@ public:
       SCCSet *sB,
       std::function<bool(GenericSCC *scc)> canBeRematerialized);
 };
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_

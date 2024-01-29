@@ -32,7 +32,9 @@
 #include "noelle/core/Noelle.hpp"
 #include <fstream>
 
-namespace arcana::noelle {
+using namespace arcana::noelle ;
+
+namespace arcana::gino {
 
 class Inliner : public ModulePass {
 public:
@@ -137,6 +139,6 @@ private:
   Verbosity verbose;
 };
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
 
 #endif // NOELLE_SRC_TOOLS_INLINER_H_

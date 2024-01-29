@@ -21,7 +21,7 @@
  */
 #include "Parallelizer.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
 
@@ -199,4 +199,4 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
   return modified;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

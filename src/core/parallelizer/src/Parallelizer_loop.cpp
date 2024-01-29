@@ -21,7 +21,7 @@
  */
 #include "Parallelizer.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
                                    Noelle &par,
@@ -214,4 +214,4 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
   return true;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

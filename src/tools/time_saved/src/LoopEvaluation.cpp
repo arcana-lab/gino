@@ -21,7 +21,7 @@
  */
 #include "TimeSaved.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 std::pair<uint64_t, uint64_t>
 TimeSaved::evaluateSavings(Noelle &noelle, noelle::LoopTree *tree,
@@ -123,4 +123,4 @@ TimeSaved::evaluateSavings(Noelle &noelle, noelle::LoopTree *tree,
   return rootLoopMaxTimeSaved;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

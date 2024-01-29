@@ -22,7 +22,7 @@
 #include "noelle/tools/DOALL.hpp"
 #include "Inliner.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependences(
     Noelle &noelle,
@@ -367,4 +367,4 @@ bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
   return inlined;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino

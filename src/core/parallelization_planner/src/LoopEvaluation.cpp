@@ -21,7 +21,7 @@
  */
 #include "Planner.hpp"
 
-namespace arcana::noelle {
+namespace arcana::gino {
 
 std::pair<uint64_t, uint64_t> Planner::evaluateSavings(
     Noelle &noelle,
@@ -126,4 +126,4 @@ uint64_t Planner::evaluateSavings(
   return rootLoopMaxTimeSaved;
 }
 
-} // namespace arcana::noelle
+} // namespace arcana::gino
