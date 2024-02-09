@@ -21,7 +21,7 @@ OPT_LEVEL=-O3
 
 # Front-end
 INCLUDES=-I../../include/threadpool/include
-FRONTEND_OPTIONS=-O1 -Xclang -disable-llvm-passes
+FRONTEND_OPTIONS=-O1 -Xclang -disable-llvm-passes -DDT_ENABLE
 PRE_MIDDLEEND_OPTIONS=-O0
 FRONTEND_FLAGS=-emit-llvm $(FRONTEND_OPTIONS)
 

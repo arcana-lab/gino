@@ -1,6 +1,7 @@
 # Sources
 set(Srcs 
   Pass.cpp
+  TerminatorAnalysis.cpp
   Parallelizer_loop.cpp
   Parallelizer_loops.cpp
   Helper.cpp
