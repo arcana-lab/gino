@@ -19,14 +19,22 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/core/InductionVariableSCC.hpp"
 #include "arcana/gino/core/DOALL.hpp"
+#include "noelle/core/InductionVariableSCC.hpp"
 
 namespace arcana::gino {
 
 bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
   if (this->verbose != Verbosity::Disabled) {
-    errs() << "DOALL: Checking if the loop is DOALL\n";
+    auto mm = this->n.getMetadataManager();
+    auto LS = LDI->getLoopStructure();
+    assert(mm->doesHaveMetadata(LS, "noelle.parallelizer.looporder"));
+    auto LO = mm->getMetadata(LS, "noelle.parallelizer.looporder");
+    errs() << "DOALL: Checking if the loop is DOALL ";
+    errs() << "(";
+    errs() << "noelle.loop.id = " << LS->getID().value() << ", ";
+    errs() << "noelle.parallelizer.looporder = " << LO << "";
+    errs() << ")\n";
   }
 
   /*
@@ -102,8 +110,8 @@ bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
   }
   if (liveOutThatRequireSynchronizations.size() > 0) {
     if (this->verbose != Verbosity::Disabled) {
-      errs()
-          << "DOALL:   The next live-out variables require synchronizations between loop iterations\n";
+      errs() << "DOALL:   The next live-out variables require synchronizations "
+                "between loop iterations\n";
       for (auto envID : liveOutThatRequireSynchronizations) {
         errs() << "DOALL:     Live-out ID = " << envID << "\n";
       }
@@ -119,8 +127,8 @@ bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
   if (nonDOALLSCCs.size() > 0) {
     if (this->verbose != Verbosity::Disabled) {
       for (auto scc : nonDOALLSCCs) {
-        errs()
-            << "DOALL:   We found an SCC of the loop that is non clonable and non commutative\n";
+        errs() << "DOALL:   We found an SCC of the loop that is non clonable "
+                  "and non commutative\n";
         if (this->verbose >= Verbosity::Maximal) {
 
           /*
@@ -166,8 +174,8 @@ bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
   auto loopGoverningIVAttr = IVManager->getLoopGoverningInductionVariable();
   if (!loopGoverningIVAttr) {
     if (this->verbose != Verbosity::Disabled) {
-      errs()
-          << "DOALL:   Loop does not have an induction variable to control the number of iterations\n";
+      errs() << "DOALL:   Loop does not have an induction variable to control "
+                "the number of iterations\n";
     }
     return false;
   }
@@ -181,8 +189,8 @@ bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
       continue;
     }
     if (this->verbose != Verbosity::Disabled) {
-      errs()
-          << "DOALL:  Loop has an induction variable with step size that is not loop invariant\n";
+      errs() << "DOALL:  Loop has an induction variable with step size that is "
+                "not loop invariant\n";
     }
     return false;
   }
@@ -191,15 +199,14 @@ bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
    * Check if the final value of the induction variable is a loop invariant.
    */
   auto invariantManager = LDI->getInvariantManager();
-  LoopGoverningIVUtility ivUtility(loopStructure,
-                                   *IVManager,
+  LoopGoverningIVUtility ivUtility(loopStructure, *IVManager,
                                    *loopGoverningIVAttr);
   auto &derivation = ivUtility.getConditionValueDerivation();
   for (auto I : derivation) {
     if (!invariantManager->isLoopInvariant(I)) {
       if (this->verbose != Verbosity::Disabled) {
-        errs()
-            << "DOALL:  Loop has the governing induction variable that is compared against a non-invariant\n";
+        errs() << "DOALL:  Loop has the governing induction variable that is "
+                  "compared against a non-invariant\n";
         errs() << "DOALL:     The non-invariant is = " << *I << "\n";
       }
       return false;

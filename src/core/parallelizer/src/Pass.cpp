@@ -66,7 +66,6 @@ bool Parallelizer::runOnModule(Module &M) {
   auto &noelle = getAnalysis<Noelle>();
   TerminatorAnalysis arnold(noelle);
   noelle.addAnalysis(&arnold);
-  errs() << "Debug: Added custom dependence analysis\n";
   auto heuristics = getAnalysis<HeuristicsPass>().getHeuristics(noelle);
 
   /*

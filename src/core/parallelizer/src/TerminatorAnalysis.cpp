@@ -90,7 +90,7 @@ TerminatorAnalysis::~TerminatorAnalysis() {
 bool TerminatorAnalysis::canThisDependenceBeLoopCarried(Dependence *LCD,
                                                         LoopStructure &LS) {
   auto coverage = getCoverage(LCD);
-  if (coverage == FULL) {
+  if (coverage != NONE) {
     errs() << "Terminator: Analysis: Query: Terminated\n";
     return false;
   }

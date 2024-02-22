@@ -23,8 +23,7 @@
 
 namespace arcana::gino {
 
-bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
-                                   Noelle &par,
+bool Parallelizer::parallelizeLoop(LoopContent *loopContent, Noelle &noelle,
                                    Heuristics *h) {
   auto prefix = "Parallelizer: parallelizerLoop: ";
 
@@ -37,27 +36,29 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
   /*
    * Allocate the parallelization techniques.
    */
-  DSWP dswp{ par, this->forceParallelization, !this->forceNoSCCPartition };
-  DOALL doall{ par };
-  HELIX helix{ par, this->forceParallelization };
-  std::vector<ParallelizationTechnique *> parallelizationTechniques{ &doall,
-                                                                     &helix,
-                                                                     &dswp };
+  // DSWP dswp{ noelle, this->forceParallelization, !this->forceNoSCCPartition
+  // }; DOALL doall{ noelle }; HELIX helix{ noelle, this->forceParallelization
+  // }; std::vector<ParallelizationTechnique *> parallelizationTechniques{
+  // &doall,
+  //                                                                    &helix,
+  //                                                                    &dswp };
+  DOALL doall{noelle};
+  std::vector<ParallelizationTechnique *> parallelizationTechniques{&doall};
 
   /*
    * Fetch the profiles.
    */
-  auto profiles = par.getProfiles();
+  auto profiles = noelle.getProfiles();
 
   /*
    * Fetch the managers.
    */
-  auto cm = par.getConstantsManager();
+  auto cm = noelle.getConstantsManager();
 
   /*
    * Fetch the verbosity level.
    */
-  auto verbose = par.getVerbosity();
+  auto verbose = noelle.getVerbosity();
 
   /*
    * Fetch the loop headers.
@@ -70,7 +71,7 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
    * Fetch the loop function.
    */
   auto loopFunction = loopStructure->getFunction();
-  assert(par.verifyCode());
+  assert(noelle.verifyCode());
 
   /*
    * Print
@@ -78,19 +79,31 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
   if (verbose != Verbosity::Disabled) {
 
     /*
-     * Get loop ID.
+     * Get loop ID
      */
     auto loopIDOpt = loopStructure->getID();
     assert(loopIDOpt);
     auto loopID = loopIDOpt.value();
 
     /*
+     * Get loop order
+     */
+    auto mm = noelle.getMetadataManager();
+    assert(
+        mm->doesHaveMetadata(loopStructure, "noelle.parallelizer.looporder"));
+    auto loopOrder =
+        mm->getMetadata(loopStructure, "noelle.parallelizer.looporder");
+
+    /*
      * Print the most important loop information.
      */
     errs() << prefix << "Start\n";
     errs() << prefix << "  Function = \"" << loopFunction->getName() << "\"\n";
-    errs() << prefix << "  Loop " << loopID << " = \""
-           << *loopHeader->getFirstNonPHI() << "\"\n";
+    errs() << prefix << "  noelle.loop.id = " << loopID << "\n";
+    errs() << prefix << "  noelle.parallelizer.looporder = " << loopOrder
+           << "\n";
+    errs() << prefix << "  First non-PHI = " << *loopHeader->getFirstNonPHI()
+           << "\n";
     errs() << prefix << "  Nesting level = " << loopStructure->getNestingLevel()
            << "\n";
     errs() << prefix << "  Number of threads to extract = "
@@ -99,8 +112,8 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
            << "\n";
     if (profiles->isAvailable()) {
       errs() << prefix << "  Coverage = "
-             << (profiles->getDynamicTotalInstructionCoverage(loopStructure)
-                 * 100.0)
+             << (profiles->getDynamicTotalInstructionCoverage(loopStructure) *
+                 100.0)
              << "%\n";
     }
 
@@ -132,15 +145,15 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
     /*
      * Fetch the information about the current parallelization technique.
      */
-    auto parID = parallelizationTechnique->getParallelizationID();
+    auto noelleID = parallelizationTechnique->getParallelizationID();
 
     /*
      * Check if the current parallelization technique is applicable to the
      * current loop.
      */
-    if (par.isTransformationEnabled(parID)
-        && ltm->isTransformationEnabled(parID)
-        && parallelizationTechnique->canBeAppliedToLoop(loopContent, h)) {
+    if (noelle.isTransformationEnabled(noelleID) &&
+        ltm->isTransformationEnabled(noelleID) &&
+        parallelizationTechnique->canBeAppliedToLoop(loopContent, h)) {
 
       /*
        * Parallelize the current loop with the current parallelization
@@ -191,16 +204,11 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
           : -1;
   auto exitIndex = cm->getIntegerConstant(constantValue, 64);
   auto loopExitBlocks = loopStructure->getLoopExitBasicBlocks();
-  auto linker = par.getLinker();
+  auto linker = noelle.getLinker();
   linker->linkTransformedLoopToOriginalFunction(
-      loopPreHeader,
-      entryPoint,
-      exitPoint,
-      envArray,
-      exitIndex,
-      loopExitBlocks,
+      loopPreHeader, entryPoint, exitPoint, envArray, exitIndex, loopExitBlocks,
       usedTechnique->getMinimumNumberOfIdleCores());
-  assert(par.verifyCode());
+  assert(noelle.verifyCode());
 
   // if (verbose >= Verbosity::Maximal) {
   //   loopFunction->print(errs() << "Final printout:\n"); errs() << "\n";
