@@ -26,16 +26,12 @@ namespace arcana::gino {
 /*
  * Options of the Planner pass.
  */
-static cl::opt<bool> ForceParallelizationPlanner(
-    "noelle-parallelizer-force",
-    cl::ZeroOrMore,
-    cl::Hidden,
-    cl::desc("Force the parallelization"));
+static cl::opt<bool>
+    ForceParallelizationPlanner("gino-planner-force", cl::ZeroOrMore,
+                                cl::Hidden,
+                                cl::desc("Force the parallelization"));
 
-Planner::Planner() : ModulePass{ ID }, forceParallelization{ false } {
-
-  return;
-}
+Planner::Planner() : ModulePass{ID}, forceParallelization{false} { return; }
 
 bool Planner::doInitialization(Module &M) {
   this->forceParallelization =
@@ -104,12 +100,8 @@ bool Planner::runOnModule(Module &M) {
      */
     uint64_t maxTimeSaved = 0;
     uint64_t maxTimeSavedWithDOALLOnly = 0;
-    auto loopsToParallelize =
-        this->selectTheOrderOfLoopsToParallelize(noelle,
-                                                 profiles,
-                                                 tree,
-                                                 maxTimeSaved,
-                                                 maxTimeSavedWithDOALLOnly);
+    auto loopsToParallelize = this->selectTheOrderOfLoopsToParallelize(
+        noelle, profiles, tree, maxTimeSaved, maxTimeSavedWithDOALLOnly);
     programMaxTimeSaved += maxTimeSaved;
     programMaxTimeSavedWithDOALLOnly += maxTimeSavedWithDOALLOnly;
 
@@ -121,8 +113,7 @@ bool Planner::runOnModule(Module &M) {
       auto ls = ldi->getLoopStructure();
       auto ldiParallelizationOrderIndex =
           std::to_string(parallelizationOrderIndex++);
-      mm->addMetadata(ls,
-                      "noelle.parallelizer.looporder",
+      mm->addMetadata(ls, "noelle.parallelizer.looporder",
                       ldiParallelizationOrderIndex);
       modified = true;
     }
@@ -138,13 +129,13 @@ bool Planner::runOnModule(Module &M) {
   /*
    * Print statistics.
    */
-  auto savedTimeTotal = ((double)programMaxTimeSaved)
-                        / ((double)profiles->getTotalInstructions());
+  auto savedTimeTotal = ((double)programMaxTimeSaved) /
+                        ((double)profiles->getTotalInstructions());
   savedTimeTotal *= 100;
   errs() << "Planner:   Maximum time saved = " << savedTimeTotal << "% ("
          << programMaxTimeSaved << ")\n";
-  savedTimeTotal = ((double)programMaxTimeSavedWithDOALLOnly)
-                   / ((double)profiles->getTotalInstructions());
+  savedTimeTotal = ((double)programMaxTimeSavedWithDOALLOnly) /
+                   ((double)profiles->getTotalInstructions());
   savedTimeTotal *= 100;
   errs() << "Planner:   Maximum time saved with DOALL only = " << savedTimeTotal
          << "% (" << programMaxTimeSavedWithDOALLOnly << ")\n";
@@ -175,23 +166,22 @@ void Planner::getAnalysisUsage(AnalysisUsage &AU) const {
 
 // Next there is code to register your pass to "opt"
 char arcana::gino::Planner::ID = 0;
-static RegisterPass<arcana::gino::Planner> X(
-    "planner",
-    "Automatic parallelization planner");
+static RegisterPass<arcana::gino::Planner>
+    X("planner", "Automatic parallelization planner");
 
 // Next there is code to register your pass to "clang"
 static arcana::gino::Planner *_PassMaker = NULL;
-static RegisterStandardPasses _RegPass1(
-    PassManagerBuilder::EP_OptimizerLast,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::gino::Planner());
-      }
-    }); // ** for -Ox
-static RegisterStandardPasses _RegPass2(
-    PassManagerBuilder::EP_EnabledOnOptLevel0,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::gino::Planner());
-      }
-    }); // ** for -O0
+static RegisterStandardPasses
+    _RegPass1(PassManagerBuilder::EP_OptimizerLast,
+              [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
+                if (!_PassMaker) {
+                  PM.add(_PassMaker = new arcana::gino::Planner());
+                }
+              }); // ** for -Ox
+static RegisterStandardPasses
+    _RegPass2(PassManagerBuilder::EP_EnabledOnOptLevel0,
+              [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
+                if (!_PassMaker) {
+                  PM.add(_PassMaker = new arcana::gino::Planner());
+                }
+              }); // ** for -O0
