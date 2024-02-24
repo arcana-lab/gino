@@ -10,7 +10,7 @@ done
 installDir=$(realpath $( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd )/..)
 
 # Set the command to execute
-cmdToExecute="gino-load -load ${installDir}/lib/Planner.so -planner ${@}"
+cmdToExecute="gino-load -planner ${@}"
 echo $cmdToExecute ;
 
 # Execute

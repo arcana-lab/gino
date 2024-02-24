@@ -12,7 +12,7 @@ installDir=$(realpath $( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd
 bcFile="$@" ;
 
 # Set the command to execute
-cmdToExecute="noelle-load -load ${installDir}/lib/InputOutput.so -inputoutput ${bcFile} -o ${bcFile}"
+cmdToExecute="gino-load -inputoutput ${bcFile} -o ${bcFile}"
 echo $cmdToExecute ;
 
 # Execute the command

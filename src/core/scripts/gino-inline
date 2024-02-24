@@ -11,7 +11,7 @@ installDir=$(realpath $( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd
 
 # Delete dead functions until a fixed point is reached
 echo "GINO: Inliner: Start" ;
-cmdToExecute="noelle-fixedpoint $1 $1 \"gino-load\" -load ${installDir}/lib/Inliner.so -inliner ${@:2}"
+cmdToExecute="noelle-fixedpoint $1 $1 \"gino-load\" -inliner ${@:2}"
 echo $cmdToExecute ;
 eval $cmdToExecute ;
 echo "GINO: Inliner: Exit" ;
