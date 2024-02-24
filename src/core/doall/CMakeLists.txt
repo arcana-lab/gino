@@ -1,18 +1,12 @@
-# Project
-cmake_minimum_required(VERSION 3.13)
-project(DOALL)
-
-# Dependences
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/DependencesCMake.txt)
-
-# Pass
-add_subdirectory(src)
-
-# Install
-install(
+add_gino_component_sources(
+  core # component name
   FILES
-  include/arcana/gino/core/DOALL.hpp 
-  include/arcana/gino/core/DOALLTask.hpp
-  DESTINATION 
-  include/arcana/gino/core
-  )
+  src/DOALL_analysis.cpp
+  src/DOALL_applicabilityGuard.cpp
+  src/DOALL_chunking.cpp
+  src/DOALL.cpp
+  src/DOALL_lastIteration.cpp
+  src/DOALL_linker.cpp
+  src/DOALL_parallelization.cpp
+  src/DOALLTask.cpp
+)

@@ -1,9 +1,8 @@
-# Project
-cmake_minimum_required(VERSION 3.13)
-project(ParallelizationPlanner)
-
-# Dependences
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/DependencesCMake.txt)
-
-# Pass
-add_subdirectory(src)
+add_gino_component_sources(
+  core # component name
+  FILES
+  src/LoopEvaluation.cpp
+  src/LoopSelector.cpp
+  src/Pass.cpp
+  src/TimingModel.cpp
+)

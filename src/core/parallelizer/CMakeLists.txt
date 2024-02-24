@@ -1,9 +1,8 @@
-# Project
-cmake_minimum_required(VERSION 3.13)
-project(Parallelizer)
-
-# Dependences
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/DependencesCMake.txt)
-
-# Pass
-add_subdirectory(src)
+add_gino_component_sources(
+  core # component name
+  FILES
+  src/Helper.cpp
+  src/Parallelizer_loop.cpp
+  src/Parallelizer_loops.cpp
+  src/Pass.cpp
+)

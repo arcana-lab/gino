@@ -1,18 +1,15 @@
-# Project
-cmake_minimum_required(VERSION 3.13)
-project(DSWP)
-
-# Dependences
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/DependencesCMake.txt)
-
-# Pass
-add_subdirectory(src)
-
-# Install
-install(
+add_gino_component_sources(
+  core # component name
   FILES
-  include/arcana/gino/core/DSWP.hpp 
-  include/arcana/gino/core/DSWPTask.hpp 
-  DESTINATION 
-  include/arcana/gino/core
-  )
+  src/CFG.cpp
+  src/DSWP_clonableSCCs.cpp
+  src/DSWP.cpp
+  src/DSWP_lastIteration.cpp
+  src/DSWPTask.cpp
+  src/Environment.cpp
+  src/Inliner.cpp
+  src/Partition.cpp
+  src/Pipeline.cpp
+  src/Printer.cpp
+  src/Queue.cpp
+)

@@ -1,15 +1,6 @@
-# Project
-cmake_minimum_required(VERSION 3.13)
-project(InputOutput)
-
-# Dependences
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/DependencesCMake.txt)
-
-# Pass
-add_subdirectory(src)
-
-# Install
-install(
+add_gino_component_sources(
+  core # component name
   FILES
-  DESTINATION
-  )
+  src/InputOutput.cpp
+  src/Pass.cpp
+)
