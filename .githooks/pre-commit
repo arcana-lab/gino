@@ -2,8 +2,6 @@
 #
 # Pre-commit hook to run clang-format on all C/C++ files
 # before they are commited.
-#
-# To enable this hook, rename this file to "pre-commit".
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
