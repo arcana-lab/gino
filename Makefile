@@ -20,7 +20,7 @@ $(BUILD_DIR):
 		-DNOELLE_INSTALL_DIR=$(NOELLE_INSTALL_DIR)
 
 check_noelle:
-	@if ! noelle-opt > /dev/null 2>&1; then \
+	@if ! noelle-config > /dev/null 2>&1; then \
 		echo -e "\e[1;1mNOELLE not found\e[0m. \e[32mDid you forget to source it?\e[0m" ;\
 		exit 1; \
 	fi
