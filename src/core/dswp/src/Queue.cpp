@@ -447,4 +447,4 @@ void DSWP::pushValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
   }
 }
 
-}
+} // namespace arcana::gino

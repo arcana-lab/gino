@@ -83,4 +83,4 @@ void MinMaxSizePartitionAnalysis::checkIfShouldMerge(
   }
 }
 
-}
+} // namespace arcana::gino
