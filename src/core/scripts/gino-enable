@@ -1,13 +1,7 @@
 #!/bin/bash -e
 
-installDir=$(gino-config --prefix)
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
-# Fetch the install directory of NOELLE
-noelleInstallDir="`noelle-config --prefix`" ;
-
-# Run the enablers until a fixed point is reached
-echo "GINO: Enablers: Start" ;
-cmdToExecute="noelle-fixedpoint $1 $2 \"gino-load\" -enablers ${@:3}"
-echo $cmdToExecute ;
-eval $cmdToExecute ;
-echo "GINO: Enablers: Exit" ;
+echo "GINO: Enablers: Start"
+noelle-fixedpoint $1 $2 "gino-load" -enablers ${@:3}
+echo "GINO: Enablers: Exit"

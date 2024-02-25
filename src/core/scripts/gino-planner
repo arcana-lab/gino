@@ -1,10 +1,5 @@
 #!/bin/bash -e
 
-installDir=$(gino-config --prefix)
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
-# Set the command to execute
-cmdToExecute="gino-load -planner ${@}"
-echo $cmdToExecute ;
-
-# Execute
-eval $cmdToExecute ;
+gino-load -planner $@

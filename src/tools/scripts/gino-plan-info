@@ -1,8 +1,7 @@
 #!/bin/bash -e
 
-installDir=$(gino-config --prefix)
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
-# Check the inputs
 if test $# -lt 1 ; then
   echo "USAGE: `basename $0` IR_FILE [OPTIONS]..."
   echo
@@ -16,6 +15,4 @@ if test $# -lt 1 ; then
   exit 1
 fi
 
-cmdToExecute="gino-load -noelle-verbose=0 -ParallelizerPlanInfo -disable-output $@" 
-echo $cmdToExecute
-eval $cmdToExecute 
+gino-load -noelle-verbose=0 -ParallelizerPlanInfo -disable-output $@

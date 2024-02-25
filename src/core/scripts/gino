@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-installDir=$(gino-config --prefix)
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
 if test $# -lt 3 ; then
   echo "USAGE: `basename $0` INPUT_BITCODE -o OUTPUT_BITCODE"
@@ -9,46 +9,30 @@ fi
 
 inputIR=$1
 afterLoopMetadata="afterLoopMetadata.bc"
-intermediateResult="baseline_with_parallel_plan.bc" ;
-intermediateResult_unoptimized="parallelized_unoptimized.bc" ;
+intermediateResult="baseline_with_parallel_plan.bc"
+intermediateResult_unoptimized="parallelized_unoptimized.bc"
 outputIR=$3
 
-# Step 0: Add loop ID to all loops
-cmdToExecute="noelle-meta-loop-embed ${inputIR} -o ${afterLoopMetadata}"
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# step 0: add loop id to all loops
+noelle-meta-loop-embed ${inputIR} -o ${afterLoopMetadata}
 
-# Step 1: Run parallelization planner
-cmdToExecute="gino-planner ${afterLoopMetadata} -o ${intermediateResult} ${@:4}" ;
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# step 1: run parallelization planner
+gino-planner ${afterLoopMetadata} -o ${intermediateResult} ${@:4}
 
-# Step 2: Include function prototypes needed by parallelization techniques
-clang -c -emit-llvm NOELLE_APIs.c ;
-llvm-link NOELLE_APIs.bc ${intermediateResult} -o code_with_prototypes.bc ;
-cmdToExecute="noelle-rm-function -function-name=SIMONE_CAMPANONI_IS_GOING_TO_REMOVE_THIS_FUNCTION code_with_prototypes.bc -o code_to_parallelize.bc" ;
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# step 2: include function prototypes needed by parallelization techniques
+clang -c -emit-llvm NOELLE_APIs.c
+llvm-link NOELLE_APIs.bc ${intermediateResult} -o code_with_prototypes.bc
+noelle-rm-function -function-name=SIMONE_CAMPANONI_IS_GOING_TO_REMOVE_THIS_FUNCTION code_with_prototypes.bc -o code_to_parallelize.bc
 
-# Step 3: Run loop parallelization on bitcode with parallel plan
-cmdToExecute="gino-loops code_to_parallelize.bc -o ${intermediateResult_unoptimized} ${@:4}" ;
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# step 3: run loop parallelization on bitcode with parallel plan
+gino-loops code_to_parallelize.bc -o ${intermediateResult_unoptimized} ${@:4}
 
-# Step 4: cleaning the metadata that are now disaligned with the code
-cmdToExecute="noelle-meta-clean ${intermediateResult_unoptimized} -o ${intermediateResult_unoptimized}" ;
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# step 4: cleaning the metadata that are now disaligned with the code
+noelle-meta-clean ${intermediateResult_unoptimized} -o ${intermediateResult_unoptimized}
+clang -O3 -c -emit-llvm ${intermediateResult_unoptimized} -o ${outputIR}
 
-# Step 5: conventional optimizations
-cmdToExecute="clang -O3 -c -emit-llvm ${intermediateResult_unoptimized} -o ${outputIR}" ;
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# step 6: link with the runtime
+llvm-link ${outputIR} Parallelizer_utils.bc -o ${outputIR}
 
-# Step 6: Link with the runtime
-llvm-link ${outputIR} Parallelizer_utils.bc -o ${outputIR} ;
-
-# Step 7: conventional optimizations
-cmdToExecute="clang -O3 -c -emit-llvm ${outputIR} -o ${outputIR}" ;
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# step 7: conventional optimizations
+clang -O3 -c -emit-llvm ${outputIR} -o ${outputIR}

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-installDir=$(gino-config --prefix)
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
 usage() {
   echo "USAGE: `basename $0` INPUT_BC [OPTIONS]..."

@@ -1,109 +1,85 @@
 #!/bin/bash -e
 
-installDir=$(gino-config --prefix)
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
-# Configurations
-enablePrivatizer="1" ;
-enableEnablers="1" ;
-enableDead="1" ;
+# configurations
+enablePrivatizer="1"
+enableEnablers="1"
+enableDead="1"
 
-# Partition the arguments between options and not
-options="" ;
-notOptions="" ;
+# partition the arguments between options and not
+options=""
+notOptions=""
 for var in "$@" ; do
   if [[ $var == -* ]] ; then
 
-    # Handle custom options
+    # handle custom options
     if [[ $var == "-noelle-disable-privatizer" ]] ; then
-      enablePrivatizer="0" ;
-      continue ;
+      enablePrivatizer="0"
+      continue
     fi
+
     if [[ $var == "-noelle-disable-enablers" ]] ; then
-      enableEnablers="0" ;
-      continue ;
+      enableEnablers="0"
+      continue
     fi
+
     if [[ $var == "-noelle-disable-dead" ]] ; then
-      enableDead="0" ;
-      continue ;
+      enableDead="0"
+      continue
     fi
+
     if [[ $var == -noelle-parallelizer-* ]] ; then
-
-      # Skip all parallelizer-specific options
-      continue ;
+      # skip all parallelizer-specific options
+      continue
     fi
-
-    # General options
-    options="$options $var" ;
-
+    # general options
+    options="$options $var"
   else 
-    notOptions="$notOptions $var" ;
+    notOptions="$notOptions $var"
   fi
 done
 
-# Strip debugging symbols 
-cmdToExecute="opt --strip-debug --strip-debug-declare $notOptions -o $notOptions"
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# strip debugging symbols 
+opt --strip-debug --strip-debug-declare $notOptions -o $notOptions
 
-# Delete dead functions
+# delete dead functions
 if test "$enableDead" == "1" ; then
-  cmdToExecute="noelle-deadcode $notOptions $notOptions"
-  echo $cmdToExecute ;
-  eval $cmdToExecute ;
+  noelle-deadcode $notOptions $notOptions
 fi
 
-# Normalize the code
-cmdToExecute="noelle-simplification $notOptions -o $notOptions"
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# normalize the code
+noelle-simplification $notOptions -o $notOptions
 
-# Make file accesses more amenable for parallelization
-cmdToExecute="gino-io $notOptions"
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# make file accesses more amenable for parallelization
+gino-io $notOptions
 
-# Inline functions
-cmdToExecute="gino-inline $notOptions \"-noelle-inliner-verbose=1 $options\""
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# inline functions
+gino-inline $notOptions "-noelle-inliner-verbose=1 $options"
 
-# Normalize the code
-cmdToExecute="noelle-simplification $notOptions -o $notOptions"
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# normalize the code
+noelle-simplification $notOptions -o $notOptions
 
-# Delete dead functions
+# delete dead functions
 if test "$enableDead" == "1" ; then
-  cmdToExecute="noelle-deadcode $notOptions $notOptions"
-  echo $cmdToExecute ;
-  eval $cmdToExecute ;
+  noelle-deadcode $notOptions $notOptions
 fi
 
-# Normalize the code
-cmdToExecute="noelle-simplification $notOptions -o $notOptions"
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# normalize the code
+noelle-simplification $notOptions -o $notOptions
 
-# Run the privatizer
+# run the privatizer
 if test "$enablePrivatizer" == "1" ; then
-  cmdToExecute="noelle-privatizer $notOptions $options"
-  echo $cmdToExecute ;
-  eval $cmdToExecute ;
+  noelle-privatizer $notOptions $options
 fi
 
-# Run the enablers
+# run the enablers
 if test "$enableEnablers" == "1" ; then
-  cmdToExecute="gino-enable $notOptions $notOptions $options"
-  echo $cmdToExecute ;
-  eval $cmdToExecute ;
+  gino-enable $notOptions $notOptions $options
 fi
 
-# Normalize the code
-cmdToExecute="noelle-simplification $notOptions -o $notOptions"
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# normalize the code
+noelle-simplification $notOptions -o $notOptions
 
-# Clean up the metadata that is no longer valid
-cmdToExecute="noelle-meta-clean $notOptions -o $notOptions"
-echo $cmdToExecute ;
-eval $cmdToExecute ;
+# clean up the metadata that is no longer valid
+noelle-meta-clean $notOptions -o $notOptions

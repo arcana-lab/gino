@@ -1,12 +1,6 @@
 #!/bin/bash -e
 
-installDir=$(gino-config --prefix)
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
-bcFile="$@" ;
-
-# Set the command to execute
-cmdToExecute="gino-load -inputoutput ${bcFile} -o ${bcFile}"
-echo $cmdToExecute ;
-
-# Execute the command
-eval $cmdToExecute ;
+# set the command to execute
+gino-load -inputoutput $1 -o $1
