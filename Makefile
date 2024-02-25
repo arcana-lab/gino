@@ -7,7 +7,7 @@ export MAKEFLAGS += --no-print-directory
 
 all: install
 
-install: compile
+install: check_noelle compile
 	cmake --install $(BUILD_DIR) 
 
 compile: $(BUILD_DIR)
@@ -18,6 +18,12 @@ $(BUILD_DIR):
 		-DCMAKE_INSTALL_MESSAGE=LAZY \
 		-DCMAKE_INSTALL_PREFIX=$(GINO_INSTALL_DIR) \
 		-DNOELLE_INSTALL_DIR=$(NOELLE_INSTALL_DIR)
+
+check_noelle:
+	@if ! noelle-opt > /dev/null 2>&1; then \
+		echo -e "\e[1;1mNOELLE not found\e[0m. \e[32mDid you forget to source it?\e[0m" ;\
+		exit 1; \
+	fi
 
 tests: install
 	$(MAKE) -C tests
@@ -35,4 +41,4 @@ uninstall:
 	rm -f enable
 	rm -f .git/hooks/pre-commit
 
-.PHONY: all install compile external tests format clean uninstall
+.PHONY: all install compile check_noelle external tests format clean uninstall
