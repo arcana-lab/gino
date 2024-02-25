@@ -2,7 +2,7 @@ BUILD_DIR ?= build
 export GENERATOR ?= Unix Makefiles
 export JOBS ?= 8
 export GINO_INSTALL_DIR ?= $(shell realpath ./install)
-export NOELLE_INSTALL_DIR =
+export NOELLE_INSTALL_DIR = $(shell noelle-config --prefix)
 export MAKEFLAGS += --no-print-directory
 
 all: install
