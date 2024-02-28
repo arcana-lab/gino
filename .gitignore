@@ -2,3 +2,4 @@ build
 install
 enable
 compile_commands.json
+.clangd

@@ -4,4 +4,5 @@ performance/*/Parallelizer_utils.cpp
 regression/*/Makefile
 regression/*/NOELLE_APIs.c
 regression/*/Parallelizer_utils.cpp
+**.bc
 include
