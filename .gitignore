@@ -1,0 +1,6 @@
+install
+enable
+src/core/*/build
+src/core/**/*.json
+src/tools/*/build
+src/tools/**/*.json
