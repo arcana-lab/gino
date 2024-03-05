@@ -4,3 +4,9 @@ src/core/*/build
 src/core/**/*.json
 src/tools/*/build
 src/tools/**/*.json
+tests/regression/*/Makefile
+tests/regression/*/NOELLE_APIs.c
+tests/regression/*/Parallelizer_utils.cpp
+tests/performance/*/Makefile
+tests/performance/*/NOELLE_APIs.c
+tests/performance/*/Parallelizer_utils.cpp
