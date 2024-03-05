@@ -15,13 +15,13 @@ RUNTIME_CFLAGS="-DDEBUG"
 # Parallelization options
 # 	- To dump the PDG: -noelle-pdg-dump
 PARALLELIZATION_OPTIONS=-alloc-aa-verbose=1 -noelle-parallelizer-force
-NOELLE_OPTIONS=-noelle-pdg-verbose=1 -noelle-verbose=2 -noelle-min-hot=0 -noelle-inliner-avoid-hoist-to-main 
+NOELLE_OPTIONS=-noelle-pdg-verbose=1 -noelle-verbose=2 -noelle-min-hot=0 -noelle-inliner-avoid-hoist-to-main
 TOOLS_OPTIONS=
 OPT_LEVEL=-O3
 
 # Front-end
 INCLUDES=-I../../include/threadpool/include
-FRONTEND_OPTIONS=-O1 -Xclang -disable-llvm-passes -fno-exceptions -DDT_ENABLE
+FRONTEND_OPTIONS=-O1 -Xclang -disable-llvm-passes
 PRE_MIDDLEEND_OPTIONS=-O0
 FRONTEND_FLAGS=-emit-llvm $(FRONTEND_OPTIONS)
 
