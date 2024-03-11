@@ -10,3 +10,4 @@ tests/regression/*/Parallelizer_utils.cpp
 tests/performance/*/Makefile
 tests/performance/*/NOELLE_APIs.c
 tests/performance/*/Parallelizer_utils.cpp
+**/.clangd
