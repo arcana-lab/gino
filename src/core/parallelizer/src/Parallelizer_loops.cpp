@@ -20,11 +20,12 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "Parallelizer.hpp"
+#include "TerminatorAnalysis.hpp"
+#include "noelle/core/LoopStructure.hpp"
 
 namespace arcana::gino {
 
 bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
-
   /*
    * Fetch the verbosity level.
    */
@@ -36,8 +37,8 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
   auto M = noelle.getProgram();
   errs() << "Parallelizer:  Analyzing the module " << M->getName() << "\n";
   if (!this->collectThreadPoolHelperFunctionsAndTypes(*M, noelle)) {
-    errs()
-        << "Parallelizer:    ERROR: I could not find the runtime within the module\n";
+    errs() << "Parallelizer:    ERROR: I could not find the runtime within the "
+              "module\n";
     return false;
   }
 
@@ -78,12 +79,12 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
   /*
    * Determine the parallelization order from the metadata.
    */
+
   auto mm = noelle.getMetadataManager();
-  std::map<uint32_t, LoopContent *> loopParallelizationOrder;
+  std::map<uint32_t, LoopStructure *> loopParallelizationOrder;
   for (auto tree : forest->getTrees()) {
-    auto selector = [&noelle, &mm, &loopParallelizationOrder, &isSelected](
-                        LoopTree *n,
-                        uint32_t treeLevel) -> bool {
+    auto selector = [&noelle, &mm, &loopParallelizationOrder,
+                     &isSelected](LoopTree *n, uint32_t treeLevel) -> bool {
       auto ls = n->getLoop();
       if (!mm->doesHaveMetadata(ls, "noelle.parallelizer.looporder")) {
         return false;
@@ -93,10 +94,7 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
       if (!isSelected(parallelizationOrderIndex)) {
         return false;
       }
-      auto optimizations = { LoopContentOptimization::MEMORY_CLONING_ID,
-                             LoopContentOptimization::THREAD_SAFE_LIBRARY_ID };
-      auto ldi = noelle.getLoopContent(ls, optimizations);
-      loopParallelizationOrder[parallelizationOrderIndex] = ldi;
+      loopParallelizationOrder[parallelizationOrderIndex] = ls;
       return false;
     };
     tree->visitPreOrder(selector);
@@ -110,16 +108,18 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
   /*
    * Parallelize the loops in order.
    */
+  TerminatorAnalysis arnold(noelle);
+  noelle.addAnalysis(&arnold);
+
   auto modified = false;
   std::unordered_map<BasicBlock *, bool> modifiedBBs{};
   std::unordered_set<Function *> modifiedFunctions;
   for (auto indexLoopPair : loopParallelizationOrder) {
-    auto ldi = indexLoopPair.second;
+    auto ls = indexLoopPair.second;
 
     /*
      * Check if we can parallelize this loop.
      */
-    auto ls = ldi->getLoopStructure();
     auto safe = true;
     for (auto bb : ls->getBasicBlocks()) {
       if (modifiedBBs[bb]) {
@@ -142,14 +142,17 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
         auto loopID = loopIDOpt.value();
         errs() << loopID;
       }
-      errs()
-          << " cannot be parallelized because one of its parent has been parallelized already\n";
+      errs() << " cannot be parallelized because one of its parent has been "
+                "parallelized already\n";
       continue;
     }
 
     /*
      * Parallelize the current loop.
      */
+    auto optimizations = {LoopContentOptimization::MEMORY_CLONING_ID,
+                          LoopContentOptimization::THREAD_SAFE_LIBRARY_ID};
+    auto ldi = noelle.getLoopContent(ls, optimizations);
     auto loopIsParallelized = this->parallelizeLoop(ldi, noelle, heuristics);
 
     /*
@@ -161,8 +164,8 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
       auto loopID = loopIDOpt.value();
       errs() << loopID;
       errs() << " has been parallelized\n";
-      errs()
-          << "Parallelizer:      Keep track of basic blocks being modified by the parallelization\n";
+      errs() << "Parallelizer:      Keep track of basic blocks being modified "
+                "by the parallelization\n";
       modified = true;
       for (auto bb : ls->getBasicBlocks()) {
         modifiedBBs[bb] = true;

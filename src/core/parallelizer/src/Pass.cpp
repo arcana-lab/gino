@@ -20,7 +20,6 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "Parallelizer.hpp"
-#include "TerminatorAnalysis.hpp"
 
 namespace arcana::gino {
 
@@ -64,8 +63,6 @@ bool Parallelizer::runOnModule(Module &M) {
    * Fetch the outputs of the passes we rely on.
    */
   auto &noelle = getAnalysis<Noelle>();
-  TerminatorAnalysis arnold(noelle);
-  noelle.addAnalysis(&arnold);
   auto heuristics = getAnalysis<HeuristicsPass>().getHeuristics(noelle);
 
   /*
