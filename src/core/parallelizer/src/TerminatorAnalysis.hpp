@@ -1,5 +1,5 @@
-#ifndef __TERMINATOR_HPP__
-#define __TERMINATOR_HPP__
+#ifndef __TERMINATOR_ANALYSIS_HPP__
+#define __TERMINATOR_ANALYSIS_HPP__
 
 #include <map>
 #include <set>
@@ -95,4 +95,4 @@ private:
 };
 } // namespace arcana::gino
 
-#endif // __TERMINATOR_HPP__
+#endif // __TERMINATOR_ANALYSIS_HPP__

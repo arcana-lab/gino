@@ -118,9 +118,9 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
   /*
    * Parallelize the loops in order.
    */
-  TerminatorAnalysis arnold(noelle);
-  arnold.run(selectedLSs);
-  noelle.addAnalysis(&arnold);
+  TerminatorAnalysis TA(noelle);
+  TA.run(selectedLSs);
+  noelle.addAnalysis(&TA);
 
   auto modified = false;
   unordered_map<BasicBlock *, bool> modifiedBBs{};
@@ -165,7 +165,7 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
                           LoopContentOptimization::THREAD_SAFE_LIBRARY_ID};
     auto ldi = noelle.getLoopContent(ls, optimizations);
     auto loopIsParallelized =
-        this->parallelizeLoop(ldi, noelle, heuristics, arnold);
+        this->parallelizeLoop(ldi, noelle, heuristics, TA);
 
     /*
      * Keep track of the parallelization.

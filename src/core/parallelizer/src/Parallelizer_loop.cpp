@@ -20,12 +20,13 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "Parallelizer.hpp"
+#include "Termination.hpp"
 #include "TerminatorAnalysis.hpp"
 
 namespace arcana::gino {
 
 bool Parallelizer::parallelizeLoop(LoopContent *loopContent, Noelle &noelle,
-                                   Heuristics *h, TerminatorAnalysis &arnold) {
+                                   Heuristics *h, TerminatorAnalysis &TA) {
   auto prefix = "Parallelizer: parallelizerLoop: ";
 
   /*
@@ -162,6 +163,8 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent, Noelle &noelle,
        */
       // Terminator clause compliance
       auto *LS = loopContent->getLoopStructure();
+      terminateLCDs(LS, TA);
+
       codeModified = parallelizationTechnique->apply(loopContent, h);
       usedTechnique = parallelizationTechnique;
       break;

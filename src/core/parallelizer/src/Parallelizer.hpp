@@ -59,7 +59,7 @@ private:
    * Methods
    */
   bool parallelizeLoop(LoopContent *loopContent, Noelle &noelle, Heuristics *h,
-                       TerminatorAnalysis &arnold);
+                       TerminatorAnalysis &TA);
 
   bool parallelizeLoops(Noelle &noelle, Heuristics *heuristics);
 

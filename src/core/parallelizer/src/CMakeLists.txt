@@ -5,6 +5,7 @@ set(Srcs
   Parallelizer_loop.cpp
   Parallelizer_loops.cpp
   Pass.cpp
+  Termination.cpp
   TerminatorAnalysis.cpp
 )
 
