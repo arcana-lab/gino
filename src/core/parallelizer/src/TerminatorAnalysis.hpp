@@ -3,6 +3,7 @@
 
 #include <map>
 #include <set>
+#include <vector>
 
 #include "Clause.hpp"
 #include "noelle/core/Noelle.hpp"
@@ -24,6 +25,9 @@ struct TerminatorAnalysis : public noelle::DependenceAnalysis {
   using Dependence = noelle::DGEdge<llvm::Value, llvm::Value>;
 
   TerminatorAnalysis(noelle::Noelle &noelle);
+
+  TerminatorAnalysis(noelle::Noelle &noelle,
+                     const std::vector<noelle::LoopStructure *> &LSs);
 
   ~TerminatorAnalysis();
 
@@ -79,6 +83,7 @@ private:
   std::map<noelle::LoopStructure *, std::set<llvm::Instruction *>>
       loopToPragmas_;
   std::set<llvm::Instruction *> matchedBegins_;
+  const std::vector<noelle::LoopStructure *> &selectedLSs_;
 
   noelle::Noelle &noelle;
 };

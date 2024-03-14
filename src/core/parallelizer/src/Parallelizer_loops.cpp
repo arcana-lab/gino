@@ -19,9 +19,16 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
 #include "Parallelizer.hpp"
 #include "TerminatorAnalysis.hpp"
 #include "noelle/core/LoopStructure.hpp"
+
+using namespace std;
 
 namespace arcana::gino {
 
@@ -68,10 +75,10 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
      * If no index has been specified we will select them all
      */
     if (!WL.empty()) {
-      return std::find(WL.begin(), WL.end(), i) != std::end(WL);
+      return find(WL.begin(), WL.end(), i) != std::end(WL);
     }
     if (!BL.empty()) {
-      return std::find(BL.begin(), BL.end(), i) == std::end(BL);
+      return find(BL.begin(), BL.end(), i) == std::end(BL);
     }
     return true;
   };
@@ -81,20 +88,23 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
    */
 
   auto mm = noelle.getMetadataManager();
-  std::map<uint32_t, LoopStructure *> loopParallelizationOrder;
+  map<uint32_t, LoopStructure *> loopParallelizationOrder;
+  vector<LoopStructure *> selectedLSs;
+
   for (auto tree : forest->getTrees()) {
-    auto selector = [&noelle, &mm, &loopParallelizationOrder,
+    auto selector = [&noelle, &mm, &loopParallelizationOrder, &selectedLSs,
                      &isSelected](LoopTree *n, uint32_t treeLevel) -> bool {
       auto ls = n->getLoop();
       if (!mm->doesHaveMetadata(ls, "noelle.parallelizer.looporder")) {
         return false;
       }
       auto parallelizationOrderIndex =
-          std::stoi(mm->getMetadata(ls, "noelle.parallelizer.looporder"));
+          stoi(mm->getMetadata(ls, "noelle.parallelizer.looporder"));
       if (!isSelected(parallelizationOrderIndex)) {
         return false;
       }
       loopParallelizationOrder[parallelizationOrderIndex] = ls;
+      selectedLSs.push_back(ls);
       return false;
     };
     tree->visitPreOrder(selector);
@@ -108,12 +118,12 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
   /*
    * Parallelize the loops in order.
    */
-  TerminatorAnalysis arnold(noelle);
+  TerminatorAnalysis arnold(noelle, selectedLSs);
   noelle.addAnalysis(&arnold);
 
   auto modified = false;
-  std::unordered_map<BasicBlock *, bool> modifiedBBs{};
-  std::unordered_set<Function *> modifiedFunctions;
+  unordered_map<BasicBlock *, bool> modifiedBBs{};
+  unordered_set<Function *> modifiedFunctions;
   for (auto indexLoopPair : loopParallelizationOrder) {
     auto ls = indexLoopPair.second;
 
@@ -172,6 +182,8 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
       }
       modifiedFunctions.insert(ls->getFunction());
     }
+
+    delete ldi;
   }
 
   /*
@@ -184,7 +196,7 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
   /*
    * Erase calls to intrinsics in modified functions
    */
-  std::unordered_set<CallInst *> intrinsicCallsToRemove;
+  unordered_set<CallInst *> intrinsicCallsToRemove;
   for (auto F : modifiedFunctions) {
     for (auto &I : *F) {
       if (auto callInst = dyn_cast<CallInst>(&I)) {

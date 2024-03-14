@@ -5,6 +5,7 @@
 #include <queue>
 #include <set>
 #include <stack>
+#include <vector>
 
 #include "noelle/core/LoopCarriedUnknownSCC.hpp"
 #include "noelle/core/Noelle.hpp"
@@ -17,7 +18,15 @@ using namespace arcana::noelle;
 namespace arcana::gino {
 
 TerminatorAnalysis::TerminatorAnalysis(Noelle &noelle)
-    : DependenceAnalysis("Terminator"), noelle(noelle) {
+    : DependenceAnalysis("Terminator"), noelle(noelle),
+      selectedLSs_(*noelle.getLoopStructures()) {
+  findCandidates();
+  resolveClauses();
+}
+
+TerminatorAnalysis::TerminatorAnalysis(Noelle &noelle,
+                                       const vector<LoopStructure *> &LSs)
+    : DependenceAnalysis("Terminator"), noelle(noelle), selectedLSs_(LSs) {
   findCandidates();
   resolveClauses();
 }
@@ -95,12 +104,11 @@ set<Instruction *> TerminatorAnalysis::getPragmasInLoop(LoopStructure *LS,
 
 void TerminatorAnalysis::findCandidates() {
   auto PDG = noelle.getProgramDependenceGraph();
-  auto LSs = noelle.getLoopStructures();
 
-  for (auto LS : *LSs) {
-    if (LS->getFunction()->getName() != "main") {
-      continue;
-    }
+  errs() << "Terminator: Analysis: Info: " << selectedLSs_.size()
+         << " input loops\n";
+
+  for (auto LS : selectedLSs_) {
     auto LC = noelle.getLoopContent(LS);
     auto sccManager = LC->getSCCManager();
     auto SCCDAG = sccManager->getSCCDAG();
