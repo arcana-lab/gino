@@ -1,10 +1,11 @@
 # Sources
 set(Srcs 
-  Pass.cpp
-  TerminatorAnalysis.cpp
+  Clause.cpp
+  Helper.cpp
   Parallelizer_loop.cpp
   Parallelizer_loops.cpp
-  Helper.cpp
+  Pass.cpp
+  TerminatorAnalysis.cpp
 )
 
 # Compilation flags

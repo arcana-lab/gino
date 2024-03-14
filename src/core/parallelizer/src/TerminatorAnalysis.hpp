@@ -4,6 +4,7 @@
 #include <map>
 #include <set>
 
+#include "Clause.hpp"
 #include "noelle/core/Noelle.hpp"
 #include "llvm/IR/Instructions.h"
 
@@ -17,24 +18,6 @@ enum Coverage {
   FULL = 0b10000
 };
 
-class Clause {
-public:
-  Clause(llvm::Instruction *begin, llvm::Instruction *end);
-
-  void print() const;
-
-  llvm::Value *getVariable() const;
-  llvm::Function *getFunction() const;
-  llvm::Instruction *getBegin() const;
-  llvm::Instruction *getEnd() const;
-
-private:
-  llvm::Value *variable_;
-  llvm::Function *function_;
-  llvm::Instruction *begin_;
-  llvm::Instruction *end_;
-};
-
 struct TerminatorAnalysis : public noelle::DependenceAnalysis {
   static char ID;
 
@@ -43,12 +26,6 @@ struct TerminatorAnalysis : public noelle::DependenceAnalysis {
   TerminatorAnalysis(noelle::Noelle &noelle);
 
   ~TerminatorAnalysis();
-
-  // bool doInitialization(Module &M) override;
-  //
-  // bool runOnModule(Module &M) override;
-  //
-  // void getAnalysisUsage(AnalysisUsage &AU) const override;
 
   bool canThisDependenceBeLoopCarried(Dependence *LCD,
                                       noelle::LoopStructure &LS) override;

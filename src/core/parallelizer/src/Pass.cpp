@@ -20,7 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "Parallelizer.hpp"
-#include "Terminator.hpp"
+#include "TerminatorAnalysis.hpp"
 
 namespace arcana::gino {
 
