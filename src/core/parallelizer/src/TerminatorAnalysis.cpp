@@ -1,3 +1,5 @@
+#include "TerminatorAnalysis.hpp"
+
 #include <algorithm>
 #include <map>
 #include <queue>
@@ -7,8 +9,6 @@
 #include "noelle/core/LoopCarriedUnknownSCC.hpp"
 #include "noelle/core/Noelle.hpp"
 #include "llvm/IR/Instructions.h"
-
-#include "TerminatorAnalysis.hpp"
 
 using namespace std;
 using namespace llvm;
@@ -28,32 +28,16 @@ TerminatorAnalysis::~TerminatorAnalysis() {
   }
 }
 
-// bool TerminatorAnalysis::doInitialization(Module &M) {
-//   return false;
-// }
-//
-// bool TerminatorAnalysis::runOnModule(Module &M) {
-//   findCandidates();
-//   resolveClauses();
-//   printClauses();
-//   sanityChecks();
-//   return false;
-// }
-//
-// void TerminatorAnalysis::getAnalysisUsage(AnalysisUsage &AU) const {
-//   AU.addRequired<Noelle>();
-// }
-
 bool TerminatorAnalysis::canThisDependenceBeLoopCarried(Dependence *LCD,
                                                         LoopStructure &LS) {
   auto coverage = getCoverage(LCD);
   if (coverage != NONE) {
-    errs() << "Terminator: Analysis: Query: Terminated\n";
+    // errs() << "Terminator: Analysis: Query: Terminated\n";
     return false;
   }
   if (coverage != NONE) {
-    errs() << "Terminator: Analysis: Query: Let live ("
-           << coverageToString(coverage) << ")\n";
+    // errs() << "Terminator: Analysis: Query: Let live ("
+    //        << coverageToString(coverage) << ")\n";
     printDependence(LCD);
   }
   return true;
@@ -62,8 +46,8 @@ bool TerminatorAnalysis::canThisDependenceBeLoopCarried(Dependence *LCD,
 void TerminatorAnalysis::printDependence(const Dependence *LCD) const {
   auto srcValue = LCD->getSrcNode()->getT();
   auto dstValue = LCD->getDstNode()->getT();
-  errs() << "Terminator: Analysis: [src] " << *srcValue << "\n";
-  errs() << "Terminator: Analysis: [dst] " << *dstValue << "\n";
+  errs() << "Terminator: Analysis: Dependence: [src] " << *srcValue << "\n";
+  errs() << "Terminator: Analysis: Dependence: [dst] " << *dstValue << "\n";
 }
 
 bool TerminatorAnalysis::isLDTCBegin(const Instruction *I) const {
@@ -149,21 +133,25 @@ void TerminatorAnalysis::findCandidates() {
   errs() << "Terminator: Analysis: Info: Found " << unknownLCDs_.size()
          << " candidate LCDs\n";
   errs() << "Terminator: Analysis: Info: Found " << candidateLSs_.size()
-         << " candidate loops\n";
+         << " loops with LCDs\n";
 
   auto LF = noelle.getLoopNestingForest();
 
+  vector<int> targetLoopIDs;
   for (auto LS : candidateLSs_) {
     auto pragmas = getPragmasInLoop(LS, LF);
     if (pragmas.size() > 0) {
       targetLSs_.insert(LS);
       loopToPragmas_[LS] = pragmas;
-      errs() << "Terminator: Analysis: Header: Target loop header:\n";
-      errs() << *LS->getHeader() << "\n";
+      targetLoopIDs.push_back(LS->getID().value());
     }
   }
-  errs() << "Terminator: Analysis: Info: Found " << targetLSs_.size()
-         << " target loops\n";
+  errs() << "Terminator: Analysis: Info: Found " << targetLoopIDs.size()
+         << " target loops. IDs = { ";
+  for (auto &id : targetLoopIDs) {
+    errs() << id << " ";
+  }
+  errs() << "}\n";
 }
 
 bool TerminatorAnalysis::isUnmatched(Instruction *begin) const {
