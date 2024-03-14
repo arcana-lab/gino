@@ -22,6 +22,7 @@
 #ifndef NOELLE_SRC_TOOLS_PARALLELIZER_H_
 #define NOELLE_SRC_TOOLS_PARALLELIZER_H_
 
+#include "TerminatorAnalysis.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 #include "arcana/gino/core/DSWP.hpp"
 #include "arcana/gino/core/HELIX.hpp"
@@ -57,7 +58,8 @@ private:
   /*
    * Methods
    */
-  bool parallelizeLoop(LoopContent *loopContent, Noelle &noelle, Heuristics *h);
+  bool parallelizeLoop(LoopContent *loopContent, Noelle &noelle, Heuristics *h,
+                       TerminatorAnalysis &arnold);
 
   bool parallelizeLoops(Noelle &noelle, Heuristics *heuristics);
 

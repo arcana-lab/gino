@@ -31,6 +31,10 @@ struct TerminatorAnalysis : public noelle::DependenceAnalysis {
 
   ~TerminatorAnalysis();
 
+  void run();
+
+  void run(std::set<noelle::LoopStructure *> &LSs);
+
   bool canThisDependenceBeLoopCarried(Dependence *LCD,
                                       noelle::LoopStructure &LS) override;
 
@@ -45,7 +49,8 @@ struct TerminatorAnalysis : public noelle::DependenceAnalysis {
   std::set<llvm::Instruction *> getPragmasInLoop(noelle::LoopStructure *LS,
                                                  noelle::LoopForest *LF) const;
 
-  void findCandidates();
+  std::set<noelle::LoopStructure *>
+  findTargetLoops(std::set<noelle::LoopStructure *> &LSs);
 
   bool isUnmatched(llvm::Instruction *begin) const;
 
@@ -58,7 +63,9 @@ struct TerminatorAnalysis : public noelle::DependenceAnalysis {
 
   void resolveClauses(noelle::LoopStructure *LS);
 
-  void resolveClauses();
+  void resolveClauses(std::set<noelle::LoopStructure *> &targetLSs);
+
+  std::set<Clause *> getClausesOf(noelle::LoopStructure *LS);
 
   void printClauses() const;
 
@@ -78,12 +85,11 @@ private:
   std::map<llvm::Instruction *, Clause *> instToClause_;
   std::map<Clause *, std::set<llvm::Instruction *>> clauseToInsts_;
   std::set<noelle::LoopStructure *> candidateLSs_;
-  std::set<noelle::LoopStructure *> targetLSs_;
+  // std::set<noelle::LoopStructure *> targetLSs_;
   std::set<Dependence *> unknownLCDs_;
   std::map<noelle::LoopStructure *, std::set<llvm::Instruction *>>
       loopToPragmas_;
   std::set<llvm::Instruction *> matchedBegins_;
-  const std::vector<noelle::LoopStructure *> &selectedLSs_;
 
   noelle::Noelle &noelle;
 };

@@ -89,7 +89,7 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
 
   auto mm = noelle.getMetadataManager();
   map<uint32_t, LoopStructure *> loopParallelizationOrder;
-  vector<LoopStructure *> selectedLSs;
+  set<LoopStructure *> selectedLSs;
 
   for (auto tree : forest->getTrees()) {
     auto selector = [&noelle, &mm, &loopParallelizationOrder, &selectedLSs,
@@ -104,7 +104,7 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
         return false;
       }
       loopParallelizationOrder[parallelizationOrderIndex] = ls;
-      selectedLSs.push_back(ls);
+      selectedLSs.insert(ls);
       return false;
     };
     tree->visitPreOrder(selector);
@@ -118,7 +118,8 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
   /*
    * Parallelize the loops in order.
    */
-  TerminatorAnalysis arnold(noelle, selectedLSs);
+  TerminatorAnalysis arnold(noelle);
+  arnold.run(selectedLSs);
   noelle.addAnalysis(&arnold);
 
   auto modified = false;
@@ -163,7 +164,8 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
     auto optimizations = {LoopContentOptimization::MEMORY_CLONING_ID,
                           LoopContentOptimization::THREAD_SAFE_LIBRARY_ID};
     auto ldi = noelle.getLoopContent(ls, optimizations);
-    auto loopIsParallelized = this->parallelizeLoop(ldi, noelle, heuristics);
+    auto loopIsParallelized =
+        this->parallelizeLoop(ldi, noelle, heuristics, arnold);
 
     /*
      * Keep track of the parallelization.

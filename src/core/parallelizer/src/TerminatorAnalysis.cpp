@@ -18,23 +18,24 @@ using namespace arcana::noelle;
 namespace arcana::gino {
 
 TerminatorAnalysis::TerminatorAnalysis(Noelle &noelle)
-    : DependenceAnalysis("Terminator"), noelle(noelle),
-      selectedLSs_(*noelle.getLoopStructures()) {
-  findCandidates();
-  resolveClauses();
-}
-
-TerminatorAnalysis::TerminatorAnalysis(Noelle &noelle,
-                                       const vector<LoopStructure *> &LSs)
-    : DependenceAnalysis("Terminator"), noelle(noelle), selectedLSs_(LSs) {
-  findCandidates();
-  resolveClauses();
-}
+    : DependenceAnalysis("Terminator"), noelle(noelle) {}
 
 TerminatorAnalysis::~TerminatorAnalysis() {
   for (auto *C : clauses_) {
     delete C;
   }
+}
+
+void TerminatorAnalysis::run(set<LoopStructure *> &LSs) {
+  auto targetLSs = findTargetLoops(LSs);
+  resolveClauses(targetLSs);
+}
+
+void TerminatorAnalysis::run() {
+  auto LSs_vector = noelle.getLoopStructures();
+  set<LoopStructure *> LSs(LSs_vector->begin(), LSs_vector->end());
+  run(LSs);
+  delete LSs_vector;
 }
 
 bool TerminatorAnalysis::canThisDependenceBeLoopCarried(Dependence *LCD,
@@ -102,13 +103,14 @@ set<Instruction *> TerminatorAnalysis::getPragmasInLoop(LoopStructure *LS,
   return pragmas;
 }
 
-void TerminatorAnalysis::findCandidates() {
+set<LoopStructure *>
+TerminatorAnalysis::findTargetLoops(set<LoopStructure *> &LSs) {
   auto PDG = noelle.getProgramDependenceGraph();
+  set<LoopStructure *> targetLSs;
 
-  errs() << "Terminator: Analysis: Info: " << selectedLSs_.size()
-         << " input loops\n";
+  errs() << "Terminator: Analysis: Info: " << LSs.size() << " input loops\n";
 
-  for (auto LS : selectedLSs_) {
+  for (auto LS : LSs) {
     auto LC = noelle.getLoopContent(LS);
     auto sccManager = LC->getSCCManager();
     auto SCCDAG = sccManager->getSCCDAG();
@@ -149,7 +151,7 @@ void TerminatorAnalysis::findCandidates() {
   for (auto LS : candidateLSs_) {
     auto pragmas = getPragmasInLoop(LS, LF);
     if (pragmas.size() > 0) {
-      targetLSs_.insert(LS);
+      targetLSs.insert(LS);
       loopToPragmas_[LS] = pragmas;
       targetLoopIDs.push_back(LS->getID().value());
     }
@@ -160,6 +162,8 @@ void TerminatorAnalysis::findCandidates() {
     errs() << id << " ";
   }
   errs() << "}\n";
+
+  return targetLSs;
 }
 
 bool TerminatorAnalysis::isUnmatched(Instruction *begin) const {
@@ -321,10 +325,18 @@ void TerminatorAnalysis::resolveClauses(LoopStructure *LS) {
          << " clauses\n";
 }
 
-void TerminatorAnalysis::resolveClauses() {
-  for (auto LS : targetLSs_) {
+void TerminatorAnalysis::resolveClauses(set<LoopStructure *> &targetLSs) {
+  for (auto *LS : targetLSs) {
     resolveClauses(LS);
   }
+}
+
+set<Clause *> TerminatorAnalysis::getClausesOf(LoopStructure *LS) {
+  auto it = loopToClauses_.find(LS);
+  if (it != loopToClauses_.end()) {
+    return it->second;
+  }
+  return {};
 }
 
 void TerminatorAnalysis::printClauses() const {
