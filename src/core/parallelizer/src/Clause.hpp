@@ -1,6 +1,8 @@
 #ifndef __CLAUSE_HPP__
 #define __CLAUSE_HPP__
 
+#include <vector>
+
 #include "llvm/IR/Instructions.h"
 
 namespace arcana::gino {
@@ -15,12 +17,14 @@ public:
   llvm::Function *getFunction() const;
   llvm::Instruction *getBegin() const;
   llvm::Instruction *getEnd() const;
+  std::vector<llvm::Value *> getCallArguments() const;
 
 private:
   llvm::Value *variable_;
   llvm::Function *function_;
   llvm::Instruction *begin_;
   llvm::Instruction *end_;
+  std::vector<llvm::Value *> arguments_;
 };
 
 } // namespace arcana::gino

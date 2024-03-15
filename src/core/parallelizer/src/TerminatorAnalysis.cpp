@@ -332,9 +332,10 @@ void TerminatorAnalysis::resolveClauses(set<LoopStructure *> &targetLSs) {
 }
 
 set<Clause *> TerminatorAnalysis::getClausesOf(LoopStructure *LS) {
-  auto it = loopToClauses_.find(LS);
-  if (it != loopToClauses_.end()) {
-    return it->second;
+  for (auto &[otherLS, C] : loopToClauses_) {
+    if (LS->getHeader() == otherLS->getHeader()) {
+      return C;
+    }
   }
   return {};
 }
