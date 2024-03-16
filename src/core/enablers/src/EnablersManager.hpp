@@ -26,7 +26,7 @@
 #include "noelle/tools/LoopInvariantCodeMotion.hpp"
 #include "noelle/tools/SCEVSimplification.hpp"
 
-using namespace arcana::noelle ;
+using namespace arcana::noelle;
 
 namespace arcana::gino {
 

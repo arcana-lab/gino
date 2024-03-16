@@ -68,7 +68,9 @@ protected:
    * Interface
    */
   BasicBlock *getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
-      LoopContent *LDI, uint32_t taskIndex, BasicBlock &bb) override;
+      LoopContent *LDI,
+      uint32_t taskIndex,
+      BasicBlock &bb) override;
 };
 
 } // namespace arcana::gino

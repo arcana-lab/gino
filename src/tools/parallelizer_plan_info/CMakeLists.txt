@@ -1,10 +1,7 @@
-# Project
-cmake_minimum_required(VERSION 3.13)
-project(ParallelizerPlanInfo)
-
-# Dependences
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/DependencesCMake.txt)
-
-# Pass
-add_subdirectory(src)
-
+gino_tool_declare(ParallelizerPlanInfo)
+target_sources(
+  ParallelizerPlanInfo # component name
+  PRIVATE
+  src/Pass.cpp
+  src/PlanInfo.cpp
+)

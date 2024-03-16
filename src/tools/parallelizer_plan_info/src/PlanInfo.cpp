@@ -24,7 +24,9 @@
 
 namespace arcana::gino {
 
-PlanInfo::PlanInfo() : ModulePass{ID}, printAllHeaders{false} { return; }
+PlanInfo::PlanInfo() : ModulePass{ ID }, printAllHeaders{ false } {
+  return;
+}
 
 bool PlanInfo::runOnModule(Module &M) {
   auto &noelle = getAnalysis<Noelle>();
@@ -56,8 +58,8 @@ bool PlanInfo::runOnModule(Module &M) {
       }
       auto order =
           std::stoi(mm->getMetadata(ls, "noelle.parallelizer.looporder"));
-      auto optimizations = {LoopContentOptimization::MEMORY_CLONING_ID,
-                            LoopContentOptimization::THREAD_SAFE_LIBRARY_ID};
+      auto optimizations = { LoopContentOptimization::MEMORY_CLONING_ID,
+                             LoopContentOptimization::THREAD_SAFE_LIBRARY_ID };
       auto ldi = noelle.getLoopContent(ls, optimizations);
       order2ldi[order] = ldi;
       return false;

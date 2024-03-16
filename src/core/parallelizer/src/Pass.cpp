@@ -27,7 +27,7 @@ namespace arcana::gino {
  * Options of the Parallelizer pass.
  */
 static cl::opt<bool> ForceParallelization(
-    "noelle-parallelizer-force",
+    "gino-parallelizer-force",
     cl::ZeroOrMore,
     cl::Hidden,
     cl::desc("Force the parallelization"));
@@ -37,12 +37,12 @@ static cl::opt<bool> ForceNoSCCPartition(
     cl::Hidden,
     cl::desc("Force no SCC merging when parallelizing"));
 static cl::list<int> LoopIndexesWhiteList(
-    "noelle-loops-white-list",
+    "gino-loops-white-list",
     cl::ZeroOrMore,
     cl::CommaSeparated,
     cl::desc("Parallelize only a subset of loops"));
 static cl::list<int> LoopIndexesBlackList(
-    "noelle-loops-black-list",
+    "gino-loops-black-list",
     cl::ZeroOrMore,
     cl::CommaSeparated,
     cl::desc("Don't parallelize a subset of loops"));

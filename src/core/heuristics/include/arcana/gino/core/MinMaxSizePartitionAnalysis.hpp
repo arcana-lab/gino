@@ -35,14 +35,18 @@ namespace arcana::gino {
 class MinMaxSizePartitionAnalysis : public PartitionCostAnalysis {
 public:
   MinMaxSizePartitionAnalysis(
-      InvocationLatency &IL, SCCDAGPartitioner &p, SCCDAGAttrs &attrs,
-      int cores, std::function<bool(GenericSCC *scc)> canBeRematerialized,
+      InvocationLatency &IL,
+      SCCDAGPartitioner &p,
+      SCCDAGAttrs &attrs,
+      int cores,
+      std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity v)
-      : PartitionCostAnalysis{IL, p, attrs, cores, canBeRematerialized, v} {};
+    : PartitionCostAnalysis{ IL, p, attrs, cores, canBeRematerialized, v } {};
 
-  void
-  checkIfShouldMerge(SCCSet *sA, SCCSet *sB,
-                     std::function<bool(GenericSCC *scc)> canBeRematerialized);
+  void checkIfShouldMerge(
+      SCCSet *sA,
+      SCCSet *sB,
+      std::function<bool(GenericSCC *scc)> canBeRematerialized);
 };
 } // namespace arcana::gino
 

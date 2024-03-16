@@ -58,4 +58,4 @@ void SmallestSizePartitionAnalysis::checkIfShouldMerge(
   // if (lowered == loweredCost && insts > instCount) return ;
 }
 
-}
+} // namespace arcana::gino
