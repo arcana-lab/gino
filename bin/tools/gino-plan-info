@@ -15,4 +15,6 @@ if test $# -lt 1 ; then
   exit 1
 fi
 
-gino-load -noelle-verbose=0 -ParallelizerPlanInfo -disable-output $@
+installDir=$(gino-config --prefix)
+
+gino-load -load $installDir/lib/ParallelizerPlanInfo.so -ParallelizerPlanInfo -noelle-verbose=0 -disable-output $@

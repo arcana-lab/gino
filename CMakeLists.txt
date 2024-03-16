@@ -1,11 +1,17 @@
-cmake_minimum_required(VERSION 3.4.3)
+cmake_minimum_required(VERSION 3.13)
 
 project(gino)
 
-# See `cmake --help-policy CMP0077`
-# `OLD` specifies that the effects of this policy are whatever LLVM 9
-# assumed at that time.
-cmake_policy(SET CMP0077 OLD)
+include(FetchContent)
+
+include(config.default.cmake)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/config.cmake)
+  include(config.cmake)
+endif()
+
+if(DEFINED GINO_INSTALL_DIR)
+  set(CMAKE_INSTALL_PREFIX ${GINO_INSTALL_DIR})
+endif()
 
 set(GINO_CXX_FLAGS 
   -O0
@@ -15,11 +21,32 @@ set(GINO_CXX_FLAGS
   -Wall
 )
 
+string(ASCII 27 Esc)
+set(Purple "${Esc}[35m")
+set(Green "${Esc}[32m")
+set(Red "${Esc}[31m")
+set(ColorReset "${Esc}[m")
+
+function(gino_acquire_option OPT)
+  if(${OPT} MATCHES "ON|On|on|1")
+    set(${OPT} ON PARENT_SCOPE)
+    message(STATUS "${Purple}Option${ColorReset} ${OPT} ${Green}ON${ColorReset}")
+  elseif(${OPT} MATCHES "OFF|Off|off|0")
+    set(${OPT} OFF PARENT_SCOPE)
+    message(STATUS "${Purple}Option${ColorReset} ${OPT} ${Red}OFF${ColorReset}")
+  elseif(${OPT} MATCHES "OFF|Off|off|0")
+  else()
+    message(FATAL_ERROR "${OPT} must be either ON or OFF")
+  endif()
+endfunction()
+
+message(STATUS "${Purple}Install directory${ColorReset} is ${CMAKE_INSTALL_PREFIX}")
+
+gino_acquire_option(GINO_TOOLS)
+
 if(NOT DEFINED NOELLE_INSTALL_DIR OR (NOELLE_INSTALL_DIR STREQUAL ""))
   message(FATAL_ERROR "Missing value for NOELLE_INSTALL_DIR")
 endif()
-
-message(STATUS "NOELLE installed at ${NOELLE_INSTALL_DIR}")
 
 set(GINO_CMAKE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -41,12 +68,8 @@ install(
 )
 
 install(
-  FILES ${GINO_CMAKE_ROOT}/.githooks/pre-commit
+  PROGRAMS ${GINO_CMAKE_ROOT}/.githooks/pre-commit
   DESTINATION ${GINO_CMAKE_ROOT}/.git/hooks
-  PERMISSIONS
-    OWNER_EXECUTE OWNER_WRITE OWNER_READ
-    GROUP_EXECUTE GROUP_READ
-    WORLD_EXECUTE WORLD_READ
 )
 
 enable_language(C CXX)
@@ -87,21 +110,24 @@ add_custom_target(
     ${GINO_CMAKE_ROOT}/compile_commands.json
 )
 
-macro(add_gino_component name)
-  add_custom_target(${name})
-  set_target_properties(${name} PROPERTIES SOURCES "")
-endmacro()
+add_custom_target(gino_libraries)
+add_custom_target(gino_tool_libraries)
+set_target_properties(gino_libraries PROPERTIES NAMES "")
+set_target_properties(gino_tool_libraries PROPERTIES NAMES "")
 
-macro(add_gino_component_sources component)
-  cmake_parse_arguments(ARG "" "" "FILES" ${ARGV})
-  set(files "")
-  foreach(file IN LISTS ARG_FILES)
-    set(file "${CMAKE_CURRENT_LIST_DIR}/${file}")
-    list(APPEND files ${file})
-  endforeach()
-  get_target_property(sources ${component} SOURCES)
-  list(APPEND sources "${files}")
-  set_target_properties(${component} PROPERTIES SOURCES "${sources}")
-endmacro()
+function(gino_component_declare name)
+  add_llvm_library(${name} MODULE)
+  get_target_property(names gino_libraries NAMES)
+  list(APPEND names ${name})
+  set_target_properties(gino_libraries PROPERTIES NAMES "${names}")
+endfunction()
+
+function(gino_tool_declare name)
+  add_llvm_library(${name} MODULE)
+  get_target_property(names gino_tool_libraries NAMES)
+  list(APPEND names ${name})
+  set_target_properties(gino_tool_libraries PROPERTIES NAMES "${names}")
+endfunction()
 
 add_subdirectory(src)
+add_subdirectory(bin)

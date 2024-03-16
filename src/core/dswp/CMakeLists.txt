@@ -1,6 +1,6 @@
-add_gino_component_sources(
-  core # component name
-  FILES
+target_sources(
+  Gino # component name
+  PRIVATE
   src/CFG.cpp
   src/DSWP_clonableSCCs.cpp
   src/DSWP.cpp

@@ -1,7 +1,0 @@
-#!/bin/bash -e
-
-trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
-
-installDir=$(gino-config --prefix)
-
-noelle-load $(noelle-config --tool-libs) -load ${installDir}/lib/GinoCore.so -load ${installDir}/lib/GinoTools.so $@

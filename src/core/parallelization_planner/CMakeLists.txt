@@ -1,6 +1,6 @@
-add_gino_component_sources(
-  core # component name
-  FILES
+target_sources(
+  Gino # component name
+  PRIVATE
   src/LoopEvaluation.cpp
   src/LoopSelector.cpp
   src/Pass.cpp

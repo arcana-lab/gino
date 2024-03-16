@@ -1,20 +1,21 @@
-add_gino_component(core)
+gino_component_declare(Gino)
 
-foreach(module IN LISTS GINO_CORE_MODULES)
+file(GLOB all_files "*")
+
+set(directories "")
+
+foreach(f IN LISTS all_files)
+  if(IS_DIRECTORY ${f})
+    list(APPEND directories ${f})
+  endif()
+endforeach()
+
+foreach(module IN LISTS directories)
   include_directories(${module}/include)
   install(
     DIRECTORY ${module}/include
     DESTINATION ${CMAKE_INSTALL_PREFIX}
     FILES_MATCHING PATTERN "*.hpp"
   )
-endforeach()
-
-foreach(module IN LISTS GINO_CORE_MODULES)
   add_subdirectory(${module})
 endforeach()
-
-get_target_property(core_SOURCES core SOURCES)
-add_llvm_library(GinoCore MODULE "${core_SOURCES}")
-
-add_subdirectory(gino_config)
-add_subdirectory(scripts)

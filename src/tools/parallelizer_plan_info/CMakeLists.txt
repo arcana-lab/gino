@@ -1,6 +1,7 @@
-add_gino_component_sources(
-  tools # component name
-  FILES
+gino_tool_declare(ParallelizerPlanInfo)
+target_sources(
+  ParallelizerPlanInfo # component name
+  PRIVATE
   src/Pass.cpp
   src/PlanInfo.cpp
 )

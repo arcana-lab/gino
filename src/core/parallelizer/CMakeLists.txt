@@ -1,6 +1,6 @@
-add_gino_component_sources(
-  core # component name
-  FILES
+target_sources(
+  Gino # component name
+  PRIVATE
   src/Helper.cpp
   src/Parallelizer_loop.cpp
   src/Parallelizer_loops.cpp

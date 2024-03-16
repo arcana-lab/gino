@@ -10,8 +10,8 @@ function linkParUtils {
     cd $i ;
     echo "  $i" ;
     if ! test -f Parallelizer_utils.cpp ; then
-      ln -s ${rootDir}/src/core/runtime/Parallelizer_utils.cpp ;
-      ln -s ${rootDir}/src/core/runtime/NOELLE_APIs.c ;
+      ln -s ${rootDir}/src/runtime/Parallelizer_utils.cpp ;
+      ln -s ${rootDir}/src/runtime/GINO_APIs.c ;
     fi
     if ! test -f Makefile ; then
       ln -s ../../scripts/Makefile ;

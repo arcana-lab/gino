@@ -1,5 +1,5 @@
-add_gino_component_sources(
-  core # component name
-  FILES
+target_sources(
+  Gino # component name
+  PRIVATE
   src/Pass.cpp
 )

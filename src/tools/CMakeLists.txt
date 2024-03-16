@@ -1,10 +1,30 @@
-add_gino_component(tools)
+# making all core header files available
 
-foreach(module IN LISTS GINO_CORE_MODULES)
-  include_directories(../core/${module}/include)
+file(GLOB all_core_files "../core/*")
+set(directories "")
+
+foreach(f IN LISTS all_core_files)
+  if(IS_DIRECTORY ${f})
+    include_directories(${f}/include)
+  endif()
 endforeach()
 
-foreach(module IN LISTS GINO_TOOL_MODULES)
+# adding source for Tools
+
+file(GLOB all_tool_files "*")
+set(directories "")
+
+foreach(f IN LISTS all_tool_files)
+  if(IS_DIRECTORY ${f})
+    list(APPEND directories ${f})
+  endif()
+endforeach()
+
+if(NOELLE_REPL STREQUAL OFF)
+  list(REMOVE_ITEM directories ${CMAKE_CURRENT_SOURCE_DIR}/repl)
+endif()
+
+foreach(module IN LISTS directories)
   include_directories(${module}/include)
   install(
     DIRECTORY ${module}/include
@@ -13,10 +33,6 @@ foreach(module IN LISTS GINO_TOOL_MODULES)
   )
 endforeach()
 
-foreach(module IN LISTS GINO_TOOL_MODULES)
+foreach(module IN LISTS directories)
   add_subdirectory(${module})
 endforeach()
-add_subdirectory(scripts)
-
-get_target_property(tools_SOURCES tools SOURCES)
-add_llvm_library(GinoTools MODULE "${tools_SOURCES}")

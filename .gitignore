@@ -1,5 +1,8 @@
-build
-install
-enable
-compile_commands.json
+.cache
 .clangd
+.config
+build
+compile_commands.json
+config.cmake
+enable
+install

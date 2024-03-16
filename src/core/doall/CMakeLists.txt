@@ -1,6 +1,6 @@
-add_gino_component_sources(
-  core # component name
-  FILES
+target_sources(
+  Gino # component name
+  PRIVATE
   src/DOALL_analysis.cpp
   src/DOALL_applicabilityGuard.cpp
   src/DOALL_chunking.cpp
