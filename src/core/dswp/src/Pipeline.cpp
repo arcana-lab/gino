@@ -116,8 +116,8 @@ bool DSWP::isCompleteAndValidStageStructure(LoopContent *LDI) const {
     auto task = (DSWPTask *)techniqueTask;
     for (auto scc : task->stageSCCs) {
       if (allSCCs.find(scc) != allSCCs.end()) {
-        errs()
-            << "DSWP:  ERROR! A non-clonable SCC is present in more than one DSWP stage";
+        errs() << "DSWP:  ERROR! A non-clonable SCC is present in more than "
+                  "one DSWP stage";
         return false;
       }
       allSCCs.insert(scc);
@@ -193,9 +193,8 @@ void DSWP::createPipelineFromStages(LoopContent *LDI, Noelle &par) {
    * Add the call to the task dispatcher
    */
   auto runtimeCall = builder.CreateCall(
-      taskDispatcher,
-      ArrayRef<Value *>(
-          { envPtr, queueSizesPtr, stagesPtr, stagesCount, queuesCount }));
+      taskDispatcher, ArrayRef<Value *>({envPtr, queueSizesPtr, stagesPtr,
+                                         stagesCount, queuesCount}));
   auto numThreadsUsed = builder.CreateExtractValue(runtimeCall, (uint64_t)0);
 
   /*
@@ -204,14 +203,14 @@ void DSWP::createPipelineFromStages(LoopContent *LDI, Noelle &par) {
   auto latestBBAfterCall =
       this->performReductionToAllReducableLiveOutVariables(LDI, numThreadsUsed);
 
-  IRBuilder<> afterCallBuilder{ latestBBAfterCall };
+  IRBuilder<> afterCallBuilder{latestBBAfterCall};
   afterCallBuilder.CreateBr(this->exitPointOfParallelizedLoop);
 
   return;
 }
 
 Value *DSWP::createStagesArrayFromStages(LoopContent *LDI,
-                                         IRBuilder<> funcBuilder,
+                                         IRBuilder<> &funcBuilder,
                                          Noelle &par) {
 
   /*
@@ -227,22 +226,21 @@ Value *DSWP::createStagesArrayFromStages(LoopContent *LDI,
   for (int i = 0; i < this->numTaskInstances; ++i) {
     auto stage = this->tasks[i];
     auto stageIndex = cm->getIntegerConstant(i, 64);
-    auto stagePtr = funcBuilder.CreateInBoundsGEP(
-        stagesAlloca,
-        ArrayRef<Value *>({ this->zeroIndexForBaseArray, stageIndex }));
+    auto stagePtr = funcBuilder.CreateGEP(
+        stagesAlloca->getType()->getPointerElementType(), stagesAlloca,
+        ArrayRef<Value *>({this->zeroIndexForBaseArray, stageIndex}));
     auto stageCast = funcBuilder.CreateBitCast(stagePtr, stageCastType);
     funcBuilder.CreateStore(stage->getTaskBody(), stageCast);
   }
 
   auto int8Type = tm->getIntegerType(8);
 
-  return cast<Value>(
-      funcBuilder.CreateBitCast(stagesAlloca,
-                                PointerType::getUnqual(int8Type)));
+  return cast<Value>(funcBuilder.CreateBitCast(
+      stagesAlloca, PointerType::getUnqual(int8Type)));
 }
 
 Value *DSWP::createQueueSizesArrayFromStages(LoopContent *LDI,
-                                             IRBuilder<> funcBuilder,
+                                             IRBuilder<> &funcBuilder,
                                              Noelle &par) {
 
   /*
@@ -257,18 +255,17 @@ Value *DSWP::createQueueSizesArrayFromStages(LoopContent *LDI,
   for (int i = 0; i < this->queues.size(); ++i) {
     auto &queue = this->queues[i];
     auto queueIndex = cm->getIntegerConstant(i, 64);
-    auto queuePtr = funcBuilder.CreateInBoundsGEP(
-        queuesAlloca,
-        ArrayRef<Value *>({ this->zeroIndexForBaseArray, queueIndex }));
+    auto queuePtr = funcBuilder.CreateGEP(
+        queuesAlloca->getType()->getPointerElementType(), queuesAlloca,
+        ArrayRef<Value *>({this->zeroIndexForBaseArray, queueIndex}));
     auto queueCast =
         funcBuilder.CreateBitCast(queuePtr, PointerType::getUnqual(int64Type));
     funcBuilder.CreateStore(cm->getIntegerConstant(queue->bitLength, 64),
                             queueCast);
   }
 
-  return cast<Value>(
-      funcBuilder.CreateBitCast(queuesAlloca,
-                                PointerType::getUnqual(int64Type)));
+  return cast<Value>(funcBuilder.CreateBitCast(
+      queuesAlloca, PointerType::getUnqual(int64Type)));
 }
 
 } // namespace arcana::gino

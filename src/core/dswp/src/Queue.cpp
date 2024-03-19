@@ -25,13 +25,9 @@ using namespace llvm;
 
 namespace arcana::gino {
 
-void DSWP::registerQueue(Noelle &par,
-                         LoopContent *LDI,
-                         DSWPTask *fromStage,
-                         DSWPTask *toStage,
-                         Instruction *producer,
-                         Instruction *consumer,
-                         bool isMemoryDependence) {
+void DSWP::registerQueue(Noelle &par, LoopContent *LDI, DSWPTask *fromStage,
+                         DSWPTask *toStage, Instruction *producer,
+                         Instruction *consumer, bool isMemoryDependence) {
 
   /*
    * Find/create the push queue in the producer stage
@@ -46,11 +42,8 @@ void DSWP::registerQueue(Noelle &par,
     break;
   }
   if (queueIndex == this->queues.size()) {
-    this->queues.push_back(
-        std::move(std::make_unique<QueueInfo>(producer,
-                                              consumer,
-                                              producer->getType(),
-                                              isMemoryDependence)));
+    this->queues.push_back(std::move(std::make_unique<QueueInfo>(
+        producer, consumer, producer->getType(), isMemoryDependence)));
     fromStage->producerToQueues[producer].insert(queueIndex);
     queueInfo = this->queues[queueIndex].get();
 
@@ -144,8 +137,9 @@ void DSWP::collectControlQueueInfo(LoopContent *LDI, Noelle &par) {
     for (auto conditionToBranchDependency :
          conditionalBranchNode->getIncomingEdges()) {
       assert(
-          (!isa<MemoryDependence<Value, Value>>(conditionToBranchDependency))
-          && "Node producing control dependencies is expected not to consume a memory dependence");
+          (!isa<MemoryDependence<Value, Value>>(conditionToBranchDependency)) &&
+          "Node producing control dependencies is expected not to consume a "
+          "memory dependence");
       if (isa<ControlDependence<Value, Value>>(conditionToBranchDependency)) {
         continue;
       }
@@ -192,21 +186,16 @@ void DSWP::collectControlQueueInfo(LoopContent *LDI, Noelle &par) {
         continue;
 
       for (auto condition : conditionsOfConditionalBranch) {
-        registerQueue(par,
-                      LDI,
-                      taskOfCondition,
-                      taskControlledByCondition,
-                      condition,
-                      conditionalBranch,
-                      false);
+        registerQueue(par, LDI, taskOfCondition, taskControlledByCondition,
+                      condition, conditionalBranch, false);
       }
     }
   }
 }
 
-std::set<Task *> DSWP::collectTransitivelyControlledTasks(
-    LoopContent *LDI,
-    DGNode<Value> *conditionalBranchNode) {
+std::set<Task *>
+DSWP::collectTransitivelyControlledTasks(LoopContent *LDI,
+                                         DGNode<Value> *conditionalBranchNode) {
   std::set<Task *> tasksControlledByCondition;
   auto sccManager = LDI->getSCCManager();
   SCCDAG *sccdag = sccManager->getSCCDAG();
@@ -293,15 +282,10 @@ void DSWP::collectDataAndMemoryQueueInfo(LoopContent *LDI, Noelle &par) {
            */
           auto isMemoryDependence =
               isa<MemoryDependence<Value, Value>>(instructionEdge);
-          assert(!isMemoryDependence
-                 && "FIXME: Support memory synchronization with queues");
+          assert(!isMemoryDependence &&
+                 "FIXME: Support memory synchronization with queues");
 
-          registerQueue(par,
-                        LDI,
-                        fromStage,
-                        toStage,
-                        producer,
-                        consumer,
+          registerQueue(par, LDI, fromStage, toStage, producer, consumer,
                         isMemoryDependence);
         }
       }
@@ -350,9 +334,8 @@ void DSWP::generateLoadsOfQueuePointers(Noelle &par, int taskIndex) {
 
   auto task = (DSWPTask *)this->tasks[taskIndex];
   IRBuilder<> entryBuilder(task->getEntry());
-  auto queuesArray =
-      entryBuilder.CreateBitCast(task->queueArg,
-                                 PointerType::getUnqual(this->queueArrayType));
+  auto queuesArray = entryBuilder.CreateBitCast(
+      task->queueArg, PointerType::getUnqual(this->queueArrayType));
 
   /*
    * Load this stage's relevant queues
@@ -360,9 +343,9 @@ void DSWP::generateLoadsOfQueuePointers(Noelle &par, int taskIndex) {
   auto loadQueuePtrFromIndex = [&](int queueIndex) -> void {
     auto queueInfo = this->queues[queueIndex].get();
     auto queueIndexValue = cm->getIntegerConstant(queueIndex, 64);
-    auto queuePtr = entryBuilder.CreateInBoundsGEP(
-        queuesArray,
-        ArrayRef<Value *>({ this->zeroIndexForBaseArray, queueIndexValue }));
+    auto queuePtr = entryBuilder.CreateGEP(
+        queuesArray->getType()->getPointerElementType(), queuesArray,
+        ArrayRef<Value *>({this->zeroIndexForBaseArray, queueIndexValue}));
     auto parQueueIndex = par.queues.queueSizeToIndex[queueInfo->bitLength];
     auto queueType = par.queues.queueTypes[parQueueIndex];
     auto queueElemType = par.queues.queueElementTypes[parQueueIndex];
@@ -370,11 +353,11 @@ void DSWP::generateLoadsOfQueuePointers(Noelle &par, int taskIndex) {
         entryBuilder.CreateBitCast(queuePtr, PointerType::getUnqual(queueType));
 
     auto queueInstrs = std::make_unique<QueueInstrs>();
-    queueInstrs->queuePtr = entryBuilder.CreateLoad(queueCast);
+    queueInstrs->queuePtr = entryBuilder.CreateLoad(
+        queueCast->getType()->getPointerElementType(), queueCast);
     queueInstrs->alloca = entryBuilder.CreateAlloca(queueInfo->dependentType);
-    queueInstrs->allocaCast =
-        entryBuilder.CreateBitCast(queueInstrs->alloca,
-                                   PointerType::getUnqual(queueElemType));
+    queueInstrs->allocaCast = entryBuilder.CreateBitCast(
+        queueInstrs->alloca, PointerType::getUnqual(queueElemType));
     task->queueInstrMap[queueIndex] = std::move(queueInstrs);
   };
 
@@ -391,7 +374,7 @@ void DSWP::popValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
     auto &queueInfo = this->queues[queueIndex];
     auto queueInstrs = task->queueInstrMap[queueIndex].get();
     auto queueCallArgs =
-        ArrayRef<Value *>({ queueInstrs->queuePtr, queueInstrs->allocaCast });
+        ArrayRef<Value *>({queueInstrs->queuePtr, queueInstrs->allocaCast});
 
     /*
      * Determine the clone of the basic block of the original producer
@@ -406,7 +389,9 @@ void DSWP::popValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
         par.queues.queuePops[par.queues.queueSizeToIndex[queueInfo->bitLength]];
     queueInstrs->queueCall =
         builder.CreateCall(queuePopFunction, queueCallArgs);
-    queueInstrs->load = builder.CreateLoad(queueInstrs->alloca);
+    queueInstrs->load = builder.CreateLoad(
+        queueInstrs->alloca->getType()->getPointerElementType(),
+        queueInstrs->alloca);
 
     /*
      * Map from producer to queue load
@@ -423,7 +408,7 @@ void DSWP::pushValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
     auto queueInstrs = task->queueInstrMap[queueIndex].get();
     auto queueInfo = this->queues[queueIndex].get();
     auto queueCallArgs =
-        ArrayRef<Value *>({ queueInstrs->queuePtr, queueInstrs->allocaCast });
+        ArrayRef<Value *>({queueInstrs->queuePtr, queueInstrs->allocaCast});
     auto queuePushFunction =
         par.queues
             .queuePushes[par.queues.queueSizeToIndex[queueInfo->bitLength]];
@@ -447,4 +432,4 @@ void DSWP::pushValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
   }
 }
 
-}
+} // namespace arcana::gino
