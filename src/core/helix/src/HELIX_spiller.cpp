@@ -328,7 +328,7 @@ void HELIX::defineFrontierForLoadsToSpilledLCD(
       assert(validBlock != loopHeader);
 
       auto invalidatedNode = originalLoopDS->DT.getNode(validBlock);
-      auto immediateDominatorNode = invalidatedNode->getIDom();
+      auto immediateDominatorNode = invalidatedNode->getParent();
       validBlock = immediateDominatorNode->getBlock();
     }
 
