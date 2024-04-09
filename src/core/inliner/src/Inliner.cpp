@@ -76,7 +76,7 @@ bool Inliner::runOnModule(Module &M) {
   /*
    * Fetch the call graph.
    */
-  auto pcg = fm->getProgramCallGraph();
+  auto pcg = fm->getSCCDAGOfProgramCallGraph();
 
   /*
    * Collect function and loop ordering to track inlining progress
