@@ -9,7 +9,7 @@ DOALL_object_cloning  22.170
 DOALL_periodic_variable  12.525
 DOALL_reduction	       3.560
 DOALL_streamclusters  22.4
-DSWP_communication     1.221
+DSWP_communication     0.4
 DSWP_limit	       7.059
 HELIX_challenge	       7.164
 HELIX_communication    1.152
