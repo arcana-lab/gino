@@ -19,13 +19,13 @@ endif()
 string(REPLACE ";" " " gino_config_CXX_FLAGS "${GINO_CXX_FLAGS}")
 
 get_target_property(GINO_LIBRARIES gino_libraries NAMES)
-set(gino_config_GINO_LIBS "")
+set(gino_config_CORE_LIBS "")
 foreach(lib IN LISTS GINO_LIBRARIES)
-  list(APPEND gino_config_GINO_LIBS 
+  list(APPEND gino_config_CORE_LIBS 
     "-load ${CMAKE_INSTALL_PREFIX}/lib/${lib}.so"
   )
 endforeach()
-string(REPLACE ";" " " gino_config_GINO_LIBS "${gino_config_GINO_LIBS}")
+string(REPLACE ";" " " gino_config_CORE_LIBS "${gino_config_CORE_LIBS}")
 
 get_target_property(GINO_TOOL_LIBRARIES gino_tool_libraries NAMES)
 set(gino_config_TOOL_LIBS "")
