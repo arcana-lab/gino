@@ -14,7 +14,6 @@
 - [License](#license)
 
 ## Description
-
 GINO is an automatic parallelizing compiler that works at the LLVM IR level.
 It relies on the abstractions provided by [NOELLE](https://github.com/arcana-lab/noelle) (e.g. PDG, SCCDAG, ecc), [VIRGIL](https://github.com/arcana-lab/virgil), and [LLVM](http://llvm.org).
 GINO supports DOALL and provides an implementation of [DSWP](https://liberty.princeton.edu/Publications/micro05_dswp.pdf) and [HELIX](https://users.cs.northwestern.edu/~simonec/files/Research/papers/HELIX_CGO_2012.pdf).
