@@ -146,4 +146,4 @@ If you have any trouble using this framework feel free to reach out to us for he
 
 ## License
 
-[MIT License](./LICENSE.md).
+GINO is licensed under [MIT License](./LICENSE.md).
