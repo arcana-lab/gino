@@ -9,6 +9,7 @@
 - [Prerequisites](#prerequisites)
 - [Building and Installing](#building-and-installing)
 - [Testing](#testing)
+- [Uninstalling](#uninstalling)
 - [Repository structure](#repository-structure)
 - [Contributing](#contributing)
 - [License](#license)
@@ -111,6 +112,15 @@ make clean
 make condor_autotuner
 ```
 The speedup results will be collected in `tests/performance/speedups_autotuner.txt`.
+
+## Uninstalling
+
+In this order:
+
+Run `make uninstall` to uninstall without cleaning the build files.
+
+Run `make clean` to reset the repository to its initial state.
+For generality, the install directory is not removed.
 
 ## Repository structure
 
