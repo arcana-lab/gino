@@ -77,11 +77,12 @@ Check out the Zythos cluster guide [here](http://www.cs.northwestern.edu/~simone
 
 ## Building and Installing
 
-To build and install NOELLE you need to configure it first, unless the [default configuration](config.default.cmake) is satisfactory.
+To build and install GINO you need to configure it first, unless the [default configuration](config.default.cmake) is satisfactory.
 From the root directory:
 ```
-make menuconfig     # to customize the installation
-make                # set the number of jobs with JOBS=8 (default is 16)
+source /path/to/noelle/enable   # make NOELLE available
+make menuconfig                 # to customize the installation
+make                            # set the number of jobs with JOBS=8 (default is 16)
 ```
 
 ## Testing
