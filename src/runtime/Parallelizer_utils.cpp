@@ -48,9 +48,9 @@ typedef struct {
   pthread_spinlock_t endLock;
 } DOALL_args_t;
 
-class NoelleRuntime {
+class GinoRuntime {
 public:
-  NoelleRuntime();
+  GinoRuntime();
 
   uint32_t reserveCores(uint32_t coresRequested);
 
@@ -64,7 +64,7 @@ public:
 
   ThreadPoolForCSingleQueue *virgil;
 
-  ~NoelleRuntime(void);
+  ~GinoRuntime(void);
 
 private:
   mutable pthread_spinlock_t doallMemoryLock;
@@ -77,7 +77,7 @@ private:
   /*
    * Current number of idle cores.
    */
-  int32_t NOELLE_idleCores;
+  int32_t GINO_idleCores;
 
   /*
    * Maximum number of cores.
@@ -107,11 +107,11 @@ uint64_t clocks_dispatch_ends[64];
 pthread_spinlock_t printLock;
 #endif
 
-static NoelleRuntime runtime{};
+static GinoRuntime runtime{};
 
 extern "C" {
 
-/************************************ NOELLE public APIs **************/
+/************************************ GINO public APIs **************/
 class DispatcherInfo {
 public:
   int32_t numberOfThreadsUsed;
@@ -121,7 +121,7 @@ public:
 /*
  * Dispatch tasks to run a DOALL loop.
  */
-DispatcherInfo NOELLE_DOALLDispatcher(
+DispatcherInfo GINO_DOALLDispatcher(
     void (*parallelizedLoop)(void *, int64_t, int64_t, int64_t),
     void *env,
     int64_t maxNumberOfCores,
@@ -130,7 +130,7 @@ DispatcherInfo NOELLE_DOALLDispatcher(
 /*
  * Dispatch tasks to run a HELIX loop.
  */
-DispatcherInfo NOELLE_HELIX_dispatcher_sequentialSegments(
+DispatcherInfo GINO_HELIX_dispatcher_sequentialSegments(
     void (*parallelizedLoop)(void *,
                              void *,
                              void *,
@@ -143,7 +143,7 @@ DispatcherInfo NOELLE_HELIX_dispatcher_sequentialSegments(
     int64_t numCores,
     int64_t numOfsequentialSegments);
 
-DispatcherInfo NOELLE_HELIX_dispatcher_criticalSections(
+DispatcherInfo GINO_HELIX_dispatcher_criticalSections(
     void (*parallelizedLoop)(void *,
                              void *,
                              void *,
@@ -156,11 +156,11 @@ DispatcherInfo NOELLE_HELIX_dispatcher_criticalSections(
     int64_t numCores,
     int64_t numOfsequentialSegments);
 
-DispatcherInfo NOELLE_DSWPDispatcher(void *env,
-                                     int64_t *queueSizes,
-                                     void *stages,
-                                     int64_t numberOfStages,
-                                     int64_t numberOfQueues);
+DispatcherInfo GINO_DSWPDispatcher(void *env,
+                                   int64_t *queueSizes,
+                                   void *stages,
+                                   int64_t numberOfStages,
+                                   int64_t numberOfQueues);
 
 /******************************************* Utils ********************/
 #ifdef RUNTIME_PROFILE
@@ -178,7 +178,7 @@ static __inline__ int64_t rdtsc_e(void) {
 }
 #endif
 
-/************************************* NOELLE API implementations ***/
+/************************************* GINO API implementations ***/
 typedef void (*stageFunctionPtr_t)(void *, void *);
 
 void printReachedS(std::string s) {
@@ -260,7 +260,7 @@ void queuePop64(ThreadSafeQueue<int64_t> *queue, int64_t *val) {
 /**********************************************************************
  *                DOALL
  **********************************************************************/
-static void NOELLE_DOALLTrampoline(void *args) {
+static void GINO_DOALLTrampoline(void *args) {
 #ifdef RUNTIME_PROFILE
   auto clocks_start = rdtsc_s();
 #endif
@@ -287,7 +287,7 @@ static void NOELLE_DOALLTrampoline(void *args) {
   return;
 }
 
-DispatcherInfo NOELLE_DOALLDispatcher(
+DispatcherInfo GINO_DOALLDispatcher(
     void (*parallelizedLoop)(void *, int64_t, int64_t, int64_t),
     void *env,
     int64_t maxNumberOfCores,
@@ -339,7 +339,7 @@ DispatcherInfo NOELLE_DOALLDispatcher(
     /*
      * Submit
      */
-    virgil->submitAndDetach(NOELLE_DOALLTrampoline, argsPerCore);
+    virgil->submitAndDetach(GINO_DOALLTrampoline, argsPerCore);
 
 #ifdef RUNTIME_PROFILE
     clocks_dispatch_ends[i] = rdtsc_s();
@@ -467,14 +467,14 @@ typedef struct {
   uint64_t numCores;
   uint64_t *loopIsOverFlag;
   pthread_spinlock_t endLock;
-} NOELLE_HELIX_args_t;
+} GINO_HELIX_args_t;
 
-static void NOELLE_HELIXTrampoline(void *args) {
+static void GINO_HELIXTrampoline(void *args) {
 
   /*
    * Fetch the arguments.
    */
-  auto HELIX_args = (NOELLE_HELIX_args_t *)args;
+  auto HELIX_args = (GINO_HELIX_args_t *)args;
 
   /*
    * Invoke
@@ -520,7 +520,7 @@ static void HELIX_helperThread(void *ssArray,
   return;
 }
 
-static DispatcherInfo NOELLE_HELIX_dispatcher(
+static DispatcherInfo GINO_HELIX_dispatcher(
     void (*parallelizedLoop)(void *,
                              void *,
                              void *,
@@ -624,10 +624,10 @@ static DispatcherInfo NOELLE_HELIX_dispatcher(
   /*
    * Allocate the arguments for the cores.
    */
-  NOELLE_HELIX_args_t *argsForAllCores;
+  GINO_HELIX_args_t *argsForAllCores;
   posix_memalign((void **)&argsForAllCores,
                  CACHE_LINE_SIZE,
-                 sizeof(NOELLE_HELIX_args_t) * (numCores - 1));
+                 sizeof(GINO_HELIX_args_t) * (numCores - 1));
 
   /*
    * Launch threads
@@ -691,7 +691,7 @@ static DispatcherInfo NOELLE_HELIX_dispatcher(
     /*
      * Launch the thread.
      */
-    virgil->submitAndDetach(NOELLE_HELIXTrampoline, argsPerCore);
+    virgil->submitAndDetach(GINO_HELIXTrampoline, argsPerCore);
 
     /*
      * Launch the helper thread.
@@ -765,7 +765,7 @@ static DispatcherInfo NOELLE_HELIX_dispatcher(
   return dispatcherInfo;
 }
 
-DispatcherInfo NOELLE_HELIX_dispatcher_sequentialSegments(
+DispatcherInfo GINO_HELIX_dispatcher_sequentialSegments(
     void (*parallelizedLoop)(void *,
                              void *,
                              void *,
@@ -777,15 +777,15 @@ DispatcherInfo NOELLE_HELIX_dispatcher_sequentialSegments(
     void *loopCarriedArray,
     int64_t numCores,
     int64_t numOfsequentialSegments) {
-  return NOELLE_HELIX_dispatcher(parallelizedLoop,
-                                 env,
-                                 loopCarriedArray,
-                                 numCores,
-                                 numOfsequentialSegments,
-                                 true);
+  return GINO_HELIX_dispatcher(parallelizedLoop,
+                               env,
+                               loopCarriedArray,
+                               numCores,
+                               numOfsequentialSegments,
+                               true);
 }
 
-DispatcherInfo NOELLE_HELIX_dispatcher_criticalSections(
+DispatcherInfo GINO_HELIX_dispatcher_criticalSections(
     void (*parallelizedLoop)(void *,
                              void *,
                              void *,
@@ -797,12 +797,12 @@ DispatcherInfo NOELLE_HELIX_dispatcher_criticalSections(
     void *loopCarriedArray,
     int64_t numCores,
     int64_t numOfsequentialSegments) {
-  return NOELLE_HELIX_dispatcher(parallelizedLoop,
-                                 env,
-                                 loopCarriedArray,
-                                 numCores,
-                                 numOfsequentialSegments,
-                                 false);
+  return GINO_HELIX_dispatcher(parallelizedLoop,
+                               env,
+                               loopCarriedArray,
+                               numCores,
+                               numOfsequentialSegments,
+                               false);
 }
 
 void HELIX_wait(void *sequentialSegment) {
@@ -873,18 +873,18 @@ typedef struct {
   void *env;
   void *localQueues;
   pthread_mutex_t endLock;
-} NOELLE_DSWP_args_t;
+} GINO_DSWP_args_t;
 
 void stageExecuter(void (*stage)(void *, void *), void *env, void *queues) {
   return stage(env, queues);
 }
 
-static void NOELLE_DSWPTrampoline(void *args) {
+static void GINO_DSWPTrampoline(void *args) {
 
   /*
    * Fetch the arguments.
    */
-  auto DSWPArgs = (NOELLE_DSWP_args_t *)args;
+  auto DSWPArgs = (GINO_DSWP_args_t *)args;
 
   /*
    * Invoke
@@ -895,11 +895,11 @@ static void NOELLE_DSWPTrampoline(void *args) {
   return;
 }
 
-DispatcherInfo NOELLE_DSWPDispatcher(void *env,
-                                     int64_t *queueSizes,
-                                     void *stages,
-                                     int64_t numberOfStages,
-                                     int64_t numberOfQueues) {
+DispatcherInfo GINO_DSWPDispatcher(void *env,
+                                   int64_t *queueSizes,
+                                   void *stages,
+                                   int64_t numberOfStages,
+                                   int64_t numberOfQueues) {
 #ifdef RUNTIME_PRINT
   std::cerr << "Starting dispatcher: num stages " << numberOfStages
             << ", num queues: " << numberOfQueues << std::endl;
@@ -938,7 +938,7 @@ DispatcherInfo NOELLE_DSWPDispatcher(void *env,
         localQueues[i] = new ThreadSafeLockFreeQueue<int64_t>();
         break;
       default:
-        std::cerr << "NOELLE: Runtime: QUEUE SIZE INCORRECT" << std::endl;
+        std::cerr << "GINO: Runtime: QUEUE SIZE INCORRECT" << std::endl;
         abort();
         break;
     }
@@ -951,7 +951,7 @@ DispatcherInfo NOELLE_DSWPDispatcher(void *env,
    * Allocate the memory to store the arguments.
    */
   auto argsForAllCores =
-      (NOELLE_DSWP_args_t *)malloc(sizeof(NOELLE_DSWP_args_t) * numberOfStages);
+      (GINO_DSWP_args_t *)malloc(sizeof(GINO_DSWP_args_t) * numberOfStages);
 
   /*
    * Submit DSWP tasks
@@ -973,7 +973,7 @@ DispatcherInfo NOELLE_DSWPDispatcher(void *env,
     /*
      * Submit
      */
-    virgil->submitAndDetach(NOELLE_DSWPTrampoline, argsPerCore);
+    virgil->submitAndDetach(GINO_DSWPTrampoline, argsPerCore);
 #ifdef RUNTIME_PRINT
     std::cerr << "Submitted stage" << std::endl;
 #endif
@@ -1036,9 +1036,9 @@ uint32_t NOELLE_getAvailableCores(void) {
 }
 }
 
-NoelleRuntime::NoelleRuntime() {
+GinoRuntime::GinoRuntime() {
   this->maxCores = this->getMaximumNumberOfCores();
-  this->NOELLE_idleCores = maxCores;
+  this->GINO_idleCores = maxCores;
 
   pthread_spin_init(&this->spinLock, 0);
   pthread_spin_init(&this->doallMemoryLock, 0);
@@ -1054,7 +1054,7 @@ NoelleRuntime::NoelleRuntime() {
   return;
 }
 
-DOALL_args_t *NoelleRuntime::getDOALLArgs(uint32_t cores, uint32_t *index) {
+DOALL_args_t *GinoRuntime::getDOALLArgs(uint32_t cores, uint32_t *index) {
   DOALL_args_t *argsForAllCores = nullptr;
 
   /*
@@ -1113,38 +1113,38 @@ DOALL_args_t *NoelleRuntime::getDOALLArgs(uint32_t cores, uint32_t *index) {
   return argsForAllCores;
 }
 
-void NoelleRuntime::releaseDOALLArgs(uint32_t index) {
+void GinoRuntime::releaseDOALLArgs(uint32_t index) {
   pthread_spin_lock(&this->doallMemoryLock);
   this->doallMemoryAvailability[index] = true;
   pthread_spin_unlock(&this->doallMemoryLock);
   return;
 }
 
-uint32_t NoelleRuntime::reserveCores(uint32_t coresRequested) {
+uint32_t GinoRuntime::reserveCores(uint32_t coresRequested) {
 
   /*
    * Reserve the number of cores available.
    */
   pthread_spin_lock(&this->spinLock);
-  auto numCores = (this->NOELLE_idleCores >= coresRequested) ? coresRequested
-                                                             : NOELLE_idleCores;
+  auto numCores = (this->GINO_idleCores >= coresRequested) ? coresRequested
+                                                           : GINO_idleCores;
   if (numCores < 1) {
     numCores = 1;
   }
-  this->NOELLE_idleCores -= numCores;
+  this->GINO_idleCores -= numCores;
   pthread_spin_unlock(&this->spinLock);
 
   return numCores;
 }
 
-void NoelleRuntime::releaseCores(uint32_t coresReleased) {
+void GinoRuntime::releaseCores(uint32_t coresReleased) {
   assert(coresReleased > 0);
 
   pthread_spin_lock(&this->spinLock);
-  this->NOELLE_idleCores += coresReleased;
+  this->GINO_idleCores += coresReleased;
 #ifdef DEBUG
-  if (this->NOELLE_idleCores >= 0) {
-    assert(this->NOELLE_idleCores <= ((uint32_t)this->maxCores));
+  if (this->GINO_idleCores >= 0) {
+    assert(this->GINO_idleCores <= ((uint32_t)this->maxCores));
   }
 #endif
   pthread_spin_unlock(&this->spinLock);
@@ -1152,7 +1152,7 @@ void NoelleRuntime::releaseCores(uint32_t coresReleased) {
   return;
 }
 
-uint32_t NoelleRuntime::getMaximumNumberOfCores(void) {
+uint32_t GinoRuntime::getMaximumNumberOfCores(void) {
   static int cores = 0;
 
   /*
@@ -1163,7 +1163,7 @@ uint32_t NoelleRuntime::getMaximumNumberOfCores(void) {
     /*
      * Compute the number of cores.
      */
-    auto envVar = getenv("NOELLE_CORES");
+    auto envVar = getenv("GINO_CORES");
     if (envVar == nullptr) {
       cores = (std::thread::hardware_concurrency() / 2);
     } else {
@@ -1174,12 +1174,12 @@ uint32_t NoelleRuntime::getMaximumNumberOfCores(void) {
   return cores;
 }
 
-uint32_t NoelleRuntime::getAvailableCores(void) {
+uint32_t GinoRuntime::getAvailableCores(void) {
 
   /*
    * Get the number of cores available.
    */
-  auto numCores = this->NOELLE_idleCores;
+  auto numCores = this->GINO_idleCores;
   if (numCores < 1) {
     numCores = 1;
   }
@@ -1187,6 +1187,6 @@ uint32_t NoelleRuntime::getAvailableCores(void) {
   return numCores;
 }
 
-NoelleRuntime::~NoelleRuntime(void) {
+GinoRuntime::~GinoRuntime(void) {
   delete this->virgil;
 }

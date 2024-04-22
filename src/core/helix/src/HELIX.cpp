@@ -43,10 +43,10 @@ HELIX::HELIX(Noelle &n, bool forceParallelization)
    * Fetch the dispatcher to use to jump to a parallelized HELIX loop.
    */
   this->taskDispatcherSS =
-      program->getFunction("NOELLE_HELIX_dispatcher_sequentialSegments");
+      program->getFunction("GINO_HELIX_dispatcher_sequentialSegments");
   assert(this->taskDispatcherSS != nullptr);
   this->taskDispatcherCS =
-      program->getFunction("NOELLE_HELIX_dispatcher_criticalSections");
+      program->getFunction("GINO_HELIX_dispatcher_criticalSections");
   assert(this->taskDispatcherCS != nullptr);
   this->waitSSCall = program->getFunction("HELIX_wait");
   this->signalSSCall = program->getFunction("HELIX_signal");

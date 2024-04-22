@@ -5,7 +5,7 @@ typedef struct {
   int64_t unusedVariableToPreventOptIfStructHasOnlyOneVariable;
 } DispatcherInfo;
 
-extern DispatcherInfo NOELLE_DOALLDispatcher(
+extern DispatcherInfo GINO_DOALLDispatcher(
     void (*parallelizedLoop)(void *, int64_t, int64_t, int64_t),
     void *env,
     int64_t maxNumberOfCores,
@@ -22,15 +22,15 @@ extern void queuePop32(void *, int32_t *);
 extern void queuePop64(void *, int64_t *);
 
 extern void stageExecuter(void (*stage)(void *, void *), void *, void *);
-extern DispatcherInfo NOELLE_DSWPDispatcher(void *env,
-                                            int64_t *queueSizes,
-                                            void *stages,
-                                            int64_t numberOfStages,
-                                            int64_t numberOfQueues);
+extern DispatcherInfo GINO_DSWPDispatcher(void *env,
+                                          int64_t *queueSizes,
+                                          void *stages,
+                                          int64_t numberOfStages,
+                                          int64_t numberOfQueues);
 
 extern void HELIX_wait(void *);
 extern void HELIX_signal(void *);
-extern DispatcherInfo NOELLE_HELIX_dispatcher_criticalSections(
+extern DispatcherInfo GINO_HELIX_dispatcher_criticalSections(
     void (*parallelizedLoop)(void *,
                              void *,
                              void *,
@@ -43,7 +43,7 @@ extern DispatcherInfo NOELLE_HELIX_dispatcher_criticalSections(
     int64_t numCores,
     int64_t numOfsequentialSegments);
 
-extern DispatcherInfo NOELLE_HELIX_dispatcher_sequentialSegments(
+extern DispatcherInfo GINO_HELIX_dispatcher_sequentialSegments(
     void (*parallelizedLoop)(void *,
                              void *,
                              void *,
@@ -70,16 +70,16 @@ void SIMONE_CAMPANONI_IS_GOING_TO_REMOVE_THIS_FUNCTION(void) {
   queuePop64(0, 0);
 
   stageExecuter(0, 0, 0);
-  NOELLE_DSWPDispatcher(0, 0, 0, 0, 0);
+  GINO_DSWPDispatcher(0, 0, 0, 0, 0);
 
-  NOELLE_HELIX_dispatcher_criticalSections(0, 0, 0, 0, 0);
-  NOELLE_HELIX_dispatcher_sequentialSegments(0, 0, 0, 0, 0);
+  GINO_HELIX_dispatcher_criticalSections(0, 0, 0, 0, 0);
+  GINO_HELIX_dispatcher_sequentialSegments(0, 0, 0, 0, 0);
   HELIX_wait(0);
   HELIX_signal(0);
 
   int s;
   rand_r(&s);
-  NOELLE_DOALLDispatcher(0, 0, 0, 0);
+  GINO_DOALLDispatcher(0, 0, 0, 0);
 
   NOELLE_getAvailableCores();
 }
