@@ -53,11 +53,10 @@ bool PlanInfo::runOnModule(Module &M) {
   for (auto tree : forest->getTrees()) {
     auto collector = [&](LoopTree *n, uint32_t treeLevel) -> bool {
       auto LS = n->getLoop();
-      if (!mm->doesHaveMetadata(LS, "noelle.parallelizer.looporder")) {
+      if (!mm->doesHaveMetadata(LS, "gino.looporder")) {
         return false;
       }
-      auto order =
-          std::stoi(mm->getMetadata(LS, "noelle.parallelizer.looporder"));
+      auto order = std::stoi(mm->getMetadata(LS, "gino.looporder"));
       auto optimizations = { LoopContentOptimization::MEMORY_CLONING_ID,
                              LoopContentOptimization::THREAD_SAFE_LIBRARY_ID };
       auto LC = noelle.getLoopContent(LS, optimizations);

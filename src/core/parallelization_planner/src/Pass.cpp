@@ -120,9 +120,7 @@ bool Planner::runOnModule(Module &M) {
       auto ls = ldi->getLoopStructure();
       auto ldiParallelizationOrderIndex =
           std::to_string(parallelizationOrderIndex++);
-      mm->addMetadata(ls,
-                      "noelle.parallelizer.looporder",
-                      ldiParallelizationOrderIndex);
+      mm->addMetadata(ls, "gino.looporder", ldiParallelizationOrderIndex);
       modified = true;
     }
 
