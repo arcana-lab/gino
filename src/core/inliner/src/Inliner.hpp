@@ -55,7 +55,10 @@ private:
   bool inlineCallsInvolvedInLoopCarriedDataDependences(Noelle &noelle,
                                                        SCCCAG *pcg);
   bool inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
-      Function *F, LoopContent *LDI, SCCCAG *pcg, Noelle &noelle);
+      Function *F,
+      LoopContent *LDI,
+      SCCCAG *pcg,
+      Noelle &noelle);
 
   void getFunctionsToInline(std::string filename);
 

@@ -26,11 +26,15 @@
 namespace arcana::gino {
 
 DSWP::DSWP(Noelle &n, bool forceParallelization, bool enableSCCMerging)
-    : ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences{n,
-                                                                     forceParallelization},
-      minCores{0}, enableMergingSCC{enableSCCMerging}, queues{},
-      queueArrayType{nullptr}, sccToStage{}, stageArrayType{nullptr},
-      zeroIndexForBaseArray{nullptr} {
+  : ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences{ n,
+                                                                    forceParallelization },
+    minCores{ 0 },
+    enableMergingSCC{ enableSCCMerging },
+    queues{},
+    queueArrayType{ nullptr },
+    sccToStage{},
+    stageArrayType{ nullptr },
+    zeroIndexForBaseArray{ nullptr } {
 
   /*
    * Fetch the function that dispatch the parallelized loop.
@@ -162,9 +166,9 @@ bool DSWP::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
     errs()
         << "Parallelizer:    Loop " << loopID << " has " << averageInstructions
         << " number of sequential instructions on average per loop iteration\n";
-    errs() << "Parallelizer:    Loop " << loopID << " has "
-           << sequentialFraction
-           << " % sequential execution per loop iteration\n";
+    errs()
+        << "Parallelizer:    Loop " << loopID << " has " << sequentialFraction
+        << " % sequential execution per loop iteration\n";
     errs() << "Parallelizer:      It will not be partitioned enough for DSWP. "
               "The thresholds are at least "
            << averageInstructionThreshold
@@ -218,8 +222,8 @@ bool DSWP::apply(LoopContent *LDI, Heuristics *h) {
   /*
    * Check if the parallelization is worth it.
    */
-  if (!this->forceParallelization &&
-      this->partitioner->numberOfPartitions() == 1) {
+  if (!this->forceParallelization
+      && this->partitioner->numberOfPartitions() == 1) {
 
     /*
      * The parallelization isn't worth it as there is only one pipeline stage.
@@ -407,7 +411,9 @@ uint32_t DSWP::getMinimumNumberOfIdleCores(void) const {
   return this->minCores;
 }
 
-std::string DSWP::getName(void) const { return "DSWP"; }
+std::string DSWP::getName(void) const {
+  return "DSWP";
+}
 
 Transformation DSWP::getParallelizationID(void) const {
   return Transformation::DSWP_ID;
