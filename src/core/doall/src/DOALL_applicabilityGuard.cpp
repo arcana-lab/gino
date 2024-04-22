@@ -28,7 +28,6 @@ bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
   if (this->verbose != Verbosity::Disabled) {
     auto mm = this->n.getMetadataManager();
     auto LS = LDI->getLoopStructure();
-    assert(mm->doesHaveMetadata(LS, "noelle.parallelizer.looporder"));
     auto LO = mm->getMetadata(LS, "noelle.parallelizer.looporder");
     errs() << "DOALL: Checking if the loop is DOALL ";
     errs() << "(";
