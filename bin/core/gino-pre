@@ -55,7 +55,7 @@ noelle-simplification $notOptions -o $notOptions
 gino-io $notOptions
 
 # inline functions
-gino-inline $notOptions "-noelle-inliner-verbose=1 $options"
+gino-inline $notOptions "-gino-inliner-verbose=1 $options"
 
 # normalize the code
 noelle-simplification $notOptions -o $notOptions

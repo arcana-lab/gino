@@ -105,9 +105,9 @@ test_correctness: input.txt baseline $(OPTIMIZED)
 
 clean:
 	rm -f *.bc *.dot *.jpg *.ll *.S *.s *.o baseline $(OPTIMIZED) $(OPTIMIZED_AUTOTUNED) *.prof *.profraw *prof .*.dot
-	rm -f time_parallelized.txt compiler_output.txt input.txt ;
-	rm -f output*.txt ;
-	rm -f OUT ;
-	rm -rf binaryToRun baselineTime.txt executionTime.txt exploredConfs.json opentuner.db opentuner.log ;
+	rm -f time_parallelized.txt compiler_output.txt
+	rm -f output*.txt
+	rm -f OUT
+	rm -rf binaryToRun baselineTime.txt executionTime.txt exploredConfs.json opentuner.db opentuner.log
 
 .PHONY: test_correctness clean

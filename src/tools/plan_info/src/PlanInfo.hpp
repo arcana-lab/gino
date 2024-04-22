@@ -22,6 +22,7 @@
 #ifndef NOELLE_SRC_TOOLS_PARALLELIZER_PLAN_INFO_PLANINFO_H_
 #define NOELLE_SRC_TOOLS_PARALLELIZER_PLAN_INFO_PLANINFO_H_
 
+#include <string>
 #include "noelle/core/Noelle.hpp"
 
 using namespace arcana::noelle;
@@ -42,6 +43,7 @@ public:
 
 private:
   std::vector<int> printHeaders;
+  std::string prefix;
 };
 
 } // namespace arcana::gino

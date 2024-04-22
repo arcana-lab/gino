@@ -43,7 +43,7 @@ void PlanInfo::getAnalysisUsage(AnalysisUsage &AU) const {
 
 // Next there is code to register your pass to "opt"
 char PlanInfo::ID = 0;
-static RegisterPass<PlanInfo> X("ParallelizerPlanInfo",
+static RegisterPass<PlanInfo> X("PlanInfo",
                                 "Print information about a parallel plan");
 
 // Next there is code to register your pass to "clang"

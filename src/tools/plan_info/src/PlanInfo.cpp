@@ -24,7 +24,7 @@
 
 namespace arcana::gino {
 
-PlanInfo::PlanInfo() : ModulePass{ ID } {
+PlanInfo::PlanInfo() : ModulePass{ ID }, prefix{ "PlanInfo: " } {
   return;
 }
 
@@ -32,16 +32,15 @@ bool PlanInfo::runOnModule(Module &M) {
   auto &noelle = getAnalysis<Noelle>();
   auto verbosity = noelle.getVerbosity();
 
-  errs() << "Parallelizer: PlanInfo: Start\n";
   /*
    * Fetch all the loops we want to parallelize.
    */
   auto forest = noelle.getLoopNestingForest();
   if (forest->getNumberOfLoops() == 0) {
-    errs() << "Parallelizer: PlanInfo:    There is no loop to consider\n";
+    errs() << this->prefix << "There is no loop to consider\n";
     delete forest;
 
-    errs() << "Parallelizer: PlanInfo: Exit\n";
+    errs() << this->prefix << "Exit\n";
     return false;
   }
 
@@ -66,10 +65,11 @@ bool PlanInfo::runOnModule(Module &M) {
     tree->visitPreOrder(collector);
   }
 
-  errs() << "Parallelizer: PlanInfo: Number of loops: "
-         << forest->getNumberOfLoops() << "\n";
-  errs() << "Parallelizer: PlanInfo: Number of loops with a parallel plan: "
-         << order2LoopContent.size() << "\n";
+  errs() << this->prefix << "Number of loops: " << forest->getNumberOfLoops()
+         << "\n";
+  errs() << this->prefix
+         << "Number of loops with a parallel plan: " << order2LoopContent.size()
+         << "\n";
 
   const auto shouldPrint = [&](int order) {
     const auto &PH = this->printHeaders;
@@ -81,10 +81,10 @@ bool PlanInfo::runOnModule(Module &M) {
 
   for (const auto &[order, LC] : order2LoopContent) {
     if (printAll || shouldPrint(order)) {
-      errs() << "Parallelizer: PlanInfo:    Loop order: " << order << "\n";
+      errs() << this->prefix << "Loop order: " << order << "\n";
       auto LS = LC->getLoopStructure();
-      errs() << "Parallelizer: PlanInfo:    Function name: "
-             << LS->getFunction()->getName().str() << "\n";
+      errs() << this->prefix
+             << "Function name: " << LS->getFunction()->getName().str() << "\n";
       errs() << *LS->getHeader() << "\n";
     }
   }

@@ -9,10 +9,10 @@ if test $# -lt 1 ; then
   echo
   echo "IR_FILE                     Input bitcode with an embedded parallel plan."
   echo
-  echo "--info-print-headers        Print the headers of some loops."
+  echo "--info-print-headers        Comma separated values. Print the headers of some loops."
   exit 1
 fi
 
 installDir=$(gino-config --prefix)
 
-gino-load -load $installDir/lib/ParallelizerPlanInfo.so -ParallelizerPlanInfo -noelle-verbose=0 -disable-output $@
+gino-load -load $installDir/lib/PlanInfo.so -PlanInfo -disable-output $@
