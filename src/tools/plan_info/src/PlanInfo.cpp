@@ -21,6 +21,7 @@
  */
 
 #include "PlanInfo.hpp"
+#include "noelle/core/LoopStructure.hpp"
 
 namespace arcana::gino {
 
@@ -48,7 +49,8 @@ bool PlanInfo::runOnModule(Module &M) {
    * Collecting loops with a parallel plan
    */
   auto mm = noelle.getMetadataManager();
-  std::map<int, LoopContent *> order2LoopContent;
+  std::map<int, LoopStructure *> order2LS;
+
   for (auto tree : forest->getTrees()) {
     auto collector = [&](LoopTree *n, uint32_t treeLevel) -> bool {
       auto LS = n->getLoop();
@@ -56,10 +58,7 @@ bool PlanInfo::runOnModule(Module &M) {
         return false;
       }
       auto order = std::stoi(mm->getMetadata(LS, "gino.looporder"));
-      auto optimizations = { LoopContentOptimization::MEMORY_CLONING_ID,
-                             LoopContentOptimization::THREAD_SAFE_LIBRARY_ID };
-      auto LC = noelle.getLoopContent(LS, optimizations);
-      order2LoopContent[order] = LC;
+      order2LS[order] = LS;
       return false;
     };
     tree->visitPreOrder(collector);
@@ -68,8 +67,7 @@ bool PlanInfo::runOnModule(Module &M) {
   errs() << this->prefix << "Number of loops: " << forest->getNumberOfLoops()
          << "\n";
   errs() << this->prefix
-         << "Number of loops with a parallel plan: " << order2LoopContent.size()
-         << "\n";
+         << "Number of loops with a parallel plan: " << order2LS.size() << "\n";
 
   const auto shouldPrint = [&](int order) {
     const auto &PH = this->printHeaders;
@@ -79,12 +77,12 @@ bool PlanInfo::runOnModule(Module &M) {
   // If user didn't choose a subset we print all headers
   bool printAll = this->printHeaders.size() == 0;
 
-  for (const auto &[order, LC] : order2LoopContent) {
+  for (const auto &[order, LS] : order2LS) {
     if (printAll || shouldPrint(order)) {
-      errs() << this->prefix << "Loop order: " << order << "\n";
-      auto LS = LC->getLoopStructure();
-      errs() << this->prefix
-             << "Function name: " << LS->getFunction()->getName().str() << "\n";
+      errs() << this->prefix << "Loop order "
+             << "\e[1m" << order << "\e[0m";
+      errs() << " in function ";
+      errs() << "\e[0;32m" << LS->getFunction()->getName().str() << "\e[0m\n";
       errs() << *LS->getHeader() << "\n";
     }
   }

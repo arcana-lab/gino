@@ -15,4 +15,4 @@ fi
 
 installDir=$(gino-config --prefix)
 
-gino-load -load $installDir/lib/PlanInfo.so -PlanInfo -disable-output $@
+noelle-load -load $installDir/lib/PlanInfo.so -PlanInfo -disable-output $@
