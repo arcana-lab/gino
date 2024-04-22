@@ -95,7 +95,7 @@ void Parallelizer::getAnalysisUsage(AnalysisUsage &AU) const {
 // Next there is code to register your pass to "opt"
 char arcana::gino::Parallelizer::ID = 0;
 static RegisterPass<arcana::gino::Parallelizer> X(
-    "parallelizer",
+    "Parallelizer",
     "Automatic parallelization of sequential code");
 
 // Next there is code to register your pass to "clang"

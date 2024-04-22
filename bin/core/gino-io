@@ -3,4 +3,4 @@
 trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
 # set the command to execute
-gino-load -inputoutput $1 -o $1
+gino-load -InputOutput $1 -o $1

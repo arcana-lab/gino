@@ -57,7 +57,7 @@ void EnablersManager::getAnalysisUsage(AnalysisUsage &AU) const {
 // Next there is code to register your pass to "opt"
 char EnablersManager::ID = 0;
 static RegisterPass<EnablersManager> X(
-    "enablers",
+    "Enablers",
     "Transformations designed to enable automatic parallelization of sequential code",
     false,
     false);

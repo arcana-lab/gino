@@ -80,7 +80,7 @@ eval $cmd
 
 if [ "${generateSearchSpace}" != "0" ] ; then
   # Generate autotuner_space.info 
-  cmd="noelle-load -load ${installDir}/lib/AutotunerSearchSpace.so -autotunersearchspace ${inputbc} -disable-output"
+  cmd="noelle-load -load ${installDir}/lib/AutotunerSearchSpace.so -AutotunerSearchSpace ${inputbc} -disable-output"
   echo ${cmd}
   eval ${cmd}
 fi
@@ -93,7 +93,7 @@ fi
 
 if [ "${filterDOALLSearchSpace}" != "0" ] ; then
   # Adjust search space with DOALL only loops
-  cmd="gino-load -load ${installDir}/lib/AutotunerDoallFilter.so -autotunerdoallfilter ${inputbc} -disable-output"
+  cmd="gino-load -load ${installDir}/lib/AutotunerDoallFilter.so -AutotunerDoallFilter ${inputbc} -disable-output"
   echo ${cmd}
   eval ${cmd}
 fi

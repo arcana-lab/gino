@@ -173,7 +173,7 @@ void Planner::getAnalysisUsage(AnalysisUsage &AU) const {
 // Next there is code to register your pass to "opt"
 char arcana::gino::Planner::ID = 0;
 static RegisterPass<arcana::gino::Planner> X(
-    "planner",
+    "Planner",
     "Automatic parallelization planner");
 
 // Next there is code to register your pass to "clang"

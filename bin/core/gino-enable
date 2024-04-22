@@ -3,5 +3,5 @@
 trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
 echo "GINO: Enablers: Start"
-noelle-fixedpoint $1 $2 "gino-load" -enablers ${@:3}
+noelle-fixedpoint $1 $2 "gino-load" -Enablers ${@:3}
 echo "GINO: Enablers: Exit"

@@ -2,4 +2,4 @@
 
 trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
-gino-load -parallelizer $@
+gino-load -Parallelizer $@
