@@ -32,7 +32,7 @@ static cl::opt<bool> ForceParallelization(
     cl::Hidden,
     cl::desc("Force the parallelization"));
 static cl::opt<bool> ForceNoSCCPartition(
-    "dswp-no-scc-merge",
+    "gino-dswp-no-scc-merge",
     cl::ZeroOrMore,
     cl::Hidden,
     cl::desc("Force no SCC merging when parallelizing"));

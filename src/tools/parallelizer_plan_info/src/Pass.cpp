@@ -22,11 +22,6 @@
 
 #include "PlanInfo.hpp"
 
-static cl::opt<bool> PrintAllHeaders(
-    "info-print-all-headers",
-    cl::ZeroOrMore,
-    cl::Hidden,
-    cl::desc("Print the header of all loops with a parallel plan"));
 static cl::list<int> PrintHeaders(
     "info-print-headers",
     cl::ZeroOrMore,
@@ -37,7 +32,6 @@ static cl::list<int> PrintHeaders(
 namespace arcana::gino {
 
 bool PlanInfo::doInitialization(Module &M) {
-  this->printAllHeaders = PrintAllHeaders.getValue();
   this->printHeaders = PrintHeaders;
   return false;
 }

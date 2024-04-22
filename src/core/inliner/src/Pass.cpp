@@ -28,7 +28,7 @@ using namespace arcana::gino;
  * Options of the dependence graph simplifier pass.
  */
 static cl::opt<int> Verbose(
-    "noelle-inliner-verbose",
+    "gino-inliner-verbose",
     cl::ZeroOrMore,
     cl::Hidden,
     cl::desc("Verbose output (0: disabled, 1: minimal, 2: maximal"));

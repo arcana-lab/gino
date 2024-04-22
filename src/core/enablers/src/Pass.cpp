@@ -24,7 +24,7 @@
 
 namespace arcana::gino {
 
-static cl::opt<bool> DisableEnablers("noelle-disable-enablers",
+static cl::opt<bool> DisableEnablers("gino-disable-enablers",
                                      cl::ZeroOrMore,
                                      cl::Hidden,
                                      cl::desc("Disable all enablers"));

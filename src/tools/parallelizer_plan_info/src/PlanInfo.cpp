@@ -24,7 +24,7 @@
 
 namespace arcana::gino {
 
-PlanInfo::PlanInfo() : ModulePass{ ID }, printAllHeaders{ false } {
+PlanInfo::PlanInfo() : ModulePass{ ID } {
   return;
 }
 
@@ -49,19 +49,19 @@ bool PlanInfo::runOnModule(Module &M) {
    * Collecting loops with a parallel plan
    */
   auto mm = noelle.getMetadataManager();
-  std::map<int, LoopContent *> order2ldi;
+  std::map<int, LoopContent *> order2LoopContent;
   for (auto tree : forest->getTrees()) {
     auto collector = [&](LoopTree *n, uint32_t treeLevel) -> bool {
-      auto ls = n->getLoop();
-      if (!mm->doesHaveMetadata(ls, "noelle.parallelizer.looporder")) {
+      auto LS = n->getLoop();
+      if (!mm->doesHaveMetadata(LS, "noelle.parallelizer.looporder")) {
         return false;
       }
       auto order =
-          std::stoi(mm->getMetadata(ls, "noelle.parallelizer.looporder"));
+          std::stoi(mm->getMetadata(LS, "noelle.parallelizer.looporder"));
       auto optimizations = { LoopContentOptimization::MEMORY_CLONING_ID,
                              LoopContentOptimization::THREAD_SAFE_LIBRARY_ID };
-      auto ldi = noelle.getLoopContent(ls, optimizations);
-      order2ldi[order] = ldi;
+      auto LC = noelle.getLoopContent(LS, optimizations);
+      order2LoopContent[order] = LC;
       return false;
     };
     tree->visitPreOrder(collector);
@@ -70,20 +70,23 @@ bool PlanInfo::runOnModule(Module &M) {
   errs() << "Parallelizer: PlanInfo: Number of loops: "
          << forest->getNumberOfLoops() << "\n";
   errs() << "Parallelizer: PlanInfo: Number of loops with a parallel plan: "
-         << order2ldi.size() << "\n";
+         << order2LoopContent.size() << "\n";
 
   const auto shouldPrint = [&](int order) {
     const auto &PH = this->printHeaders;
     return std::find(PH.begin(), PH.end(), order) != std::end(PH);
   };
 
-  for (const auto &[order, ldi] : order2ldi) {
-    if (this->printAllHeaders || shouldPrint(order)) {
+  // If user didn't choose a subset we print all headers
+  bool printAll = this->printHeaders.size() == 0;
+
+  for (const auto &[order, LC] : order2LoopContent) {
+    if (printAll || shouldPrint(order)) {
       errs() << "Parallelizer: PlanInfo:    Loop order: " << order << "\n";
-      auto ls = ldi->getLoopStructure();
+      auto LS = LC->getLoopStructure();
       errs() << "Parallelizer: PlanInfo:    Function name: "
-             << ls->getFunction()->getName().str() << "\n";
-      errs() << *ls->getHeader() << "\n";
+             << LS->getFunction()->getName().str() << "\n";
+      errs() << *LS->getHeader() << "\n";
     }
   }
   errs() << "\n";

@@ -41,8 +41,6 @@ public:
   static char ID;
 
 private:
-  bool printAllHeaders;
-
   std::vector<int> printHeaders;
 };
 

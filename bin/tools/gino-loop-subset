@@ -104,8 +104,8 @@ outputName="parallelized.loop.subset.${listName}.${loops}"
 #
 gino-loops $inputBC \
   -o ${outputName}.bc \
-  -noelle-loops-${listName}-list="\"$list\"" \
-  -noelle-parallelizer-force \
+  -gino-loops-${listName}-list="\"$list\"" \
+  -gino-parallelizer-force \
   -alloc-aa-verbose=1 \
   > ${outputName}.log 2>&1
 

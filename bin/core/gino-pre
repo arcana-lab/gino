@@ -14,22 +14,22 @@ for var in "$@" ; do
   if [[ $var == -* ]] ; then
 
     # handle custom options
-    if [[ $var == "-noelle-disable-privatizer" ]] ; then
+    if [[ $var == "-gino-disable-privatizer" ]] ; then
       enablePrivatizer="0"
       continue
     fi
 
-    if [[ $var == "-noelle-disable-enablers" ]] ; then
+    if [[ $var == "-gino-disable-enablers" ]] ; then
       enableEnablers="0"
       continue
     fi
 
-    if [[ $var == "-noelle-disable-dead" ]] ; then
+    if [[ $var == "-gino-disable-dead" ]] ; then
       enableDead="0"
       continue
     fi
 
-    if [[ $var == -noelle-parallelizer-* ]] ; then
+    if [[ $var == -gino-parallelizer-* ]] ; then
       # skip all parallelizer-specific options
       continue
     fi
