@@ -19,14 +19,13 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "arcana/gino/core/DOALL.hpp"
 #include "Inliner.hpp"
+#include "arcana/gino/core/DOALL.hpp"
 
 namespace arcana::gino {
 
-bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependences(
-    Noelle &noelle,
-    noelle::CallGraph *pcg) {
+bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependences(Noelle &noelle,
+                                                              SCCCAG *pcg) {
   auto anyInlined = false;
 
   /*
@@ -98,9 +97,9 @@ bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependences(
        * always takes priority and we don't parallelize nested loops at the
        * moment.
        */
-      DOALL doall{ noelle };
-      if ((summaryNode->getNumberOfSubLoops() >= 1)
-          && doall.canBeAppliedToLoop(LDI, nullptr)) {
+      DOALL doall{noelle};
+      if ((summaryNode->getNumberOfSubLoops() >= 1) &&
+          doall.canBeAppliedToLoop(LDI, nullptr)) {
 
         /*
          * The loop is a doall.
@@ -111,8 +110,8 @@ bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependences(
           /*
            * Check if the sub-loop is enabled.
            */
-          if (std::find(toCheck.begin(), toCheck.end(), &child)
-              == toCheck.end()) {
+          if (std::find(toCheck.begin(), toCheck.end(), &child) ==
+              toCheck.end()) {
             return false;
           }
 
@@ -135,10 +134,7 @@ bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependences(
        */
       auto inlinedCall =
           this->inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
-              F,
-              LDI,
-              pcg,
-              noelle);
+              F, LDI, pcg, noelle);
       inlined |= inlinedCall;
       if (inlined) {
         break;
@@ -179,10 +175,7 @@ bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependences(
  * most memory edges to other internal/external values
  */
 bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
-    Function *F,
-    LoopContent *LDI,
-    noelle::CallGraph *pcg,
-    Noelle &noelle) {
+    Function *F, LoopContent *LDI, SCCCAG *pcg, Noelle &noelle) {
   assert(pcg != nullptr);
   assert(LDI != nullptr);
 
@@ -296,7 +289,7 @@ bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
        * Do not consider inlining calls that are in a cycle within the program
        * call graph.
        */
-      if (pcg->doesItBelongToASCC(callF)) {
+      if (pcg->doesItBelongToAnSCC(callF)) {
         continue;
       }
 
@@ -324,9 +317,9 @@ bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
        * current loop size.
        */
       numberOfFunctionCallsToInline++;
-      if ((memEdgeCount > maxMemEdges)
-          && (hot->getStaticInstructions(callF)
-              < hot->getStaticInstructions(loopStructure))) {
+      if ((memEdgeCount > maxMemEdges) &&
+          (hot->getStaticInstructions(callF) <
+           hot->getStaticInstructions(loopStructure))) {
         maxMemEdges = memEdgeCount;
         inlineCall = call;
       }
@@ -348,13 +341,13 @@ bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
    * Check if there are too many loop-carried data dependences related to
    * function calls.
    */
-  if (numberOfFunctionCallsToInline
-      >= this->maxNumberOfFunctionCallsToInlinePerLoop) {
-    errs()
-        << "Inliner:   The loop "
-        << *loopStructure->getHeader()->getFirstNonPHI()
-        << " has too many function calls involved in loop-carried data dependences (there are "
-        << numberOfFunctionCallsToInline << ")\n";
+  if (numberOfFunctionCallsToInline >=
+      this->maxNumberOfFunctionCallsToInlinePerLoop) {
+    errs() << "Inliner:   The loop "
+           << *loopStructure->getHeader()->getFirstNonPHI()
+           << " has too many function calls involved in loop-carried data "
+              "dependences (there are "
+           << numberOfFunctionCallsToInline << ")\n";
     return false;
   }
 

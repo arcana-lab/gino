@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+# Fetch the installation directories
 SOURCE=${BASH_SOURCE[0]}
 while [ -L "${SOURCE}" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR=$( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd )
@@ -8,6 +9,7 @@ while [ -L "${SOURCE}" ]; do # resolve $SOURCE until the file is no longer a sym
   [[ ${SOURCE} != /* ]] && SOURCE=$DIR/$SOURCE 
 done
 installDir=$(realpath $( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd )/..)
+noelleInstallDir="`noelle-config --prefix`" ;
 
 # Parse arguments
 for arg in "$@"; do
@@ -116,10 +118,10 @@ export autotunerLIBS="${libs}" ;
 export INDEX_FILE="${autotunerConf}" ;
 
 # Setup python virtualEnv
-source ${installDir}/autotuner/source-me-to-setup-python-virtual-environment ;
+source ${noelleInstallDir}/autotuner/source-me-to-setup-python-virtual-environment ;
 
 # Compile and run baseline
-cmd="python ${installDir}/autotuner/utils/compileAndRunBaseline.py" ;
+cmd="python ${noelleInstallDir}/autotuner/utils/compileAndRunBaseline.py" ;
 echo ${cmd} ;
 eval ${cmd} ;
 
@@ -127,7 +129,7 @@ if [ "${filterDOALLtimeSearchSpace}" != "0" ] && [ "${filterDOALLSearchSpace}" !
   # Filter search space by trying to parallelize DOALL loops one by one
   # if they don't speedup compared to the baseline, then disable them
   # (note: modifies autotuner_space.info)
-  cmd="python ${installDir}/autotuner/scripts/filter.py" ;
+  cmd="python ${noelleInstallDir}/autotuner/scripts/filter.py" ;
   echo ${cmd} ;
   eval ${cmd} ;
 fi
@@ -141,7 +143,7 @@ if [ -s ${autotunerSpace} ] ; then
   echo `cat ${autotunerSpace}` ;
 
   # Set the command to execute
-  cmd="python ${installDir}/autotuner/src/autotuner.py --no-dups --parallelism=1" ;
+  cmd="python ${noelleInstallDir}/autotuner/src/autotuner.py --no-dups --parallelism=1" ;
 
   # Get autotuner time limit
   if [ "${autotunerTime}" != "" ] ; then
@@ -164,7 +166,7 @@ if [ -s ${autotunerSpace} ] ; then
       exit 1 ;
     fi
 
-    autotunerPathToSeedConf="`python ${installDir}/autotuner/utils/genSeedConf.py ${autotunerSeedConf}`" ;
+    autotunerPathToSeedConf="`python ${noelleInstallDir}/autotuner/utils/genSeedConf.py ${autotunerSeedConf}`" ;
     cmd="${cmd} --seed-configuration=${autotunerPathToSeedConf}" ;
   fi
 

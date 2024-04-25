@@ -53,9 +53,9 @@ private:
   void getLoopsToInline(Noelle &noelle, Hot *profiles);
   bool registerRemainingLoops(std::string filename);
   bool inlineCallsInvolvedInLoopCarriedDataDependences(Noelle &noelle,
-                                                       noelle::CallGraph *pcg);
+                                                       SCCCAG *pcg);
   bool inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
-      Function *F, LoopContent *LDI, noelle::CallGraph *pcg, Noelle &noelle);
+      Function *F, LoopContent *LDI, SCCCAG *pcg, Noelle &noelle);
 
   void getFunctionsToInline(std::string filename);
 

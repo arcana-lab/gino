@@ -26,15 +26,11 @@
 namespace arcana::gino {
 
 DSWP::DSWP(Noelle &n, bool forceParallelization, bool enableSCCMerging)
-  : ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences{ n,
-                                                                    forceParallelization },
-    minCores{ 0 },
-    enableMergingSCC{ enableSCCMerging },
-    queues{},
-    queueArrayType{ nullptr },
-    sccToStage{},
-    stageArrayType{ nullptr },
-    zeroIndexForBaseArray{ nullptr } {
+    : ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences{n,
+                                                                     forceParallelization},
+      minCores{0}, enableMergingSCC{enableSCCMerging}, queues{},
+      queueArrayType{nullptr}, sccToStage{}, stageArrayType{nullptr},
+      zeroIndexForBaseArray{nullptr} {
 
   /*
    * Fetch the function that dispatch the parallelized loop.
@@ -108,8 +104,8 @@ bool DSWP::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
    * not applicable.
    */
   if (!doesSequentialSCCExist) {
-    errs()
-        << "DSWP: It is not applicable because the loop doesn't have a sequential SCC\n";
+    errs() << "DSWP: It is not applicable because the loop doesn't have a "
+              "sequential SCC\n";
     return false;
   }
 
@@ -134,9 +130,9 @@ bool DSWP::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
     /*
      * The pipeline would be too imbalance.
      */
-    errs()
-        << "DSWP: It is not applicable because the coverage of the biggest SCC is "
-        << biggestSCCCoverage << "\n";
+    errs() << "DSWP: It is not applicable because the coverage of the biggest "
+              "SCC is "
+           << biggestSCCCoverage << "\n";
     return false;
   }
 
@@ -166,15 +162,15 @@ bool DSWP::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
     errs()
         << "Parallelizer:    Loop " << loopID << " has " << averageInstructions
         << " number of sequential instructions on average per loop iteration\n";
-    errs()
-        << "Parallelizer:    Loop " << loopID << " has " << sequentialFraction
-        << " % sequential execution per loop iteration\n";
-    errs()
-        << "Parallelizer:      It will not be partitioned enough for DSWP. The thresholds are at least "
-        << averageInstructionThreshold
-        << " instructions per iteration or at least "
-        << minimumSequentialFraction << " % sequential execution."
-        << "\n";
+    errs() << "Parallelizer:    Loop " << loopID << " has "
+           << sequentialFraction
+           << " % sequential execution per loop iteration\n";
+    errs() << "Parallelizer:      It will not be partitioned enough for DSWP. "
+              "The thresholds are at least "
+           << averageInstructionThreshold
+           << " instructions per iteration or at least "
+           << minimumSequentialFraction << " % sequential execution."
+           << "\n";
 
     return false;
   }
@@ -222,15 +218,15 @@ bool DSWP::apply(LoopContent *LDI, Heuristics *h) {
   /*
    * Check if the parallelization is worth it.
    */
-  if (!this->forceParallelization
-      && this->partitioner->numberOfPartitions() == 1) {
+  if (!this->forceParallelization &&
+      this->partitioner->numberOfPartitions() == 1) {
 
     /*
      * The parallelization isn't worth it as there is only one pipeline stage.
      */
     if (this->verbose != Verbosity::Disabled) {
-      errs()
-          << "DSWP:  There is only 1 partition and therefore the parallelization isn't worth it.\n";
+      errs() << "DSWP:  There is only 1 partition and therefore the "
+                "parallelization isn't worth it.\n";
     }
 
     return false;
@@ -408,13 +404,10 @@ bool DSWP::apply(LoopContent *LDI, Heuristics *h) {
 }
 
 uint32_t DSWP::getMinimumNumberOfIdleCores(void) const {
-  return Architecture::getNumberOfPhysicalCores();
   return this->minCores;
 }
 
-std::string DSWP::getName(void) const {
-  return "DSWP";
-}
+std::string DSWP::getName(void) const { return "DSWP"; }
 
 Transformation DSWP::getParallelizationID(void) const {
   return Transformation::DSWP_ID;
