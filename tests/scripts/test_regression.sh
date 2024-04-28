@@ -85,20 +85,20 @@ runningTestsWrapper -noelle-disable-helix -noelle-disable-dswp -noelle-disable-d
 # Test parallelization techniques
 runningTestsWrapper 
 
-runningTestsWrapper -noelle-parallelizer-force -noelle-disable-helix ;
-runningTestsWrapper -noelle-parallelizer-force -noelle-disable-helix -dswp-no-scc-merge ;
+runningTestsWrapper -gino-parallelizer-force -noelle-disable-helix ;
+runningTestsWrapper -gino-parallelizer-force -noelle-disable-helix -gino-dswp-no-scc-merge ;
 
-runningTestsWrapper -noelle-parallelizer-force -noelle-disable-dswp ;
-runningTestsWrapper -noelle-parallelizer-force -noelle-disable-dswp -dswp-no-scc-merge ;
+runningTestsWrapper -gino-parallelizer-force -noelle-disable-dswp ;
+runningTestsWrapper -gino-parallelizer-force -noelle-disable-dswp -gino-dswp-no-scc-merge ;
 
-runningTestsWrapper -noelle-parallelizer-force -noelle-disable-doall ;
-runningTestsWrapper -noelle-parallelizer-force -noelle-disable-doall -dswp-no-scc-merge ;
+runningTestsWrapper -gino-parallelizer-force -noelle-disable-doall ;
+runningTestsWrapper -gino-parallelizer-force -noelle-disable-doall -gino-dswp-no-scc-merge ;
 
-runningTestsWrapper -noelle-parallelizer-force -noelle-disable-doall -noelle-disable-helix ;
-runningTestsWrapper -noelle-parallelizer-force -noelle-disable-doall -noelle-disable-helix -dswp-no-scc-merge ;
+runningTestsWrapper -gino-parallelizer-force -noelle-disable-doall -noelle-disable-helix ;
+runningTestsWrapper -gino-parallelizer-force -noelle-disable-doall -noelle-disable-helix -gino-dswp-no-scc-merge ;
 
-runningTestsWrapper -noelle-parallelizer-force -noelle-disable-doall -noelle-disable-dswp ;
-runningTestsWrapper -noelle-parallelizer-force -noelle-disable-doall -noelle-disable-dswp -dswp-no-scc-merge ;
+runningTestsWrapper -gino-parallelizer-force -noelle-disable-doall -noelle-disable-dswp ;
+runningTestsWrapper -gino-parallelizer-force -noelle-disable-doall -noelle-disable-dswp -gino-dswp-no-scc-merge ;
 
 cd ../ ;
 
