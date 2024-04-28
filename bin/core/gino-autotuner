@@ -2,7 +2,7 @@
 
 trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
-installDir=$(gino-config --prefix)
+noelleInstallDir=$(noelle-config --prefix)
 
 # Parse arguments
 for arg in "$@"; do
@@ -80,7 +80,7 @@ eval $cmd
 
 if [ "${generateSearchSpace}" != "0" ] ; then
   # Generate autotuner_space.info 
-  cmd="noelle-load -load ${installDir}/lib/AutotunerSearchSpace.so -AutotunerSearchSpace ${inputbc} -disable-output"
+  cmd="noelle-load -load ${ginoInstallDir}/lib/AutotunerSearchSpace.so -AutotunerSearchSpace ${inputbc} -disable-output"
   echo ${cmd}
   eval ${cmd}
 fi
@@ -93,7 +93,7 @@ fi
 
 if [ "${filterDOALLSearchSpace}" != "0" ] ; then
   # Adjust search space with DOALL only loops
-  cmd="gino-load -load ${installDir}/lib/AutotunerDoallFilter.so -AutotunerDoallFilter ${inputbc} -disable-output"
+  cmd="gino-load -load ${ginoInstallDir}/lib/AutotunerDoallFilter.so -AutotunerDoallFilter ${inputbc} -disable-output"
   echo ${cmd}
   eval ${cmd}
 fi
@@ -102,7 +102,7 @@ fi
 export autotunerPARALLELIZED_BINARY="binaryToRun"
 export autotunerEXECUTION_TIME="executionTime.txt"
 export autotunerBASELINE_TIME="baselineTime.txt"
-export autotunerINSTALL_DIR="${installDir}"
+export autotunerINSTALL_DIR="${ginoInstallDir}"
 export autotunerARGS="${parallelizerArgs}"
 export autotunerINPUT="${inputToRun}"
 export autotunerOUTPUTBC="${outputbc}"
@@ -111,10 +111,10 @@ export autotunerLIBS="${libs}"
 export INDEX_FILE="${autotunerConf}"
 
 # Setup python virtualEnv
-source ${installDir}/autotuner/source-me-to-setup-python-virtual-environment
+source ${noelleInstallDir}/autotuner/source-me-to-setup-python-virtual-environment
 
 # Compile and run baseline
-cmd="python ${installDir}/autotuner/utils/compileAndRunBaseline.py"
+cmd="python ${noelleInstallDir}/autotuner/utils/compileAndRunBaseline.py"
 echo ${cmd}
 eval ${cmd}
 
@@ -122,7 +122,7 @@ if [ "${filterDOALLtimeSearchSpace}" != "0" ] && [ "${filterDOALLSearchSpace}" !
   # Filter search space by trying to parallelize DOALL loops one by one
   # if they don't speedup compared to the baseline, then disable them
   # (note: modifies autotuner_space.info)
-  cmd="python ${installDir}/autotuner/scripts/filter.py"
+  cmd="python ${noelleInstallDir}/autotuner/scripts/filter.py"
   echo ${cmd}
   eval ${cmd}
 fi
@@ -136,7 +136,7 @@ if [ -s ${autotunerSpace} ] ; then
   echo `cat ${autotunerSpace}`
 
   # Set the command to execute
-  cmd="python ${installDir}/autotuner/src/autotuner.py --no-dups --parallelism=1"
+  cmd="python ${noelleInstallDir}/autotuner/src/autotuner.py --no-dups --parallelism=1"
 
   # Get autotuner time limit
   if [ "${autotunerTime}" != "" ] ; then
@@ -159,7 +159,7 @@ if [ -s ${autotunerSpace} ] ; then
       exit 1
     fi
 
-    autotunerPathToSeedConf="`python ${installDir}/autotuner/utils/genSeedConf.py ${autotunerSeedConf}`"
+    autotunerPathToSeedConf="`python ${noelleInstallDir}/autotuner/utils/genSeedConf.py ${autotunerSeedConf}`" ;
     cmd="${cmd} --seed-configuration=${autotunerPathToSeedConf}"
   fi
 
