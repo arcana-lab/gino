@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
+
+noelle-load \
+  $(noelle-config --tool-libs) \
+  $(gino-config --core-libs) \
+  $@

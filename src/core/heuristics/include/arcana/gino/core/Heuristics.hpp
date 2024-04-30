@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_HEURISTICS_H_
-#define NOELLE_SRC_TOOLS_HEURISTICS_H_
+#ifndef GINO_SRC_CORE_HEURISTICS_H_
+#define GINO_SRC_CORE_HEURISTICS_H_
 
 #include "noelle/core/Noelle.hpp"
 
@@ -41,19 +41,24 @@ public:
   Heuristics(Noelle &noelle);
 
   void adjustParallelizationPartitionForDSWP(
-      SCCDAGPartitioner *partitioner, SCCDAGAttrs &attrs, uint64_t numThreads,
+      SCCDAGPartitioner *partitioner,
+      SCCDAGAttrs &attrs,
+      uint64_t numThreads,
       std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity verbose);
 
 private:
-  void
-  minMaxMergePartition(SCCDAGPartitioner &partitioner, SCCDAGAttrs &attrs,
-                       uint64_t numThreads,
-                       std::function<bool(GenericSCC *scc)> canBeRematerialized,
-                       Verbosity verbose);
+  void minMaxMergePartition(
+      SCCDAGPartitioner &partitioner,
+      SCCDAGAttrs &attrs,
+      uint64_t numThreads,
+      std::function<bool(GenericSCC *scc)> canBeRematerialized,
+      Verbosity verbose);
 
   void smallestSizeMergePartition(
-      SCCDAGPartitioner &partitioner, SCCDAGAttrs &attrs, uint64_t numThreads,
+      SCCDAGPartitioner &partitioner,
+      SCCDAGAttrs &attrs,
+      uint64_t numThreads,
       std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity verbose);
 
@@ -62,4 +67,4 @@ private:
 
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_HEURISTICS_H_
+#endif // GINO_SRC_CORE_HEURISTICS_H_

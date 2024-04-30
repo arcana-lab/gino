@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_
-#define NOELLE_SRC_TOOLS_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_
+#ifndef GINO_SRC_CORE_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_
+#define GINO_SRC_CORE_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_
 
 #include "noelle/core/SCC.hpp"
 #include "noelle/core/SCCDAGAttrs.hpp"
@@ -35,15 +35,19 @@ namespace arcana::gino {
 class MinMaxSizePartitionAnalysis : public PartitionCostAnalysis {
 public:
   MinMaxSizePartitionAnalysis(
-      InvocationLatency &IL, SCCDAGPartitioner &p, SCCDAGAttrs &attrs,
-      int cores, std::function<bool(GenericSCC *scc)> canBeRematerialized,
+      InvocationLatency &IL,
+      SCCDAGPartitioner &p,
+      SCCDAGAttrs &attrs,
+      int cores,
+      std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity v)
-      : PartitionCostAnalysis{IL, p, attrs, cores, canBeRematerialized, v} {};
+    : PartitionCostAnalysis{ IL, p, attrs, cores, canBeRematerialized, v } {};
 
-  void
-  checkIfShouldMerge(SCCSet *sA, SCCSet *sB,
-                     std::function<bool(GenericSCC *scc)> canBeRematerialized);
+  void checkIfShouldMerge(
+      SCCSet *sA,
+      SCCSet *sB,
+      std::function<bool(GenericSCC *scc)> canBeRematerialized);
 };
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_
+#endif // GINO_SRC_CORE_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_

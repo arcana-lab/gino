@@ -19,12 +19,12 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_TIME_SAVED_TIMINGMODEL_H_
-#define NOELLE_SRC_TOOLS_TIME_SAVED_TIMINGMODEL_H_
+#ifndef GINO_SRC_TOOLS_TIME_SAVED_TIMINGMODEL_H_
+#define GINO_SRC_TOOLS_TIME_SAVED_TIMINGMODEL_H_
 
 #include "noelle/core/Noelle.hpp"
 
-using namespace arcana::noelle ;
+using namespace arcana::noelle;
 
 namespace arcana::gino {
 
@@ -43,4 +43,4 @@ protected:
 
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_TIME_SAVED_TIMINGMODEL_H_
+#endif // GINO_SRC_TOOLS_TIME_SAVED_TIMINGMODEL_H_

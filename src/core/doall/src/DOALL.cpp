@@ -33,12 +33,12 @@ DOALL::DOALL(Noelle &noelle)
    * Fetch the dispatcher to use to jump to a parallelized DOALL loop.
    */
   this->taskDispatcher =
-      this->n.getProgram()->getFunction("NOELLE_DOALLDispatcher");
+      this->n.getProgram()->getFunction("GINO_DOALLDispatcher");
   if (this->taskDispatcher == nullptr) {
     this->enabled = false;
     if (this->verbose != Verbosity::Disabled) {
       errs()
-          << "DOALL: WARNING: function NOELLE_DOALLDispatcher couldn't be found. DOALL is disabled\n";
+          << "DOALL: WARNING: function GINO_DOALLDispatcher couldn't be found. DOALL is disabled\n";
     }
   }
 

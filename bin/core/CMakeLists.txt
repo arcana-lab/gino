@@ -1,0 +1,14 @@
+install(
+  PROGRAMS
+    gino
+    gino-autotuner
+    gino-enable
+    gino-inline
+    gino-io
+    gino-load
+    gino-loops
+    gino-planner
+    gino-pre
+  DESTINATION
+    bin
+)

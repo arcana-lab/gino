@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_HEURISTICS_INVOCATIONLATENCY_H_
-#define NOELLE_SRC_TOOLS_HEURISTICS_INVOCATIONLATENCY_H_
+#ifndef GINO_SRC_CORE_HEURISTICS_INVOCATIONLATENCY_H_
+#define GINO_SRC_CORE_HEURISTICS_INVOCATIONLATENCY_H_
 
 #include "noelle/core/Noelle.hpp"
 #include "noelle/core/SCCDAGPartition.hpp"
@@ -36,20 +36,23 @@ public:
   uint64_t latencyPerInvocation(SCC *scc);
 
   uint64_t latencyPerInvocation(
-      SCCDAGAttrs *, std::unordered_set<SCCSet *> &subsets,
+      SCCDAGAttrs *,
+      std::unordered_set<SCCSet *> &subsets,
       std::function<bool(GenericSCC *scc)> canBeRematerialized);
 
   uint64_t latencyPerInvocation(Instruction *inst);
 
   uint64_t queueLatency(Value *queueVal);
 
-  std::set<Value *> &
-  memoizeExternals(SCCDAGAttrs *, SCC *,
-                   std::function<bool(GenericSCC *scc)> canBeRematerialized);
+  std::set<Value *> &memoizeExternals(
+      SCCDAGAttrs *,
+      SCC *,
+      std::function<bool(GenericSCC *scc)> canBeRematerialized);
 
-  std::set<SCC *> &
-  memoizeParents(SCCDAGAttrs *, SCC *,
-                 std::function<bool(GenericSCC *scc)> canBeRematerialized);
+  std::set<SCC *> &memoizeParents(
+      SCCDAGAttrs *,
+      SCC *,
+      std::function<bool(GenericSCC *scc)> canBeRematerialized);
 
 private:
   Hot *profiles;
@@ -61,4 +64,4 @@ private:
 };
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_HEURISTICS_INVOCATIONLATENCY_H_
+#endif // GINO_SRC_CORE_HEURISTICS_INVOCATIONLATENCY_H_

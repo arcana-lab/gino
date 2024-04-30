@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_HEURISTICS_PARTITIONCOSTANALYSIS_H_
-#define NOELLE_SRC_TOOLS_HEURISTICS_PARTITIONCOSTANALYSIS_H_
+#ifndef GINO_SRC_CORE_HEURISTICS_PARTITIONCOSTANALYSIS_H_
+#define GINO_SRC_CORE_HEURISTICS_PARTITIONCOSTANALYSIS_H_
 
 #include "noelle/core/Noelle.hpp"
 
@@ -33,14 +33,18 @@ namespace arcana::gino {
 class PartitionCostAnalysis {
 public:
   PartitionCostAnalysis(
-      InvocationLatency &IL, SCCDAGPartitioner &p, SCCDAGAttrs &, int numCores,
+      InvocationLatency &IL,
+      SCCDAGPartitioner &p,
+      SCCDAGAttrs &,
+      int numCores,
       std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity verbose);
 
   void traverseAllPartitionSubsets();
 
   virtual void checkIfShouldMerge(
-      SCCSet *sA, SCCSet *sB,
+      SCCSet *sA,
+      SCCSet *sB,
       std::function<bool(GenericSCC *scc)> canBeRematerialized) = 0;
 
   void resetCandidateSubsetInfo();
@@ -72,4 +76,4 @@ protected:
 
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_HEURISTICS_PARTITIONCOSTANALYSIS_H_
+#endif // GINO_SRC_CORE_HEURISTICS_PARTITIONCOSTANALYSIS_H_

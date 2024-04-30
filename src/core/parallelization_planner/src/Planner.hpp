@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_PARALLELIZATION_PLANNER_PLANNER_H_
-#define NOELLE_SRC_TOOLS_PARALLELIZATION_PLANNER_PLANNER_H_
+#ifndef GINO_SRC_CORE_PARALLELIZATION_PLANNER_PLANNER_H_
+#define GINO_SRC_CORE_PARALLELIZATION_PLANNER_PLANNER_H_
 
 #include "arcana/gino/core/DOALL.hpp"
 #include "noelle/core/Noelle.hpp"
@@ -54,23 +54,29 @@ private:
 
   std::vector<LoopContent *> getLoopsToParallelize(Module &M, Noelle &par);
 
-  void removeLoopsNotWorthParallelizing(Noelle &noelle, Hot *profiles,
+  void removeLoopsNotWorthParallelizing(Noelle &noelle,
+                                        Hot *profiles,
                                         LoopForest *f);
 
   std::vector<LoopContent *> selectTheOrderOfLoopsToParallelize(
-      Noelle &noelle, Hot *profiles, noelle::LoopTree *tree,
-      uint64_t &maxTimeSaved, uint64_t &maxTimeSavedWithDOALLOnly);
+      Noelle &noelle,
+      Hot *profiles,
+      noelle::LoopTree *tree,
+      uint64_t &maxTimeSaved,
+      uint64_t &maxTimeSavedWithDOALLOnly);
 
-  std::pair<uint64_t, uint64_t>
-  evaluateSavings(Noelle &noelle, noelle::LoopTree *tree,
-                  const std::map<LoopStructure *, uint64_t> &timeSaved,
-                  const std::map<LoopStructure *, bool> &doallLoops);
+  std::pair<uint64_t, uint64_t> evaluateSavings(
+      Noelle &noelle,
+      noelle::LoopTree *tree,
+      const std::map<LoopStructure *, uint64_t> &timeSaved,
+      const std::map<LoopStructure *, bool> &doallLoops);
 
-  uint64_t evaluateSavings(Noelle &noelle, noelle::LoopTree *tree,
+  uint64_t evaluateSavings(Noelle &noelle,
+                           noelle::LoopTree *tree,
                            const std::map<LoopStructure *, uint64_t> &timeSaved,
                            std::function<bool(LoopStructure *)> considerLoop);
 };
 
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_PARALLELIZATION_PLANNER_PLANNER_H_
+#endif // GINO_SRC_CORE_PARALLELIZATION_PLANNER_PLANNER_H_

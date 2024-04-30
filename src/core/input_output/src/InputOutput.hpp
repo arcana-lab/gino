@@ -19,12 +19,12 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_INPUT_OUTPUT_INPUTOUTPUT_H_
-#define NOELLE_SRC_TOOLS_INPUT_OUTPUT_INPUTOUTPUT_H_
+#ifndef GINO_SRC_CORE_INPUT_OUTPUT_INPUTOUTPUT_H_
+#define GINO_SRC_CORE_INPUT_OUTPUT_INPUTOUTPUT_H_
 
 #include "noelle/core/SystemHeaders.hpp"
 
-using namespace arcana::noelle ;
+using namespace arcana::noelle;
 
 namespace arcana::gino {
 
@@ -53,4 +53,4 @@ private:
 
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_INPUT_OUTPUT_INPUTOUTPUT_H_
+#endif // GINO_SRC_CORE_INPUT_OUTPUT_INPUTOUTPUT_H_

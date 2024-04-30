@@ -28,7 +28,7 @@ using namespace arcana::gino;
  * Options of the dependence graph simplifier pass.
  */
 static cl::opt<int> Verbose(
-    "noelle-inliner-verbose",
+    "gino-inliner-verbose",
     cl::ZeroOrMore,
     cl::Hidden,
     cl::desc("Verbose output (0: disabled, 1: minimal, 2: maximal"));
@@ -50,7 +50,7 @@ void Inliner::getAnalysisUsage(AnalysisUsage &AU) const {
 
 // Next there is code to register your pass to "opt"
 char Inliner::ID = 0;
-static RegisterPass<Inliner> X("inliner", "Inliner");
+static RegisterPass<Inliner> X("Inliner", "Inliner");
 
 // Next there is code to register your pass to "clang"
 static Inliner *_PassMaker = NULL;

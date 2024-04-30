@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_HEURISTICS_SMALLESTSIZEPARTITIONANALYSIS_H_
-#define NOELLE_SRC_TOOLS_HEURISTICS_SMALLESTSIZEPARTITIONANALYSIS_H_
+#ifndef GINO_SRC_CORE_HEURISTICS_SMALLESTSIZEPARTITIONANALYSIS_H_
+#define GINO_SRC_CORE_HEURISTICS_SMALLESTSIZEPARTITIONANALYSIS_H_
 
 #include "noelle/core/Noelle.hpp"
 #include "noelle/core/SCCDAGPartition.hpp"
@@ -34,16 +34,20 @@ namespace arcana::gino {
 class SmallestSizePartitionAnalysis : public PartitionCostAnalysis {
 public:
   SmallestSizePartitionAnalysis(
-      InvocationLatency &IL, SCCDAGPartitioner &p, SCCDAGAttrs &attrs,
-      int cores, std::function<bool(GenericSCC *scc)> canBeRematerialized,
+      InvocationLatency &IL,
+      SCCDAGPartitioner &p,
+      SCCDAGAttrs &attrs,
+      int cores,
+      std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity v)
-      : PartitionCostAnalysis{IL, p, attrs, cores, canBeRematerialized, v} {};
+    : PartitionCostAnalysis{ IL, p, attrs, cores, canBeRematerialized, v } {};
 
   void checkIfShouldMerge(
-      SCCSet *sA, SCCSet *sB,
+      SCCSet *sA,
+      SCCSet *sB,
       std::function<bool(GenericSCC *scc)> canBeRematerialized) override;
 };
 
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_HEURISTICS_SMALLESTSIZEPARTITIONANALYSIS_H_
+#endif // GINO_SRC_CORE_HEURISTICS_SMALLESTSIZEPARTITIONANALYSIS_H_

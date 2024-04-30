@@ -84,9 +84,9 @@ function generateCondorJobs {
 
 function generateAllCondorJobs {
   generateCondorJobs "8" "" ;
-  generateCondorJobs "8" "-noelle-disable-enablers -noelle-disable-inliner -noelle-disable-dead" ;
+  generateCondorJobs "8" "-gino-disable-enablers -noelle-disable-inliner -noelle-disable-dead" ;
   generateCondorJobs "2" "" ;
-  generateCondorJobs "2" "-noelle-disable-enablers -noelle-disable-inliner -noelle-disable-dead" ;
+  generateCondorJobs "2" "-gino-disable-enablers -noelle-disable-inliner -noelle-disable-dead" ;
   generateCondorJobs "7" "" ;
 
   noelleOptions="-noelle-inliner-avoid-hoist-to-main -noelle-disable-helix" ;
@@ -112,15 +112,15 @@ fi
 # Generate the condor jobs
 feOptions="-O0 -Xclang -disable-O0-optnone" ;
 meOptions="-O0" ;
-parOptions="-noelle-parallelizer-force";
+parOptions="-gino-parallelizer-force";
 generateAllCondorJobs ;
 
 feOptions="-O1 -Xclang -disable-llvm-passes " ;
 meOptions="-O0" ;
-parOptions="-noelle-parallelizer-force";
+parOptions="-gino-parallelizer-force";
 generateAllCondorJobs ;
 
 feOptions="-O1 -Xclang -disable-llvm-passes " ;
 meOptions="-O1" ;
-parOptions="-noelle-parallelizer-force";
+parOptions="-gino-parallelizer-force";
 generateAllCondorJobs ;

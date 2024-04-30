@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_INLINER_H_
-#define NOELLE_SRC_TOOLS_INLINER_H_
+#ifndef GINO_SRC_CORE_INLINER_H_
+#define GINO_SRC_CORE_INLINER_H_
 
 #include "noelle/core/Noelle.hpp"
 #include <fstream>
@@ -55,7 +55,10 @@ private:
   bool inlineCallsInvolvedInLoopCarriedDataDependences(Noelle &noelle,
                                                        SCCCAG *pcg);
   bool inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
-      Function *F, LoopContent *LDI, SCCCAG *pcg, Noelle &noelle);
+      Function *F,
+      LoopContent *LDI,
+      SCCCAG *pcg,
+      Noelle &noelle);
 
   void getFunctionsToInline(std::string filename);
 
@@ -68,7 +71,9 @@ private:
    */
   bool canInlineWithoutRecursiveLoop(Function *parentF, Function *childF);
 
-  bool inlineFunctionCall(Hot *p, Function *F, Function *childF,
+  bool inlineFunctionCall(Hot *p,
+                          Function *F,
+                          Function *childF,
                           CallInst *call);
 
   int getNextPreorderLoopAfter(Function *F, CallInst *call);
@@ -129,4 +134,4 @@ private:
 
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_INLINER_H_
+#endif // GINO_SRC_CORE_INLINER_H_
