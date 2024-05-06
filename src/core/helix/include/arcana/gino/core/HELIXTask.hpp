@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2019  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Sophia Boksenbaum, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,7 @@ public:
   Value *ssPastArrayArg;
   Value *ssFutureArrayArg;
   Value *loopCarriedArrayArg;
+  Value *scylaxDataArg;
   Value *loopIsOverFlagArg;
 
   /*

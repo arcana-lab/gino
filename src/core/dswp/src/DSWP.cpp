@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2022  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -55,6 +55,13 @@ bool DSWP::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
           canBeAppliedToLoop(LDI, h)) {
     return false;
   }
+
+  /*
+   * Exclude OutputSequenceSCC, which does not support DSWP
+   */
+  auto SCCManager = LDI->getSCCManager();
+  auto hasAnyOutputSequenceSCC =
+      !SCCManager->getSCCsOfKind(GenericSCC::SCCKind::OUTPUT_SEQUENCE).empty();
 
   /*
    * Fetch the profiles

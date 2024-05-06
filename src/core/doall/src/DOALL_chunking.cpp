@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2023  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Sophia Boksenbaum, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -118,6 +118,9 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
                                                                 chunkPHI,
                                                                 chunkStepSize);
     this->IVValueJustBeforeEnteringBody[ivPHI] = chunkedIVValues;
+
+    task->isChunkCompleted =
+        IVUtility::isChunkCompleted(preheaderClone, chunkPHI);
   }
 
   /*
@@ -154,7 +157,8 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
         periodicVariableSCC->getPhiThatAccumulatesValuesBetweenLoopIterations();
     assert(
         phi->getNumIncomingValues() == 2
-        && "DOALL: PHINode in periodic variable SCC doesn't have exactly two entries!");
+        && "DOALL: PHINode in periodic variable SCC doesn't have exactly two "
+           "entries!");
     auto taskPHI = cast<PHINode>(task->getCloneOfOriginalInstruction(phi));
 
     unsigned entryBlock, loopBlock;
@@ -277,9 +281,9 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
   if (auto exitConditionInst = dyn_cast<Instruction>(exitConditionValue)) {
     auto &derivation = ivUtility.getConditionValueDerivation();
     for (auto I : derivation) {
-      assert(
-          invariantManager->isLoopInvariant(I)
-          && "DOALL exit condition value is not derived from loop invariant values!");
+      assert(invariantManager->isLoopInvariant(I)
+             && "DOALL exit condition value is not derived from loop invariant "
+                "values!");
 
       /*
        * Fetch the clone of @I

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2023  Simone Campanoni
+ * Copyright 2016 - 2024  Simone Campanoni, Sophia Boksenbaum
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,8 @@
 
 namespace arcana::gino {
 
-void DOALL::invokeParallelizedLoop(LoopContent *LDI) {
+void DOALL::invokeParallelizedLoop(LoopContent *LDI,
+                                   bool loopHasParallelizedOutput) {
 
   /*
    * Create the environment.
@@ -52,14 +53,22 @@ void DOALL::invokeParallelizedLoop(LoopContent *LDI) {
   auto chunkSize = cm->getIntegerConstant(ltm->getChunkSize(), 64);
 
   /*
+   * Fetch the output flag
+   */
+  auto outputFlag = cm->getIntegerConstant(loopHasParallelizedOutput, 8);
+
+  /*
    * Call the dispatcher that will dispatch the tasks that execute the
    * parallelized loop.
    */
   IRBuilder<> doallBuilder(this->entryPointOfParallelizedLoop);
-  auto doallCallInst = doallBuilder.CreateCall(
-      this->taskDispatcher,
-      ArrayRef<Value *>(
-          { tasks[0]->getTaskBody(), envPtr, numCores, chunkSize }));
+  auto doallCallInst =
+      doallBuilder.CreateCall(this->taskDispatcher,
+                              ArrayRef<Value *>({ tasks[0]->getTaskBody(),
+                                                  envPtr,
+                                                  numCores,
+                                                  chunkSize,
+                                                  outputFlag }));
 
   /*
    * Get the return value of the dispatcher, which has the information about how

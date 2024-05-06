@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2019  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Sophia Boksenbaum, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -19,6 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "noelle/core/OutputSequenceSCC.hpp"
 #include "arcana/gino/core/HELIX.hpp"
 
 namespace arcana::gino {
@@ -64,6 +65,14 @@ void HELIX::invokeParallelizedLoop(LoopContent *LDI,
   auto numOfSS = cm->getIntegerConstant(numberOfSequentialSegments, 64);
 
   /*
+   * Fetch the output flag
+   */
+  auto SCCManager = LDI->getSCCManager();
+  auto outputFlag = cm->getIntegerConstant(
+      !SCCManager->getSCCsOfKind(GenericSCC::SCCKind::OUTPUT_SEQUENCE).empty(),
+      8);
+
+  /*
    * Call the function that incudes the parallelized loop.
    */
   IRBuilder<> helixBuilder(this->entryPointOfParallelizedLoop);
@@ -73,7 +82,8 @@ void HELIX::invokeParallelizedLoop(LoopContent *LDI,
                           envPtr,
                           loopCarriedEnvPtr,
                           numCores,
-                          numOfSS }));
+                          numOfSS,
+                          outputFlag }));
   auto numThreadsUsed =
       helixBuilder.CreateExtractValue(runtimeCall, (uint64_t)0);
 

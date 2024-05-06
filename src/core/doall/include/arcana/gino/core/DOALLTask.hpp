@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2024  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Sophia Boksenbaum, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,8 @@ public:
   /*
    * Chunking function specific arguments
    */
-  Value *taskInstanceID, *numTaskInstances, *chunkSizeArg;
+  Value *taskInstanceID, *numTaskInstances, *chunkSizeArg,
+      *scylaxPerThreadDataArg;
 
   /*
    * Clone of original IV loop, new outer loop
@@ -54,6 +55,7 @@ public:
   CmpInst *cloneOfOriginalCmp;
   BranchInst *cloneOfOriginalBr;
   PHINode *outermostLoopIV;
+  CmpInst *isChunkCompleted;
 
 protected:
   void initializeTask(Function *F);

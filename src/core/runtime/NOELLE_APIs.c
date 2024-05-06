@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 
 typedef struct {
   int32_t numberOfThreadsUsed;
@@ -6,10 +7,11 @@ typedef struct {
 } DispatcherInfo;
 
 extern DispatcherInfo NOELLE_DOALLDispatcher(
-    void (*parallelizedLoop)(void *, int64_t, int64_t, int64_t),
+    void (*parallelizedLoop)(void *, int64_t, int64_t, int64_t, void *),
     void *env,
     int64_t maxNumberOfCores,
-    int64_t chunkSize);
+    int64_t chunkSize,
+    int8_t useScylax);
 
 extern void queuePush8(void *, int8_t *);
 extern void queuePush16(void *, int16_t *);
@@ -35,6 +37,7 @@ extern DispatcherInfo NOELLE_HELIX_dispatcher_criticalSections(
                              void *,
                              void *,
                              void *,
+                             void *,
                              int64_t,
                              int64_t,
                              uint64_t *),
@@ -48,13 +51,40 @@ extern DispatcherInfo NOELLE_HELIX_dispatcher_sequentialSegments(
                              void *,
                              void *,
                              void *,
+                             void *,
                              int64_t,
                              int64_t,
                              uint64_t *),
     void *env,
     void *loopCarriedArray,
     int64_t numCores,
-    int64_t numOfsequentialSegments);
+    int64_t numOfsequentialSegments,
+    int8_t useScylax);
+
+extern int NOELLE_Scylax_printf(void *scylaxData, const char *format, ...);
+extern int NOELLE_Scylax_printf_knownMaxLength(void *scylaxData,
+                                               int64_t neededBytes,
+                                               const char *format,
+                                               ...);
+extern int NOELLE_Scylax_fprintf(void *scylaxData,
+                                 FILE *stream,
+                                 const char *format,
+                                 ...);
+extern int NOELLE_Scylax_fprintf_knownMaxLength(void *scylaxData,
+                                                int64_t neededBytes,
+                                                FILE *stream,
+                                                const char *format,
+                                                ...);
+extern int NOELLE_Scylax_putc(void *scylaxData, int character, FILE *stream);
+extern int NOELLE_Scylax_putchar(void *scylaxData, int character);
+extern int NOELLE_Scylax_puts(void *scylaxData, const char *str);
+extern int NOELLE_Scylax_perror(void *scylaxData, const char *str);
+
+extern void NOELLE_DOALL_Scylax_ChunkEnd(int8_t isChunkCompleted,
+                                         void *scylaxData);
+extern void NOELLE_DOALL_Scylax_TaskEnd(void *scylaxData);
+extern void NOELLE_HELIX_Scylax_IterEnd(void *scylaxData);
+extern void NOELLE_HELIX_Scylax_TaskEnd(void *scylaxData);
 
 extern uint32_t NOELLE_getAvailableCores(void);
 
@@ -73,13 +103,27 @@ void SIMONE_CAMPANONI_IS_GOING_TO_REMOVE_THIS_FUNCTION(void) {
   NOELLE_DSWPDispatcher(0, 0, 0, 0, 0);
 
   NOELLE_HELIX_dispatcher_criticalSections(0, 0, 0, 0, 0);
-  NOELLE_HELIX_dispatcher_sequentialSegments(0, 0, 0, 0, 0);
+  NOELLE_HELIX_dispatcher_sequentialSegments(0, 0, 0, 0, 0, 0);
   HELIX_wait(0);
   HELIX_signal(0);
 
   int s;
   rand_r(&s);
-  NOELLE_DOALLDispatcher(0, 0, 0, 0);
+  NOELLE_DOALLDispatcher(0, 0, 0, 0, 0);
+
+  NOELLE_Scylax_printf(0, 0, 0, 0, 0, 0);
+  NOELLE_Scylax_printf_knownMaxLength(0, 0, 0, 0);
+  NOELLE_Scylax_fprintf(0, 0, 0, 0, 0, 0);
+  NOELLE_Scylax_fprintf_knownMaxLength(0, 0, 0, 0, 0);
+  NOELLE_Scylax_puts(0, 0);
+  NOELLE_Scylax_putc(0, 0, 0);
+  NOELLE_Scylax_putchar(0, 0);
+  NOELLE_Scylax_perror(0, 0);
+
+  NOELLE_DOALL_Scylax_ChunkEnd(0, 0);
+  NOELLE_DOALL_Scylax_TaskEnd(0);
+  NOELLE_HELIX_Scylax_IterEnd(0);
+  NOELLE_HELIX_Scylax_TaskEnd(0);
 
   NOELLE_getAvailableCores();
 }

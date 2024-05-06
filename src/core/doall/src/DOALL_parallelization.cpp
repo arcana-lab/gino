@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2023  Simone Campanoni
+ * Copyright 2016 - 2024  Simone Campanoni, Sophia Boksenbaum
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
  */
 #include "noelle/core/ReductionSCC.hpp"
 #include "noelle/core/InductionVariableSCC.hpp"
+#include "noelle/core/OutputSequenceSCC.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 #include "arcana/gino/core/DOALLTask.hpp"
 
@@ -76,7 +77,8 @@ bool DOALL::apply(LoopContent *LDI, Heuristics *h) {
   auto funcArgTypes = ArrayRef<Type *>({ tm->getVoidPointerType(),
                                          tm->getIntegerType(64),
                                          tm->getIntegerType(64),
-                                         tm->getIntegerType(64) });
+                                         tm->getIntegerType(64),
+                                         tm->getVoidPointerType() });
   auto taskSignature =
       FunctionType::get(tm->getVoidType(), funcArgTypes, false);
 
@@ -215,6 +217,11 @@ bool DOALL::apply(LoopContent *LDI, Heuristics *h) {
   }
 
   /*
+   * Replace identified output sequences
+   */
+  auto loopHasParallelizedOutput = this->replaceOutputSequences(LDI);
+
+  /*
    * Store final results to loop live-out variables. Note this occurs after
    * all other code is generated. Propagated PHIs through the generated
    * outer loop might affect the values stored
@@ -227,7 +234,7 @@ bool DOALL::apply(LoopContent *LDI, Heuristics *h) {
   /*
    * Add code to invoke the parallelized loop.
    */
-  this->invokeParallelizedLoop(LDI);
+  this->invokeParallelizedLoop(LDI, loopHasParallelizedOutput);
 
   /*
    * Make PRVGs reentrant to avoid cache sharing.

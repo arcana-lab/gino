@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2022  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Sophia Boksenbaum, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -45,6 +45,7 @@ void DOALLTask::initializeTask(Function *F) {
   this->taskInstanceID = (Value *)&*(argIter++);
   this->numTaskInstances = (Value *)&*(argIter++);
   this->chunkSizeArg = (Value *)&*(argIter++);
+  this->scylaxPerThreadDataArg = (Value *)&*(argIter++);
 
   this->instanceIndexV = taskInstanceID;
 
@@ -52,6 +53,9 @@ void DOALLTask::initializeTask(Function *F) {
   this->taskInstanceID->setName("taskInstanceID");
   this->numTaskInstances->setName("numTaskInstances");
   this->chunkSizeArg->setName("chunkSize");
+  this->scylaxPerThreadDataArg->setName("scylaxPerThreadData");
+
+  return;
 }
 
 } // namespace arcana::gino

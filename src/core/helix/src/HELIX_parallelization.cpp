@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2023  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Sophia Boksenbaum, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -77,6 +77,12 @@ bool HELIX::apply(LoopContent *LDI, Heuristics *h) {
                                   false);
   auto modified = this->synchronizeTask(newLDI, h, helixTask);
 
+  /*
+   * Replace identified output sequences and enable the printer thread if
+   * needed.
+   */
+  modified |= this->replaceOutputSequences(LDI);
+
   return modified;
 }
 
@@ -146,6 +152,7 @@ HELIXTask *HELIX::createParallelizableTask(LoopContent *LDI, Heuristics *h) {
   auto ptrType = tm->getVoidPointerType();
   auto voidType = tm->getVoidType();
   auto funcArgTypes = ArrayRef<Type *>({ ptrType,
+                                         ptrType,
                                          ptrType,
                                          ptrType,
                                          ptrType,

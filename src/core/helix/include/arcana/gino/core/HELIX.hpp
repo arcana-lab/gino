@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2023  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Sophia Boksenbaum, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -144,6 +144,8 @@ protected:
   void rewireLoopForIVsToIterateNthIterations(LoopContent *LDI);
 
   void rewireLoopForPeriodicVariables(LoopContent *LDI);
+
+  bool replaceOutputSequences(LoopContent *LDI);
 
   BasicBlock *getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
       LoopContent *LDI,

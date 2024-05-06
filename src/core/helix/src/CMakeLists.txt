@@ -14,6 +14,7 @@ set(Srcs
   HELIX_sequentialSegments.cpp
   HELIX_sequentialSegment.cpp
   HELIX_linker.cpp
+  HELIX_inputOutput.cpp
   HELIXTask.cpp
   SpilledLoopCarriedDependence.cpp
 )

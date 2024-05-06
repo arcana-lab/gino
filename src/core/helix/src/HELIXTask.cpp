@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2023  Angelo Matni, Simone Campanoni
+ * Copyright 2016 - 2024  Angelo Matni, Sophia Boksenbaum, Simone Campanoni
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ HELIXTask::HELIXTask(FunctionType *taskSignature, Module &M)
   this->loopCarriedArrayArg = (Value *)&*(argIter++);
   this->ssPastArrayArg = (Value *)&*(argIter++);
   this->ssFutureArrayArg = (Value *)&*(argIter++);
+  this->scylaxDataArg = (Value *)&*(argIter++);
   this->coreArg = (Value *)&*(argIter++);
   this->numCoresArg = (Value *)&*(argIter++);
   this->loopIsOverFlagArg = (Value *)&*(argIter++);
@@ -42,6 +43,15 @@ HELIXTask::HELIXTask(FunctionType *taskSignature, Module &M)
    * Set the task index.
    */
   this->instanceIndexV = coreArg;
+
+  this->envArg->setName("env");
+  this->loopCarriedArrayArg->setName("loopCarriedArray");
+  this->ssPastArrayArg->setName("ssPastArray");
+  this->ssFutureArrayArg->setName("ssFutureArray");
+  this->scylaxDataArg->setName("scylaxData");
+  this->coreArg->setName("coreID");
+  this->numCoresArg->setName("numCores");
+  this->loopIsOverFlagArg->setName("loopIsOverFlag");
 
   return;
 }

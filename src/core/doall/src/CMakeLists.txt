@@ -8,6 +8,7 @@ set(Srcs
   DOALL_parallelization.cpp
   DOALL_chunking.cpp
   DOALL_linker.cpp
+  DOALL_inputOutput.cpp
 )
 
 # Compilation flags
