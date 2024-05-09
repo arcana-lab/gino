@@ -41,71 +41,161 @@ class Winchester : public DOALL {
 public:
   Winchester(Noelle &noelle) : DOALL(noelle) {}
 
-  void sliceLoop(Noelle &noelle, LoopStructure *LS);
+  void sliceLoop(Noelle &noelle, LoopContent *LC);
   FunctionType *loopSliceTaskSignature;
 };
 
-void Winchester::sliceLoop(Noelle &noelle, LoopStructure *LS) {
-  auto &M = *noelle.getProgram();
-  auto LC = noelle.getLoopContent(LS);
+void Winchester::sliceLoop(Noelle &noelle, LoopContent *LC) {
+  auto LS = LC->getLoopStructure();
+  auto loopHeader = LS->getHeader();
+  auto loopPreHeader = LS->getPreHeader();
+  auto loopFunction = LS->getFunction();
+  auto loopEnvironment = LC->getEnvironment();
+  assert(loopEnvironment != nullptr);
+  auto ltm = LC->getLoopTransformationsManager();
+  auto maxCores = ltm->getMaximumNumberOfCores();
 
-  auto tm = noelle.getTypesManager();
-  std::vector<Type *> taskMemoryStructFieldTypes = {
-      tm->getIntegerType(64), // starting_level
-      tm->getIntegerType(64), // chunk_size
-      tm->getIntegerType(64), // remaining_chunk_size
-      tm->getIntegerType(64), // polling_count
-  };
+  // Definie task signature
+  auto tm = this->n.getTypesManager();
+  auto funcArgTypes =
+      ArrayRef<Type *>({tm->getVoidPointerType(), tm->getIntegerType(64),
+                        tm->getIntegerType(64), tm->getIntegerType(64)});
+  auto taskSignature =
+      FunctionType::get(tm->getVoidType(), funcArgTypes, false);
 
-  auto taskMemoryStructType = StructType::create(
-      noelle.getProgramContext(), taskMemoryStructFieldTypes, "task_memory_t");
-
-  std::vector<Type *> loopSliceTaskSignatureTypes{
-      PointerType::getUnqual(taskMemoryStructType),   // *tmem
-      tm->getIntegerType(64),                         // task_index
-      PointerType::getUnqual(tm->getIntegerType(64)), // *cxts
-      PointerType::getUnqual(tm->getIntegerType(64))  // *invariants
-  };
-
-  this->loopSliceTaskSignature =
-      FunctionType::get(tm->getIntegerType(64),
-                        ArrayRef<Type *>(loopSliceTaskSignatureTypes), false);
-
-  /*
-   * Generate an empty loop-slice task for heartbeat execution.
-   */
-  auto lsTask =
-      new Task(this->loopSliceTaskSignature, M, std::string("LST_0")
-               // std::string("LST_").append(this->lna->getLoopIDString(LC))
-      );
-
-  /*
-   * Initialize the loop-slice task with an entry and exit basic blocks.
-   */
+  // Generate an empty task for the parallel DOALL execution.
+  auto lsTask = new Task(taskSignature, *noelle.getProgram(), "lsTask");
+  this->fromTaskIDToUserID[lsTask->getID()] = 0;
   this->addPredecessorAndSuccessorsBasicBlocksToTasks(LC, {lsTask});
+  this->numTaskInstances = maxCores;
 
-  /*
-   * NOELLE's ParallelizationTechnique abstraction creates two basic blocks
-   * in the original loop function.
-   * For heartbeat, these two basic blocks are not needed.
-   */
-  this->getParLoopEntryPoint()->eraseFromParent();
-  this->getParLoopExitPoint()->eraseFromParent();
-
-  /*
-   * Clone the loop into the loop-slice task.
-   */
+  auto sccManager = LC->getSCCManager();
+  auto variablesToBeReduced = [](uint32_t id, bool isLiveOut) { return false; };
+  auto variablesToBeSkipped = [](uint32_t id, bool isLiveOut) { return false; };
+  this->initializeEnvironmentBuilder(LC, variablesToBeReduced,
+                                     variablesToBeSkipped);
   this->cloneSequentialLoop(LC, 0);
 
-  if (true) {
-    errs() << "loopSlice(): loop-slice task after cloning from original loop\n";
-    errs() << *lsTask->getTaskBody() << "\n";
+  // Load live-in values at the entry point of the task
+  auto envUser = this->envBuilder->getUser(0);
+  assert(envUser != nullptr);
+  for (auto envID : loopEnvironment->getEnvIDsOfLiveInVars()) {
+    envUser->addLiveIn(envID);
+  }
+  for (auto envID : loopEnvironment->getEnvIDsOfLiveOutVars()) {
+    envUser->addLiveOut(envID);
+  }
+  this->generateCodeToLoadLiveInVariables(LC, 0);
+
+  // This must follow loading live-ins as this re-wiring
+  // overrides the live-in mapping to use locally cloned memory instructions
+  // that are live-in to the loop
+  if (ltm->isOptimizationEnabled(LoopContentOptimization::MEMORY_CLONING_ID)) {
+    this->cloneMemoryLocationsLocallyAndRewireLoop(LC, 0);
+  }
+  lsTask->adjustDataAndControlFlowToUseClones();
+
+  // Handle the reduction variables.
+  this->setReducableVariablesToBeginAtIdentityValue(LC, 0);
+
+  // Add the jump to start the loop from within the task.
+  auto headerClone = lsTask->getCloneOfOriginalBasicBlock(loopHeader);
+  IRBuilder<> entryBuilder(lsTask->getEntry());
+  entryBuilder.CreateBr(headerClone);
+
+  // Perform the iteration-chunking optimization
+  // this->rewireLoopToIterateChunks(LC, lsTask);
+
+  // Store final results to loop live-out variables. Note this occurs after
+  // all other code is generated. Propagated PHIs through the generated
+  // outer loop might affect the values stored
+  this->generateCodeToStoreLiveOutVariables(LC, 0);
+  this->invokeParallelizedLoop(LC);
+
+  /*
+   * Make PRVGs reentrant to avoid cache sharing.
+   */
+  auto com = this->noelle.getCompilationOptionsManager();
+  if (com->arePRVGsNonDeterministic()) {
+    errs() << "DOALL:  Make PRVGs reentrant\n";
+    this->makePRVGsReentrant();
   }
 
-  return;
+  lsTask->getTaskBody()->print(errs() << "DOALL:  Final parallelized loop:\n");
+  errs() << "\n";
 }
 
-void terminateLCDs(Noelle &noelle, LoopStructure *LS, TerminatorAnalysis &TA) {
+// void Winchester::sliceLoop(Noelle &noelle, LoopStructure *LS) {
+//   auto &M = *noelle.getProgram();
+//   auto LC = noelle.getLoopContent(LS);
+//
+//   auto tm = noelle.getTypesManager();
+//   std::vector<Type *> taskMemoryStructFieldTypes = {
+//       tm->getIntegerType(64), // starting_level
+//       tm->getIntegerType(64), // chunk_size
+//       tm->getIntegerType(64), // remaining_chunk_size
+//       tm->getIntegerType(64), // polling_count
+//   };
+//
+//   auto taskMemoryStructType = StructType::create(
+//       noelle.getProgramContext(), taskMemoryStructFieldTypes,
+//       "task_memory_t");
+//
+//   std::vector<Type *> loopSliceTaskSignatureTypes{
+//       PointerType::getUnqual(taskMemoryStructType),   // *tmem
+//       tm->getIntegerType(64),                         // task_index
+//       PointerType::getUnqual(tm->getIntegerType(64)), // *cxts
+//       PointerType::getUnqual(tm->getIntegerType(64))  // *invariants
+//   };
+//
+//   this->loopSliceTaskSignature =
+//       FunctionType::get(tm->getIntegerType(64),
+//                         ArrayRef<Type *>(loopSliceTaskSignatureTypes),
+//                         false);
+//
+//   /*
+//    * Generate an empty loop-slice task for heartbeat execution.
+//    */
+//   auto lsTask =
+//       new Task(this->loopSliceTaskSignature, M, std::string("LST_0"));
+//
+//
+//   /*
+//    * Initialize the loop-slice task with an entry and exit basic blocks.
+//    */
+//   this->addPredecessorAndSuccessorsBasicBlocksToTasks(LC, {lsTask});
+//   this->fromTaskIDToUserID[lsTask->getID()] = 0;
+//
+//   /*
+//    * NOELLE's ParallelizationTechnique abstraction creates two basic blocks
+//    * in the original loop function.
+//    * For heartbeat, these two basic blocks are not needed.
+//    */
+//   // this->getParLoopEntryPoint()->eraseFromParent();
+//   // this->getParLoopExitPoint()->eraseFromParent();
+//
+//   /*
+//    * Clone the loop into the loop-slice task.
+//    */
+//   this->cloneSequentialLoop(LC, 0);
+//   this->cloneMemoryLocationsLocallyAndRewireLoop(LC, 0);
+//   // lsTask->adjustDataAndControlFlowToUseClones();
+//
+//   errs() << "getParLoopEntryPoint()\n";
+//   errs() << *this->getParLoopEntryPoint() << "\n";
+//   errs() << "getParLoopExitPoint()\n";
+//   errs() << *this->getParLoopExitPoint() << "\n";
+//
+//   if (true) {
+//     errs() << "loopSlice(): loop-slice task after cloning from original
+//     loop\n"; errs() << *lsTask->getTaskBody() << "\n";
+//   }
+//
+//   return;
+// }
+
+void terminateLCDs(Noelle &noelle, LoopContent *LC, TerminatorAnalysis &TA) {
+  auto LS = LC->getLoopStructure();
   auto clauses = TA.getClausesOf(LS);
 
   errs() << "Terminator: Termination for loop " << LS->getID().value() << " ("
@@ -122,7 +212,7 @@ void terminateLCDs(Noelle &noelle, LoopStructure *LS, TerminatorAnalysis &TA) {
   }
 
   Winchester winch(noelle);
-  winch.sliceLoop(noelle, LS);
+  winch.sliceLoop(noelle, LC);
 }
 
 } // namespace arcana::gino

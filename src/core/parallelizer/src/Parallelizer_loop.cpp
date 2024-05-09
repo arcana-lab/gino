@@ -162,8 +162,7 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent, Noelle &noelle,
        * technique.
        */
       // Terminator clause compliance
-      auto *LS = loopContent->getLoopStructure();
-      terminateLCDs(noelle, LS, TA);
+      terminateLCDs(noelle, loopContent, TA);
 
       codeModified = parallelizationTechnique->apply(loopContent, h);
       usedTechnique = parallelizationTechnique;

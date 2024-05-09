@@ -11,7 +11,7 @@
 
 namespace arcana::gino {
 
-void terminateLCDs(noelle::Noelle &noelle, noelle::LoopStructure *LS,
+void terminateLCDs(noelle::Noelle &noelle, noelle::LoopContent *LC,
                    TerminatorAnalysis &TA);
 
 }
