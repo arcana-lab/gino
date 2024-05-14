@@ -25,7 +25,7 @@
 
 namespace arcana::gino {
 
-bool HELIX::replaceOutputSequences(LoopContent *LDI) {
+bool HELIX::parallelizeOutput(LoopContent *LDI) {
 
   auto sccManager = LDI->getSCCManager();
   auto task = (HELIXTask *)this->tasks[0];
@@ -35,8 +35,14 @@ bool HELIX::replaceOutputSequences(LoopContent *LDI) {
   auto taskEnd =
       this->noelle.getProgram()->getFunction("NOELLE_HELIX_Scylax_TaskEnd");
 
-  assert(iterEnd != nullptr && "can't find HELIX IterEnd");
-  assert(taskEnd != nullptr && "can't find HELIX TaskEnd");
+  if (iterEnd == nullptr) {
+    errs() << "Can't find HELIX IterEnd\n";
+    abort();
+  }
+  if (taskEnd == nullptr) {
+    errs() << "Can't find HELIX TaskEnd\n";
+    abort();
+  }
 
   bool modified = false;
 
@@ -64,7 +70,7 @@ bool HELIX::replaceOutputSequences(LoopContent *LDI) {
 
       if (newPrint == nullptr) {
         errs() << "HELIX: Can't find new print: " << newPrintName << "\n";
-        assert(newPrint != nullptr);
+        abort();
       }
 
       IRBuilder<> replacer(I);

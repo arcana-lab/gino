@@ -81,7 +81,7 @@ bool HELIX::apply(LoopContent *LDI, Heuristics *h) {
    * Replace identified output sequences and enable the printer thread if
    * needed.
    */
-  modified |= this->replaceOutputSequences(LDI);
+  modified |= this->parallelizeOutput(LDI);
 
   return modified;
 }

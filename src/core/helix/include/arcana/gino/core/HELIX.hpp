@@ -145,7 +145,7 @@ protected:
 
   void rewireLoopForPeriodicVariables(LoopContent *LDI);
 
-  bool replaceOutputSequences(LoopContent *LDI);
+  bool parallelizeOutput(LoopContent *LDI);
 
   BasicBlock *getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
       LoopContent *LDI,

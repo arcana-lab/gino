@@ -64,7 +64,7 @@ protected:
    * DOALL specific generation
    */
   void rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task);
-  bool replaceOutputSequences(LoopContent *LDI);
+  bool parallelizeOutput(LoopContent *LDI);
 
   /*
    * Interface

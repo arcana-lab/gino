@@ -219,7 +219,7 @@ bool DOALL::apply(LoopContent *LDI, Heuristics *h) {
   /*
    * Replace identified output sequences
    */
-  auto loopHasParallelizedOutput = this->replaceOutputSequences(LDI);
+  auto loopHasParallelizedOutput = this->parallelizeOutput(LDI);
 
   /*
    * Store final results to loop live-out variables. Note this occurs after

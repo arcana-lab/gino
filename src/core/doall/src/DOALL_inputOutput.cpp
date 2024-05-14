@@ -25,7 +25,7 @@
 
 namespace arcana::gino {
 
-bool DOALL::replaceOutputSequences(LoopContent *LDI) {
+bool DOALL::parallelizeOutput(LoopContent *LDI) {
   auto sccManager = LDI->getSCCManager();
   auto task = (DOALLTask *)this->tasks[0];
 
@@ -34,8 +34,14 @@ bool DOALL::replaceOutputSequences(LoopContent *LDI) {
   auto taskEnd =
       this->n.getProgram()->getFunction("NOELLE_DOALL_Scylax_TaskEnd");
 
-  assert(chunkEnd != nullptr && "cant find ChunkEnd");
-  assert(taskEnd != nullptr && "cant find TaskEnd");
+  if (chunkEnd == nullptr) {
+    errs() << "Can't find DOALL ChunkEnd\n";
+    abort();
+  }
+  if (taskEnd == nullptr) {
+    errs() << "Can't find DOALL TaskEnd\n";
+    abort();
+  }
 
   bool modified = false;
 
@@ -64,7 +70,7 @@ bool DOALL::replaceOutputSequences(LoopContent *LDI) {
 
       if (newPrint == nullptr) {
         errs() << "DOALL: Can't find new print: " << newPrintName << "\n";
-        assert(newPrint != nullptr);
+        abort();
       }
 
       IRBuilder<> replacer(I);
