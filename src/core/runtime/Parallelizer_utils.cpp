@@ -605,6 +605,8 @@ void NOELLE_Scylax_FlushBuffer(void *scylaxData, OutputMessageType type) {
 
     chainLink->len = p_args->outputBufferPos;
     strncpy(chainLink->str, p_args->outputBuffer, p_args->outputBufferPos);
+    chainLink->str[p_args->outputBufferPos] = '\0';
+
     p_args->outputBufferPos = 0;
   }
 
