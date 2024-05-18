@@ -31,9 +31,9 @@ bool HELIX::parallelizeOutput(LoopContent *LDI) {
   auto task = (HELIXTask *)this->tasks[0];
 
   auto iterEnd =
-      this->noelle.getProgram()->getFunction("NOELLE_HELIX_Scylax_IterEnd");
+      this->noelle.getProgram()->getFunction("GINO_HELIX_Scylax_IterEnd");
   auto taskEnd =
-      this->noelle.getProgram()->getFunction("NOELLE_HELIX_Scylax_TaskEnd");
+      this->noelle.getProgram()->getFunction("GINO_HELIX_Scylax_TaskEnd");
 
   if (iterEnd == nullptr) {
     errs() << "Can't find HELIX IterEnd\n";

@@ -50,43 +50,6 @@ typedef struct {
   pthread_spinlock_t endLock;
 } DOALL_args_t;
 
-// about 15M for starting size
-#define OUTPUT_BUFFER_SIZE 1 << 24
-
-typedef struct {
-  void *outputQueues;
-  int64_t numCores;
-  int64_t chunkSize;
-  pthread_spinlock_t printLock;
-} NOELLE_Scylax_PrinterArgs_t;
-
-typedef struct {
-  void *outputQueue;
-  char *outputBuffer;
-  size_t outputBufferPos;
-  size_t outputBufferSize;
-  FILE *currentOutputDest;
-  int64_t coreNum;
-} NOELLE_Scylax_PerCoreArgs_t;
-
-enum OutputMessageType {
-  PRINT,
-  CHUNK_DONE,
-  PRINT_CHUNK_DONE,
-  CORE_DONE,
-  PRINT_CORE_DONE
-};
-
-typedef struct {
-  OutputMessageType messageType;
-  FILE *outputDest;
-  char *str;
-  size_t len;
-} NOELLE_OutputMessage_t;
-
-typedef BlockingReaderWriterQueue<NOELLE_OutputMessage_t *>
-    NOELLE_OutputQueue_t;
-
 class NoelleRuntime {
 public:
   NoelleRuntime();
@@ -207,7 +170,6 @@ DispatcherInfo NOELLE_DSWPDispatcher(void *env,
                                      int64_t numberOfQueues);
 
 /******************************************* Utils ********************/
-void NOELLE_Scylax(void *args);
 
 #ifdef RUNTIME_PROFILE
 static __inline__ int64_t rdtsc_s(void) {
@@ -223,6 +185,302 @@ static __inline__ int64_t rdtsc_e(void) {
   return ((unsigned long)a) | (((unsigned long)d) << 32);
 }
 #endif
+
+/*** Scylax Parallel Output *****************************************/
+
+//  As we entered, there could be seen a huge dog with a chain
+//  around its neck. It was painted on the wall, over which was written:
+//  CAVE CANEM!
+//                                             - Petronius, Satyricon .29
+//
+//  The chained dog greeted us with such noise that Ascyltos fell backward
+//  into the fish pond. I, having been terrified even when the dog was merely
+//  a mural, fell in as well while trying to pull him out.
+//
+//                                             - Petronius, Satyricon .72
+
+// about 15M for starting size
+#define OUTPUT_BUFFER_SIZE 1 << 24
+
+typedef struct {
+  void *outputQueues;
+  int64_t numCores;
+  int64_t chunkSize;
+  pthread_spinlock_t printLock;
+} GINO_Scylax_PrinterArgs_t;
+
+typedef struct {
+  void *outputQueue;
+  char *outputBuffer;
+  size_t outputBufferPos;
+  size_t outputBufferSize;
+  FILE *currentOutputDest;
+  int64_t coreNum;
+} GINO_Scylax_PerCoreArgs_t;
+
+enum OutputMessageType {
+  PRINT,
+  CHUNK_DONE,
+  PRINT_CHUNK_DONE,
+  CORE_DONE,
+  PRINT_CORE_DONE
+};
+
+typedef struct {
+  OutputMessageType messageType;
+  FILE *outputDest;
+  char *str;
+  size_t len;
+} GINO_Scylax_OutputMessage_t;
+
+typedef BlockingReaderWriterQueue<GINO_Scylax_OutputMessage_t *>
+    GINO_Scylax_OutputQueue_t;
+
+void GINO_Scylax(void *args) {
+
+  GINO_Scylax_PrinterArgs_t *p_args =
+      reinterpret_cast<GINO_Scylax_PrinterArgs_t *>(args);
+  GINO_Scylax_OutputQueue_t **outputQueues =
+      reinterpret_cast<GINO_Scylax_OutputQueue_t **>(p_args->outputQueues);
+  int64_t numCores = p_args->numCores;
+  int64_t chunkSize = p_args->chunkSize;
+
+  bool coreDone[numCores];
+  for (auto idx = 0; idx < numCores; idx++)
+    coreDone[idx] = 0;
+  int numDoneCores = 0;
+
+  bool nextCore;
+  int coreIdx = 0;
+
+  do {   // loop through active cores until all are done
+    do { // handle messages for this core until the chunk/core is finished
+      nextCore = false;
+
+      if (coreDone[coreIdx]) {
+        nextCore = true;
+
+      } else {
+        GINO_Scylax_OutputMessage_t *currentMessage;
+        outputQueues[coreIdx]->wait_dequeue(currentMessage);
+
+        if (currentMessage->messageType == PRINT
+            || currentMessage->messageType == PRINT_CHUNK_DONE
+            || currentMessage->messageType == PRINT_CORE_DONE) {
+          fputs(currentMessage->str, currentMessage->outputDest);
+          free(currentMessage->str);
+        }
+        if (currentMessage->messageType == CHUNK_DONE
+            || currentMessage->messageType == PRINT_CHUNK_DONE) {
+          nextCore = true;
+        } else if (currentMessage->messageType == CORE_DONE
+                   || currentMessage->messageType == PRINT_CORE_DONE) {
+          nextCore = true;
+          coreDone[coreIdx] = true;
+          numDoneCores++;
+        }
+        free(currentMessage);
+      }
+    } while (!nextCore);
+    coreIdx = ++coreIdx % numCores;
+  } while (numDoneCores != numCores);
+
+  pthread_spin_unlock(&p_args->printLock);
+  return;
+}
+
+void GINO_Scylax_FlushBuffer(void *scylaxData, OutputMessageType type) {
+
+  GINO_Scylax_PerCoreArgs_t *p_args =
+      reinterpret_cast<GINO_Scylax_PerCoreArgs_t *>(scylaxData);
+  GINO_Scylax_OutputQueue_t *outputQueue =
+      reinterpret_cast<GINO_Scylax_OutputQueue_t *>(p_args->outputQueue);
+
+  GINO_Scylax_OutputMessage_t *chainLink =
+      (GINO_Scylax_OutputMessage_t *)malloc(
+          sizeof(GINO_Scylax_OutputMessage_t));
+
+  // Coming from ChunkEnd/TaskEnd, PRINT_ only if applicable
+  if ((type == PRINT_CHUNK_DONE || type == PRINT_CORE_DONE)
+      && p_args->outputBufferPos == 0) {
+    type = type == PRINT_CHUNK_DONE ? CHUNK_DONE : CORE_DONE;
+  }
+  chainLink->messageType = type;
+
+  if (type == PRINT || type == PRINT_CHUNK_DONE || type == PRINT_CORE_DONE) {
+    chainLink->outputDest = p_args->currentOutputDest;
+    chainLink->str = (char *)malloc(p_args->outputBufferPos + 1);
+
+    chainLink->len = p_args->outputBufferPos;
+    strncpy(chainLink->str, p_args->outputBuffer, p_args->outputBufferPos);
+    chainLink->str[p_args->outputBufferPos] = '\0';
+
+    p_args->outputBufferPos = 0;
+  }
+
+  outputQueue->enqueue(chainLink);
+  return;
+}
+
+char *GINO_Scylax_GetWritePtr(void *scylaxData, FILE *stream, int64_t size) {
+  GINO_Scylax_PerCoreArgs_t *p_args =
+      reinterpret_cast<GINO_Scylax_PerCoreArgs_t *>(scylaxData);
+
+  if (p_args->currentOutputDest == nullptr) {
+    p_args->currentOutputDest = stream;
+  } else if (p_args->currentOutputDest != stream) {
+    GINO_Scylax_FlushBuffer(scylaxData, PRINT);
+    p_args->currentOutputDest = stream;
+  }
+
+  if (p_args->outputBufferPos + size > p_args->outputBufferSize) {
+    int64_t newSize = p_args->outputBufferSize << 1;
+    p_args->outputBuffer = (char *)realloc(p_args->outputBuffer, newSize);
+    p_args->outputBufferSize = newSize;
+  }
+
+  return p_args->outputBuffer + p_args->outputBufferPos;
+}
+
+void GINO_Scylax_AdvanceOutputBufferPos(void *scylaxData, int64_t len) {
+  GINO_Scylax_PerCoreArgs_t *p_args =
+      reinterpret_cast<GINO_Scylax_PerCoreArgs_t *>(scylaxData);
+  p_args->outputBufferPos += len;
+  return;
+}
+
+void GINO_DOALL_Scylax_ChunkEnd(int8_t isChunkCompleted, void *scylaxData) {
+  // This function will be called every iteration, doing the check here instead
+  // // simplifies manual IR generation for the same result when optimized
+  if (!isChunkCompleted) {
+    return;
+  }
+  return GINO_Scylax_FlushBuffer(scylaxData, PRINT_CHUNK_DONE);
+}
+
+void GINO_DOALL_Scylax_TaskEnd(void *scylaxData) {
+  return GINO_Scylax_FlushBuffer(scylaxData, PRINT_CORE_DONE);
+}
+
+void GINO_HELIX_Scylax_IterEnd(void *scylaxData) {
+  return GINO_Scylax_FlushBuffer(scylaxData, PRINT_CHUNK_DONE);
+}
+
+void GINO_HELIX_Scylax_TaskEnd(void *scylaxData) {
+  return GINO_Scylax_FlushBuffer(scylaxData, PRINT_CORE_DONE);
+}
+
+int GINO_Scylax_printf(void *scylaxData, const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  int neededBytes = vsnprintf(0, 0, format, args) + 1; // for null
+  va_end(args);
+
+  char *writePtr = GINO_Scylax_GetWritePtr(scylaxData, stdout, neededBytes);
+
+  va_start(args, format);
+  vsprintf(writePtr, format, args);
+  va_end(args);
+
+  GINO_Scylax_AdvanceOutputBufferPos(scylaxData, neededBytes - 1);
+  return neededBytes - 1;
+}
+
+int GINO_Scylax_printf_knownMaxLength(void *scylaxData,
+                                      int64_t maxLen,
+                                      const char *format,
+                                      ...) {
+  char *writePtr = GINO_Scylax_GetWritePtr(scylaxData, stdout, maxLen);
+
+  va_list args;
+  va_start(args, format);
+  int writtenBytes = vsnprintf(writePtr, maxLen, format, args);
+  va_end(args);
+
+  GINO_Scylax_AdvanceOutputBufferPos(scylaxData, writtenBytes);
+  return writtenBytes;
+}
+
+int GINO_Scylax_fprintf(void *scylaxData,
+                        FILE *stream,
+                        const char *format,
+                        ...) {
+  va_list args;
+  va_start(args, format);
+  int neededBytes = vsnprintf(0, 0, format, args) + 1; // for null
+  va_end(args);
+
+  char *writePtr = GINO_Scylax_GetWritePtr(scylaxData, stream, neededBytes);
+
+  va_start(args, format);
+  vsprintf(writePtr, format, args);
+  va_end(args);
+
+  GINO_Scylax_AdvanceOutputBufferPos(scylaxData, neededBytes - 1);
+  return neededBytes - 1;
+}
+
+int GINO_Scylax_fprintf_knownMaxLength(void *scylaxData,
+                                       int64_t maxLen,
+                                       FILE *stream,
+                                       const char *format,
+                                       ...) {
+  char *writePtr = GINO_Scylax_GetWritePtr(scylaxData, stream, maxLen);
+
+  va_list args;
+  va_start(args, format);
+  int writtenBytes = vsnprintf(writePtr, maxLen, format, args);
+  va_end(args);
+
+  GINO_Scylax_AdvanceOutputBufferPos(scylaxData, writtenBytes);
+  return writtenBytes;
+}
+
+int GINO_Scylax_putc(void *scylaxData, int character, FILE *stream) {
+  char *writePtr = GINO_Scylax_GetWritePtr(scylaxData, stream, 2);
+
+  *writePtr = character;
+  *(writePtr + 1) = '\0';
+
+  GINO_Scylax_AdvanceOutputBufferPos(scylaxData, 1);
+  return character;
+}
+
+int GINO_Scylax_putchar(void *scylaxData, int character) {
+  return GINO_Scylax_putc(scylaxData, character, stdout);
+}
+
+int GINO_Scylax_puts(void *scylaxData, const char *str) {
+  int neededBytes = strlen(str) + 2; // for newline + null
+  char *writePtr = GINO_Scylax_GetWritePtr(scylaxData, stdout, neededBytes);
+
+  strcpy(writePtr, str);
+  writePtr[neededBytes - 2] = '\n';
+  writePtr[neededBytes - 1] = '\0';
+
+  GINO_Scylax_AdvanceOutputBufferPos(scylaxData, neededBytes - 1);
+  return 27;
+}
+
+void GINO_Scylax_perror(void *scylaxData, const char *prefix) {
+  bool usePrefix = prefix != 0 && *prefix != 0;
+  char *errorString = strerror(errno);
+
+  if (usePrefix) {
+    int prefixLen = strlen(prefix);
+    int neededBytes = prefixLen + 2 + strlen(errorString) + 2;
+    char *writePtr = GINO_Scylax_GetWritePtr(scylaxData, stderr, neededBytes);
+    strcpy(writePtr, prefix);
+    writePtr[prefixLen] = ':';
+    writePtr[prefixLen + 1] = ' ';
+    strcpy(writePtr + prefixLen + 2, errorString);
+    writePtr[neededBytes - 2] = '\n';
+    writePtr[neededBytes - 1] = '\0';
+
+    GINO_Scylax_AdvanceOutputBufferPos(scylaxData, neededBytes - 1);
+  }
+  return;
+}
 
 /************************************* NOELLE API implementations ***/
 typedef void (*stageFunctionPtr_t)(void *, void *);
@@ -303,12 +561,6 @@ void queuePop64(ThreadSafeQueue<int64_t> *queue, int64_t *val) {
   return;
 }
 
-void queuePushOutputMessage(NOELLE_OutputQueue_t *queue,
-                            NOELLE_OutputMessage_t *val) {
-  queue->enqueue(val);
-  return;
-}
-
 /**********************************************************************
  *                DOALL
  **********************************************************************/
@@ -340,11 +592,10 @@ static void NOELLE_DOALLTrampoline(void *args) {
   return;
 }
 
-NOELLE_Scylax_PerCoreArgs_t *NOELLE_Scylax_CreatePerCoreArgs(
-    int64_t coreNum,
-    void *outputQueue) {
-  NOELLE_Scylax_PerCoreArgs_t *args = (NOELLE_Scylax_PerCoreArgs_t *)malloc(
-      sizeof(NOELLE_Scylax_PerCoreArgs_t));
+GINO_Scylax_PerCoreArgs_t *GINO_Scylax_CreatePerCoreArgs(int64_t coreNum,
+                                                         void *outputQueue) {
+  GINO_Scylax_PerCoreArgs_t *args =
+      (GINO_Scylax_PerCoreArgs_t *)malloc(sizeof(GINO_Scylax_PerCoreArgs_t));
   args->outputQueue = outputQueue;
   args->outputBuffer = (char *)malloc(OUTPUT_BUFFER_SIZE);
   args->outputBufferPos = 0;
@@ -389,12 +640,12 @@ DispatcherInfo NOELLE_DOALLDispatcher(
   /*
    * Allocate the output queues.
    */
-  NOELLE_OutputQueue_t *outputQueues[numCores];
-  NOELLE_Scylax_PerCoreArgs_t *scylaxPerCoreArgs[numCores];
+  GINO_Scylax_OutputQueue_t *outputQueues[numCores];
+  GINO_Scylax_PerCoreArgs_t *scylaxPerCoreArgs[numCores];
   if (useScylax) {
     for (auto idx = 0; idx < numCores; idx++) {
       outputQueues[idx] =
-          new BlockingReaderWriterQueue<NOELLE_OutputMessage_t *>();
+          new BlockingReaderWriterQueue<GINO_Scylax_OutputMessage_t *>();
     }
   }
 
@@ -406,9 +657,9 @@ DispatcherInfo NOELLE_DOALLDispatcher(
     /*
      * Prepare the arguments.
      */
-    NOELLE_Scylax_PerCoreArgs_t *scylaxPerCore = nullptr;
+    GINO_Scylax_PerCoreArgs_t *scylaxPerCore = nullptr;
     if (useScylax) {
-      scylaxPerCore = NOELLE_Scylax_CreatePerCoreArgs(i, outputQueues[i]);
+      scylaxPerCore = GINO_Scylax_CreatePerCoreArgs(i, outputQueues[i]);
       scylaxPerCoreArgs[i] = scylaxPerCore;
     }
 
@@ -442,10 +693,10 @@ DispatcherInfo NOELLE_DOALLDispatcher(
   /*
    * Allocate and prepare print watchdog args
    */
-  NOELLE_Scylax_PrinterArgs_t *scylaxArgs = nullptr;
+  GINO_Scylax_PrinterArgs_t *scylaxArgs = nullptr;
   if (useScylax) {
-    scylaxArgs = (NOELLE_Scylax_PrinterArgs_t *)malloc(
-        sizeof(NOELLE_Scylax_PrinterArgs_t));
+    scylaxArgs =
+        (GINO_Scylax_PrinterArgs_t *)malloc(sizeof(GINO_Scylax_PrinterArgs_t));
     scylaxArgs->outputQueues = (void *)outputQueues;
     scylaxArgs->numCores = numCores;
     scylaxArgs->chunkSize = chunkSize;
@@ -455,12 +706,12 @@ DispatcherInfo NOELLE_DOALLDispatcher(
     /*
      * Submit watchdog
      */
-    virgil->submitAndDetach(NOELLE_Scylax, scylaxArgs);
+    virgil->submitAndDetach(GINO_Scylax, scylaxArgs);
   }
   /*
    * Run a task.
    */
-  NOELLE_Scylax_PerCoreArgs_t scylaxDataForThisCore = {
+  GINO_Scylax_PerCoreArgs_t scylaxDataForThisCore = {
     outputQueues[numCores - 1],
     (char *)malloc(OUTPUT_BUFFER_SIZE),
     0,
@@ -580,243 +831,6 @@ DispatcherInfo NOELLE_DOALLDispatcher(
 #endif
 
   return dispatcherInfo;
-}
-
-void NOELLE_Scylax_FlushBuffer(void *scylaxData, OutputMessageType type) {
-
-  NOELLE_Scylax_PerCoreArgs_t *p_args =
-      reinterpret_cast<NOELLE_Scylax_PerCoreArgs_t *>(scylaxData);
-  NOELLE_OutputQueue_t *outputQueue =
-      reinterpret_cast<NOELLE_OutputQueue_t *>(p_args->outputQueue);
-
-  NOELLE_OutputMessage_t *chainLink =
-      (NOELLE_OutputMessage_t *)malloc(sizeof(NOELLE_OutputMessage_t));
-
-  // Coming from ChunkEnd/TaskEnd, PRINT_ only if applicable
-  if ((type == PRINT_CHUNK_DONE || type == PRINT_CORE_DONE)
-      && p_args->outputBufferPos == 0) {
-    type = type == PRINT_CHUNK_DONE ? CHUNK_DONE : CORE_DONE;
-  }
-  chainLink->messageType = type;
-
-  if (type == PRINT || type == PRINT_CHUNK_DONE || type == PRINT_CORE_DONE) {
-    chainLink->outputDest = p_args->currentOutputDest;
-    chainLink->str = (char *)malloc(p_args->outputBufferPos + 1);
-
-    chainLink->len = p_args->outputBufferPos;
-    strncpy(chainLink->str, p_args->outputBuffer, p_args->outputBufferPos);
-    chainLink->str[p_args->outputBufferPos] = '\0';
-
-    p_args->outputBufferPos = 0;
-  }
-
-  queuePushOutputMessage(outputQueue, chainLink);
-  return;
-}
-
-void NOELLE_DOALL_Scylax_ChunkEnd(int8_t isChunkCompleted, void *scylaxData) {
-  // This function will be called every iteration, doing the check here instead
-  // // simplifies manual IR generation for the same result when optimized
-  if (!isChunkCompleted) {
-    return;
-  }
-  return NOELLE_Scylax_FlushBuffer(scylaxData, PRINT_CHUNK_DONE);
-}
-
-void NOELLE_DOALL_Scylax_TaskEnd(void *scylaxData) {
-  return NOELLE_Scylax_FlushBuffer(scylaxData, PRINT_CORE_DONE);
-}
-
-char *NOELLE_Scylax_GetWritePtr(void *scylaxData, FILE *stream, int64_t size) {
-  NOELLE_Scylax_PerCoreArgs_t *p_args =
-      reinterpret_cast<NOELLE_Scylax_PerCoreArgs_t *>(scylaxData);
-
-  if (p_args->currentOutputDest == nullptr) {
-    p_args->currentOutputDest = stream;
-  } else if (p_args->currentOutputDest != stream) {
-    NOELLE_Scylax_FlushBuffer(scylaxData, PRINT);
-    p_args->currentOutputDest = stream;
-  }
-
-  if (p_args->outputBufferPos + size > p_args->outputBufferSize) {
-    int64_t newSize = p_args->outputBufferSize << 1;
-    p_args->outputBuffer = (char *)realloc(p_args->outputBuffer, newSize);
-    p_args->outputBufferSize = newSize;
-  }
-
-  return p_args->outputBuffer + p_args->outputBufferPos;
-}
-
-void NOELLE_Scylax_AdvanceOutputBufferPos(void *scylaxData, int64_t len) {
-  NOELLE_Scylax_PerCoreArgs_t *p_args =
-      reinterpret_cast<NOELLE_Scylax_PerCoreArgs_t *>(scylaxData);
-  p_args->outputBufferPos += len;
-  return;
-}
-
-int NOELLE_Scylax_printf(void *scylaxData, const char *format, ...) {
-  va_list args;
-  va_start(args, format);
-  int neededBytes = vsnprintf(0, 0, format, args) + 1; // for null
-  va_end(args);
-
-  char *writePtr = NOELLE_Scylax_GetWritePtr(scylaxData, stdout, neededBytes);
-
-  va_start(args, format);
-  vsprintf(writePtr, format, args);
-  va_end(args);
-
-  NOELLE_Scylax_AdvanceOutputBufferPos(scylaxData, neededBytes - 1);
-  return neededBytes - 1;
-}
-
-int NOELLE_Scylax_printf_knownMaxLength(void *scylaxData,
-                                        int64_t maxLen,
-                                        const char *format,
-                                        ...) {
-  char *writePtr = NOELLE_Scylax_GetWritePtr(scylaxData, stdout, maxLen);
-
-  va_list args;
-  va_start(args, format);
-  int writtenBytes = vsnprintf(writePtr, maxLen, format, args);
-  va_end(args);
-
-  NOELLE_Scylax_AdvanceOutputBufferPos(scylaxData, writtenBytes);
-  return writtenBytes;
-}
-
-int NOELLE_Scylax_fprintf(void *scylaxData,
-                          FILE *stream,
-                          const char *format,
-                          ...) {
-  va_list args;
-  va_start(args, format);
-  int neededBytes = vsnprintf(0, 0, format, args) + 1; // for null
-  va_end(args);
-
-  char *writePtr = NOELLE_Scylax_GetWritePtr(scylaxData, stream, neededBytes);
-
-  va_start(args, format);
-  vsprintf(writePtr, format, args);
-  va_end(args);
-
-  NOELLE_Scylax_AdvanceOutputBufferPos(scylaxData, neededBytes - 1);
-  return neededBytes - 1;
-}
-
-int NOELLE_Scylax_fprintf_knownMaxLength(void *scylaxData,
-                                         int64_t maxLen,
-                                         FILE *stream,
-                                         const char *format,
-                                         ...) {
-  char *writePtr = NOELLE_Scylax_GetWritePtr(scylaxData, stream, maxLen);
-
-  va_list args;
-  va_start(args, format);
-  int writtenBytes = vsnprintf(writePtr, maxLen, format, args);
-  va_end(args);
-
-  NOELLE_Scylax_AdvanceOutputBufferPos(scylaxData, writtenBytes);
-  return writtenBytes;
-}
-
-int NOELLE_Scylax_putc(void *scylaxData, int character, FILE *stream) {
-  char *writePtr = NOELLE_Scylax_GetWritePtr(scylaxData, stream, 2);
-
-  *writePtr = character;
-  *(writePtr + 1) = '\0';
-
-  NOELLE_Scylax_AdvanceOutputBufferPos(scylaxData, 1);
-  return character;
-}
-
-int NOELLE_Scylax_putchar(void *scylaxData, int character) {
-  return NOELLE_Scylax_putc(scylaxData, character, stdout);
-}
-
-int NOELLE_Scylax_puts(void *scylaxData, const char *str) {
-  int neededBytes = strlen(str) + 2; // for newline + null
-  char *writePtr = NOELLE_Scylax_GetWritePtr(scylaxData, stdout, neededBytes);
-
-  strcpy(writePtr, str);
-  writePtr[neededBytes - 2] = '\n';
-  writePtr[neededBytes - 1] = 0;
-
-  NOELLE_Scylax_AdvanceOutputBufferPos(scylaxData, neededBytes - 1);
-  return 27;
-}
-
-void NOELLE_Scylax_perror(void *scylaxData, const char *prefix) {
-  bool usePrefix = prefix != 0 && *prefix != 0;
-  char *errorString = strerror(errno);
-
-  if (usePrefix) {
-    int prefixLen = strlen(prefix);
-    int neededBytes = prefixLen + 2 + strlen(errorString) + 2;
-    char *writePtr = NOELLE_Scylax_GetWritePtr(scylaxData, stderr, neededBytes);
-    strcpy(writePtr, prefix);
-    writePtr[prefixLen] = ':';
-    writePtr[prefixLen + 1] = ' ';
-    strcpy(writePtr + prefixLen + 2, errorString);
-    writePtr[neededBytes - 2] = '\n';
-    writePtr[neededBytes - 1] = '0';
-
-    NOELLE_Scylax_AdvanceOutputBufferPos(scylaxData, neededBytes - 1);
-  }
-  return;
-}
-
-void NOELLE_Scylax(void *args) {
-
-  NOELLE_Scylax_PrinterArgs_t *p_args =
-      reinterpret_cast<NOELLE_Scylax_PrinterArgs_t *>(args);
-  NOELLE_OutputQueue_t **outputQueues =
-      reinterpret_cast<NOELLE_OutputQueue_t **>(p_args->outputQueues);
-  int64_t numCores = p_args->numCores;
-  int64_t chunkSize = p_args->chunkSize;
-
-  bool coreDone[numCores];
-  for (auto idx = 0; idx < numCores; idx++)
-    coreDone[idx] = 0;
-  int numDoneCores = 0;
-
-  bool nextCore;
-  int coreIdx = 0;
-
-  do {   // loop through active cores until all are done
-    do { // handle messages for this core until the chunk/core is finished
-      nextCore = false;
-
-      if (coreDone[coreIdx]) {
-        nextCore = true;
-
-      } else {
-        NOELLE_OutputMessage_t *currentMessage;
-        outputQueues[coreIdx]->wait_dequeue(currentMessage);
-
-        if (currentMessage->messageType == PRINT
-            || currentMessage->messageType == PRINT_CHUNK_DONE
-            || currentMessage->messageType == PRINT_CORE_DONE) {
-          fputs(currentMessage->str, currentMessage->outputDest);
-          free(currentMessage->str);
-        }
-        if (currentMessage->messageType == CHUNK_DONE
-            || currentMessage->messageType == PRINT_CHUNK_DONE) {
-          nextCore = true;
-        } else if (currentMessage->messageType == CORE_DONE
-                   || currentMessage->messageType == PRINT_CORE_DONE) {
-          nextCore = true;
-          coreDone[coreIdx] = true;
-          numDoneCores++;
-        }
-        free(currentMessage);
-      }
-    } while (!nextCore);
-    coreIdx = ++coreIdx % numCores;
-  } while (numDoneCores != numCores);
-
-  pthread_spin_unlock(&p_args->printLock);
-  return;
 }
 
 /**********************************************************************
@@ -1008,12 +1022,12 @@ static DispatcherInfo NOELLE_HELIX_dispatcher(
   /*
    * Allocate the output queues.
    */
-  NOELLE_OutputQueue_t *outputQueues[numCores];
-  NOELLE_Scylax_PerCoreArgs_t *scylaxPerCoreArgs[numCores];
+  GINO_Scylax_OutputQueue_t *outputQueues[numCores];
+  GINO_Scylax_PerCoreArgs_t *scylaxPerCoreArgs[numCores];
   if (useScylax) {
     for (auto idx = 0; idx < numCores; idx++) {
       outputQueues[idx] =
-          new BlockingReaderWriterQueue<NOELLE_OutputMessage_t *>();
+          new BlockingReaderWriterQueue<GINO_Scylax_OutputMessage_t *>();
     }
   }
 
@@ -1055,9 +1069,9 @@ static DispatcherInfo NOELLE_HELIX_dispatcher(
     /*
      * Prepare the arguments.
      */
-    NOELLE_Scylax_PerCoreArgs_t *scylaxPerCore = nullptr;
+    GINO_Scylax_PerCoreArgs_t *scylaxPerCore = nullptr;
     if (useScylax) {
-      scylaxPerCore = NOELLE_Scylax_CreatePerCoreArgs(i, outputQueues[i]);
+      scylaxPerCore = GINO_Scylax_CreatePerCoreArgs(i, outputQueues[i]);
       scylaxPerCoreArgs[i] = scylaxPerCore;
     }
     auto argsPerCore = &argsForAllCores[i];
@@ -1109,15 +1123,15 @@ static DispatcherInfo NOELLE_HELIX_dispatcher(
   /*
    * Prepare args and start watchdog thread
    */
-  NOELLE_Scylax_PrinterArgs_t *scylaxArgs = nullptr;
+  GINO_Scylax_PrinterArgs_t *scylaxArgs = nullptr;
   if (useScylax) {
-    scylaxArgs = (NOELLE_Scylax_PrinterArgs_t *)malloc(
-        sizeof(NOELLE_Scylax_PrinterArgs_t));
+    scylaxArgs =
+        (GINO_Scylax_PrinterArgs_t *)malloc(sizeof(GINO_Scylax_PrinterArgs_t));
     scylaxArgs->outputQueues = (void *)outputQueues;
     scylaxArgs->numCores = numCores;
     pthread_spin_init(&scylaxArgs->printLock, PTHREAD_PROCESS_SHARED);
     pthread_spin_lock(&scylaxArgs->printLock);
-    virgil->submitAndDetach(NOELLE_Scylax, scylaxArgs);
+    virgil->submitAndDetach(GINO_Scylax, scylaxArgs);
   }
 
   /*
@@ -1127,8 +1141,8 @@ static DispatcherInfo NOELLE_HELIX_dispatcher(
   auto futureID = 0;
   auto ssArrayPast = (void *)(((uint64_t)ssArrays) + (pastID * ssArraySize));
   auto ssArrayFuture = ssArrays;
-  NOELLE_Scylax_PerCoreArgs_t *scylaxDataForThisCore =
-      NOELLE_Scylax_CreatePerCoreArgs(numCores - 1, outputQueues[numCores - 1]);
+  GINO_Scylax_PerCoreArgs_t *scylaxDataForThisCore =
+      GINO_Scylax_CreatePerCoreArgs(numCores - 1, outputQueues[numCores - 1]);
 
   parallelizedLoop(env,
                    loopCarriedArray,
@@ -1288,14 +1302,6 @@ void HELIX_signal(void *sequentialSegment) {
 #endif
 
   return;
-}
-
-void NOELLE_HELIX_Scylax_IterEnd(void *scylaxData) {
-  return NOELLE_Scylax_FlushBuffer(scylaxData, PRINT_CHUNK_DONE);
-}
-
-void NOELLE_HELIX_Scylax_TaskEnd(void *scylaxData) {
-  return NOELLE_Scylax_FlushBuffer(scylaxData, PRINT_CORE_DONE);
 }
 
 /**********************************************************************

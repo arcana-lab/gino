@@ -61,30 +61,30 @@ extern DispatcherInfo NOELLE_HELIX_dispatcher_sequentialSegments(
     int64_t numOfsequentialSegments,
     int8_t useScylax);
 
-extern int NOELLE_Scylax_printf(void *scylaxData, const char *format, ...);
-extern int NOELLE_Scylax_printf_knownMaxLength(void *scylaxData,
-                                               int64_t neededBytes,
-                                               const char *format,
-                                               ...);
-extern int NOELLE_Scylax_fprintf(void *scylaxData,
-                                 FILE *stream,
-                                 const char *format,
-                                 ...);
-extern int NOELLE_Scylax_fprintf_knownMaxLength(void *scylaxData,
-                                                int64_t neededBytes,
-                                                FILE *stream,
-                                                const char *format,
-                                                ...);
-extern int NOELLE_Scylax_putc(void *scylaxData, int character, FILE *stream);
-extern int NOELLE_Scylax_putchar(void *scylaxData, int character);
-extern int NOELLE_Scylax_puts(void *scylaxData, const char *str);
-extern int NOELLE_Scylax_perror(void *scylaxData, const char *str);
+extern int GINO_Scylax_printf(void *scylaxData, const char *format, ...);
+extern int GINO_Scylax_printf_knownMaxLength(void *scylaxData,
+                                             int64_t neededBytes,
+                                             const char *format,
+                                             ...);
+extern int GINO_Scylax_fprintf(void *scylaxData,
+                               FILE *stream,
+                               const char *format,
+                               ...);
+extern int GINO_Scylax_fprintf_knownMaxLength(void *scylaxData,
+                                              int64_t neededBytes,
+                                              FILE *stream,
+                                              const char *format,
+                                              ...);
+extern int GINO_Scylax_putc(void *scylaxData, int character, FILE *stream);
+extern int GINO_Scylax_putchar(void *scylaxData, int character);
+extern int GINO_Scylax_puts(void *scylaxData, const char *str);
+extern int GINO_Scylax_perror(void *scylaxData, const char *str);
 
-extern void NOELLE_DOALL_Scylax_ChunkEnd(int8_t isChunkCompleted,
-                                         void *scylaxData);
-extern void NOELLE_DOALL_Scylax_TaskEnd(void *scylaxData);
-extern void NOELLE_HELIX_Scylax_IterEnd(void *scylaxData);
-extern void NOELLE_HELIX_Scylax_TaskEnd(void *scylaxData);
+extern void GINO_DOALL_Scylax_ChunkEnd(int8_t isChunkCompleted,
+                                       void *scylaxData);
+extern void GINO_DOALL_Scylax_TaskEnd(void *scylaxData);
+extern void GINO_HELIX_Scylax_IterEnd(void *scylaxData);
+extern void GINO_HELIX_Scylax_TaskEnd(void *scylaxData);
 
 extern uint32_t NOELLE_getAvailableCores(void);
 
@@ -111,19 +111,19 @@ void SIMONE_CAMPANONI_IS_GOING_TO_REMOVE_THIS_FUNCTION(void) {
   rand_r(&s);
   NOELLE_DOALLDispatcher(0, 0, 0, 0, 0);
 
-  NOELLE_Scylax_printf(0, 0, 0, 0, 0, 0);
-  NOELLE_Scylax_printf_knownMaxLength(0, 0, 0, 0);
-  NOELLE_Scylax_fprintf(0, 0, 0, 0, 0, 0);
-  NOELLE_Scylax_fprintf_knownMaxLength(0, 0, 0, 0, 0);
-  NOELLE_Scylax_puts(0, 0);
-  NOELLE_Scylax_putc(0, 0, 0);
-  NOELLE_Scylax_putchar(0, 0);
-  NOELLE_Scylax_perror(0, 0);
+  GINO_Scylax_printf(0, 0, 0, 0, 0, 0);
+  GINO_Scylax_printf_knownMaxLength(0, 0, 0, 0);
+  GINO_Scylax_fprintf(0, 0, 0, 0, 0, 0);
+  GINO_Scylax_fprintf_knownMaxLength(0, 0, 0, 0, 0);
+  GINO_Scylax_puts(0, 0);
+  GINO_Scylax_putc(0, 0, 0);
+  GINO_Scylax_putchar(0, 0);
+  GINO_Scylax_perror(0, 0);
 
-  NOELLE_DOALL_Scylax_ChunkEnd(0, 0);
-  NOELLE_DOALL_Scylax_TaskEnd(0);
-  NOELLE_HELIX_Scylax_IterEnd(0);
-  NOELLE_HELIX_Scylax_TaskEnd(0);
+  GINO_DOALL_Scylax_ChunkEnd(0, 0);
+  GINO_DOALL_Scylax_TaskEnd(0);
+  GINO_HELIX_Scylax_IterEnd(0);
+  GINO_HELIX_Scylax_TaskEnd(0);
 
   NOELLE_getAvailableCores();
 }

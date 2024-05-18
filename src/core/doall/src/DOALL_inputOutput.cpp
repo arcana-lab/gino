@@ -30,9 +30,8 @@ bool DOALL::parallelizeOutput(LoopContent *LDI) {
   auto task = (DOALLTask *)this->tasks[0];
 
   auto chunkEnd =
-      this->n.getProgram()->getFunction("NOELLE_DOALL_Scylax_ChunkEnd");
-  auto taskEnd =
-      this->n.getProgram()->getFunction("NOELLE_DOALL_Scylax_TaskEnd");
+      this->n.getProgram()->getFunction("GINO_DOALL_Scylax_ChunkEnd");
+  auto taskEnd = this->n.getProgram()->getFunction("GINO_DOALL_Scylax_TaskEnd");
 
   if (chunkEnd == nullptr) {
     errs() << "Can't find DOALL ChunkEnd\n";
