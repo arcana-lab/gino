@@ -62,6 +62,9 @@ bool DSWP::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
   auto SCCManager = LDI->getSCCManager();
   auto hasAnyOutputSequenceSCC =
       !SCCManager->getSCCsOfKind(GenericSCC::SCCKind::OUTPUT_SEQUENCE).empty();
+  if (hasAnyOutputSequenceSCC) {
+    return false;
+  }
 
   /*
    * Fetch the profiles
