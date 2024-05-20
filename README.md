@@ -4,6 +4,7 @@
 - [Description](#description)
 - [Logo](#logo)
 - [Version](#version)
+- [Status](#status)
 - [Prerequisites](#prerequisites)
 - [Building GINO](#building-gino)
 - [Testing GINO](#testing-gino)
@@ -61,6 +62,14 @@ The version number is in the form of \[v _Major.Minor.Revision_ \]
 - **Major**: Matches the LLVM releases on a best-effort basis
 - **Minor**: At least once per six months, at most once per month (1/month ~ 2/year)
 - **Revision**: At least once per month, at most twice per week (2/week ~ 1/month)
+
+## Status
+Next is the status of Gino for different LLVM versions.
+
+| LLVM    | Gino's branch   | NOELLE's branch | Regression tests failed out of 30492 tests | Performance tests failed out of 23 tests    |
+| ------: | --------------: | --------------: | -----------------------------------------: | ------------------------------------------: | 
+|   9.0.0 | master          | master          |                                        681 |                                           0 |
+|  14.0.6 | v14             | v14             |                                       1814 |                                           3 |
 
 
 ## Prerequisites
