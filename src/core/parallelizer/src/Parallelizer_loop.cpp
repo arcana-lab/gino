@@ -38,14 +38,9 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent, Noelle &noelle,
   /*
    * Allocate the parallelization techniques.
    */
-  // DSWP dswp{ noelle, this->forceParallelization, !this->forceNoSCCPartition
-  // }; DOALL doall{ noelle }; HELIX helix{ noelle, this->forceParallelization
-  // }; std::vector<ParallelizationTechnique *> parallelizationTechniques{
-  // &doall,
-  //                                                                    &helix,
-  //                                                                    &dswp };
-  DOALL doall{noelle};
-  std::vector<ParallelizationTechnique *> parallelizationTechniques{&doall};
+  Winchester winchester{noelle};
+  std::vector<ParallelizationTechnique *> parallelizationTechniques{
+      &winchester};
 
   /*
    * Fetch the profiles.

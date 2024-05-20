@@ -24,9 +24,8 @@
 
 #include "TerminatorAnalysis.hpp"
 #include "arcana/gino/core/DOALL.hpp"
-#include "arcana/gino/core/DSWP.hpp"
-#include "arcana/gino/core/HELIX.hpp"
 #include "arcana/gino/core/HeuristicsPass.hpp"
+#include "arcana/gino/core/Winchester.hpp"
 #include "noelle/core/Noelle.hpp"
 
 namespace arcana::gino {

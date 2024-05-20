@@ -10,7 +10,7 @@ done
 installDir=$(realpath $( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd )/..)
 
 # Code transformations
-PARALLELIZATION_TECHNIQUES="-load ${installDir}/lib/ParallelizationTechnique.so -load ${installDir}/lib/DSWP.so -load ${installDir}/lib/DOALL.so -load ${installDir}/lib/HELIX.so"
+PARALLELIZATION_TECHNIQUES="-load ${installDir}/lib/ParallelizationTechnique.so -load ${installDir}/lib/DOALL.so -load ${installDir}/lib/Winchester.so"
 
 # Set the command to execute
 cmdToExecute="noelle-load -load ${installDir}/lib/Heuristics.so ${PARALLELIZATION_TECHNIQUES} ${@}"
