@@ -137,8 +137,7 @@ void terminateLCDs(Noelle &noelle, LoopContent *LC, TerminatorAnalysis &TA) {
   //   branchInst); terminationCounter++;
   // }
 
-  errs() << "****************************\n";
-  // Winchester winchester(noelle);
+  Winchester winchester(noelle);
 }
 
 } // namespace arcana::gino
