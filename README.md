@@ -65,7 +65,7 @@ Next is the status of Gino for different LLVM versions.
 
 ## Prerequisites
 - LLVM 9.0.0
-- NOELLE 9.13.1
+- NOELLE 9.15.0
 
 ### Northwestern
 Next is the information for those that have access to the Zythos cluster at Northwestern.
