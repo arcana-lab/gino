@@ -4,7 +4,6 @@
 
 <p><img src="doc/figs/arcana_logo.jpg" align="right" width="350" height="120"/></p>
 
-## Table of Contents
 - [Description](#description)
 - [Version](#version)
 - [Status](#status)
