@@ -48,7 +48,7 @@ A future project may or may not be called Gigi.
 
 
 ## Version
-The latest stable version is 9.1.0 (tag = `v9.1.0`).
+The latest stable version is 14.0.0 (tag = `v14.0.0`).
 
 
 ### Version Numbering Scheme
@@ -73,8 +73,8 @@ Next is the status of Gino for different LLVM versions.
 
 
 ## Prerequisites
-- LLVM 9.0.0
-- NOELLE 9.13.1
+- LLVM 14.0.6
+- NOELLE 14.0.0
 
 ### Northwestern
 Next is the information for those that have access to the Zythos cluster at Northwestern.
