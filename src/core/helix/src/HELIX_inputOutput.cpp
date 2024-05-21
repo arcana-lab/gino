@@ -63,9 +63,10 @@ bool HELIX::parallelizeOutput(LoopContent *LDI) {
 
       auto knownMaxLength = OutputSequenceSCC::printConstantFstringMaxLength(I);
 
-      auto newPrintName =
-          OutputSequenceSCC::replacementName(I->getCalledFunction()->getName(),
-                                             knownMaxLength.has_value());
+      auto newPrintName = ParallelizationTechnique::
+          parallelReplacementNameForInputOutputFunction(
+              I->getCalledFunction()->getName(),
+              knownMaxLength.has_value());
       auto newPrint = this->noelle.getProgram()->getFunction(newPrintName);
 
       if (newPrint == nullptr) {

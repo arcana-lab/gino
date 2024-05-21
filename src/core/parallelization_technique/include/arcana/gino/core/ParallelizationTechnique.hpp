@@ -194,6 +194,10 @@ protected:
 
   Value *fetchCloneInTask(Task *t, Value *original);
 
+  static std::string parallelReplacementNameForInputOutputFunction(
+      const std::string &originalName,
+      bool hasKnownMaxPrintedBytes);
+
   /*
    * Fields
    */

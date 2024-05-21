@@ -1811,6 +1811,22 @@ Value *ParallelizationTechnique::fetchCloneInTask(Task *t, Value *original) {
   return iClone;
 }
 
+std::string ParallelizationTechnique::
+    parallelReplacementNameForInputOutputFunction(
+        const std::string &originalName,
+        bool hasKnownMaxPrintedBytes) {
+
+  int unlocked = originalName.rfind("_unlocked");
+  auto baseName = (unlocked ? originalName.substr(0, unlocked) : originalName);
+
+  if (baseName == "fputc") {
+    baseName = "putc";
+  }
+
+  return "GINO_Scylax_" + baseName
+         + (hasKnownMaxPrintedBytes ? "_knownMaxLength" : "");
+}
+
 BasicBlock *ParallelizationTechnique::getParLoopEntryPoint(void) const {
   return this->entryPointOfParallelizedLoop;
 }
