@@ -57,7 +57,7 @@ bool DOALL::parallelizeOutput(LoopContent *LDI) {
       errs() << "DOALL:  Parallelizing an output sequence:\n";
     }
 
-    for (auto originalI : outputSCC->getOutputInstructions()) {
+    for (auto originalI : outputSCC->getSCC()->getInstructions()) {
       auto I = dyn_cast<CallInst>(fetchCloneInTask(task, originalI));
 
       auto knownMaxLength = OutputSequenceSCC::printConstantFstringMaxLength(I);

@@ -58,7 +58,7 @@ bool HELIX::parallelizeOutput(LoopContent *LDI) {
       errs() << "HELIX: Parallelizing an output sequence:\n";
     }
 
-    for (auto originalI : outputSCC->getOutputInstructions()) {
+    for (auto originalI : outputSCC->getSCC()->getInstructions()) {
       auto I = dyn_cast<CallInst>(fetchCloneInTask(task, originalI));
 
       auto knownMaxLength = OutputSequenceSCC::printConstantFstringMaxLength(I);
@@ -87,8 +87,8 @@ bool HELIX::parallelizeOutput(LoopContent *LDI) {
       I->eraseFromParent();
 
       if (this->verbose >= Verbosity::Maximal) {
-        errs() << "HELIX:\t  " << originalI->getCalledFunction()->getName()
-               << " --> " << newPrint->getName() << "\n";
+        errs() << "HELIX:\t  " << I->getCalledFunction()->getName() << " --> "
+               << newPrint->getName() << "\n";
       }
     }
   }
