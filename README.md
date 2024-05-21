@@ -1,8 +1,10 @@
 # GINO 
 
-## Table of Contents
+[![Active Development](https://img.shields.io/badge/Maintenance%20Level-Actively%20Developed-brightgreen.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
+
+<p><img src="doc/figs/arcana_logo.jpg" align="right" width="350" height="120"/></p>
+
 - [Description](#description)
-- [Logo](#logo)
 - [Version](#version)
 - [Status](#status)
 - [Prerequisites](#prerequisites)
@@ -11,6 +13,7 @@
 - [Repository structure](#repository-structure)
 - [Contributions](#contributions)
 - [License](#license)
+- [Logo](#logo)
 
 
 ## Description
@@ -33,18 +36,6 @@ The only documentation available for GINO is:
 - the [paper](http://www.cs.northwestern.edu/~simonec/files/Research/papers/HELIX_CGO_2022.pdf)
 - the comments within the code
 - the slides we use in the class [Advanced Topics in Compilers](http://www.cs.northwestern.edu/~simonec/ATC.html)
-
-
-## Logo
-![alt text](doc/figs/Gino.jpg)
-
-Gino is the name of our cat we have taken home from the [Tree house cat shelter](https://treehouseanimals.org) when we moved to Chicago.
-
-It was surprisingly hard to find a picture of Gino by himself. 
-He is always playing and cuddling with his brother Gigi like here:
-![alt text](doc/figs/GinoGigi.jpg)
-
-A future project may or may not be called Gigi.
 
 
 ## Version
@@ -86,7 +77,7 @@ source /project/extra/llvm/9.0.0/enable
 
 To enable the correct NOELLE, run the following command from any node of the Zythos cluster:
 ```
-source /project/extra/noelle/9.13.1/enable
+source /project/extra/noelle/9.15.0/enable
 ```
 
 The guide about the Zythos cluster can be downloaded [here](http://www.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf).
@@ -157,3 +148,17 @@ If you have any trouble using this framework feel free to reach out to us for he
 
 ## License
 GINO is licensed under the [MIT License](./LICENSE.md).
+
+
+## Logo
+![alt text](doc/figs/Gino.jpg)
+
+Gino is the name of our cat we have taken home from the [Tree house cat shelter](https://treehouseanimals.org) when we moved to Chicago.
+
+It was surprisingly hard to find a picture of Gino by himself. 
+He is always playing and cuddling with his brother Gigi like here:
+![alt text](doc/figs/GinoGigi.jpg)
+
+A future project may or may not be called Gigi.
+
+
