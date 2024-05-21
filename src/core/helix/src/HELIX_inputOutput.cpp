@@ -61,7 +61,7 @@ bool HELIX::parallelizeOutput(LoopContent *LDI) {
     for (auto originalI : outputSCC->getSCC()->getInstructions()) {
       auto I = dyn_cast<CallInst>(fetchCloneInTask(task, originalI));
 
-      auto knownMaxLength = OutputSequenceSCC::printConstantFstringMaxLength(I);
+      auto knownMaxLength = OutputSequenceSCC::getMaxNumberOfPrintedBytes(I);
 
       auto newPrintName = ParallelizationTechnique::
           parallelReplacementNameForInputOutputFunction(
