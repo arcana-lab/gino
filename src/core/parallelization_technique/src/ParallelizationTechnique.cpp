@@ -1816,8 +1816,10 @@ std::string ParallelizationTechnique::
         const std::string &originalName,
         bool hasKnownMaxPrintedBytes) {
 
-  int unlocked = originalName.rfind("_unlocked");
-  auto baseName = (unlocked ? originalName.substr(0, unlocked) : originalName);
+  auto unlockedSuffixIdx = originalName.rfind("_unlocked");
+  auto baseName = (unlockedSuffixIdx != std::string::npos
+                       ? originalName.substr(0, unlockedSuffixIdx)
+                       : originalName);
 
   if (baseName == "fputc") {
     baseName = "putc";
