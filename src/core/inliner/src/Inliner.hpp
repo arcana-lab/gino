@@ -55,7 +55,10 @@ private:
   bool inlineCallsInvolvedInLoopCarriedDataDependences(Noelle &noelle,
                                                        SCCCAG *pcg);
   bool inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
-      Function *F, LoopContent *LDI, SCCCAG *pcg, Noelle &noelle);
+      Function *F,
+      LoopContent *LDI,
+      SCCCAG *pcg,
+      Noelle &noelle);
 
   void getFunctionsToInline(std::string filename);
 
@@ -68,7 +71,9 @@ private:
    */
   bool canInlineWithoutRecursiveLoop(Function *parentF, Function *childF);
 
-  bool inlineFunctionCall(Hot *p, Function *F, Function *childF,
+  bool inlineFunctionCall(Hot *p,
+                          Function *F,
+                          Function *childF,
                           CallInst *call);
 
   int getNextPreorderLoopAfter(Function *F, CallInst *call);

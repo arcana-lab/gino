@@ -25,8 +25,11 @@
 namespace arcana::gino {
 
 std::vector<LoopContent *> TimeSaved::selectTheOrderOfLoopsToParallelize(
-    Noelle &noelle, Hot *profiles, noelle::LoopTree *tree,
-    uint64_t &maxTimeSaved, uint64_t &maxTimeSavedWithDOALLOnly) {
+    Noelle &noelle,
+    Hot *profiles,
+    noelle::LoopTree *tree,
+    uint64_t &maxTimeSaved,
+    uint64_t &maxTimeSavedWithDOALLOnly) {
   std::vector<LoopContent *> selectedLoops{};
 
   /*
@@ -41,14 +44,17 @@ std::vector<LoopContent *> TimeSaved::selectTheOrderOfLoopsToParallelize(
   std::map<LoopContent *, uint64_t> timeSavedLoops;
   std::map<LoopStructure *, bool> doallLoops;
   std::map<LoopStructure *, uint64_t> timeSavedPerLoop;
-  auto selector = [&noelle, &timeSavedLoops, &timeSavedPerLoop, profiles,
+  auto selector = [&noelle,
+                   &timeSavedLoops,
+                   &timeSavedPerLoop,
+                   profiles,
                    &doallLoops](LoopTree *n, uint32_t treeLevel) -> bool {
     /*
      * Fetch the loop.
      */
     auto ls = n->getLoop();
-    auto optimizations = {LoopContentOptimization::MEMORY_CLONING_ID,
-                          LoopContentOptimization::THREAD_SAFE_LIBRARY_ID};
+    auto optimizations = { LoopContentOptimization::MEMORY_CLONING_ID,
+                           LoopContentOptimization::THREAD_SAFE_LIBRARY_ID };
     auto ldi = noelle.getLoopContent(ls, optimizations);
 
     /*
@@ -101,8 +107,8 @@ std::vector<LoopContent *> TimeSaved::selectTheOrderOfLoopsToParallelize(
     /*
      * Compute the total amount of time saved by parallelizing this loop.
      */
-    auto savedTimeTotal = ((double)timeSavedLoops[ldi]) /
-                          ((double)profiles->getTotalInstructions());
+    auto savedTimeTotal = ((double)timeSavedLoops[ldi])
+                          / ((double)profiles->getTotalInstructions());
     savedTimeTotal *= 100;
 
     /*
@@ -174,10 +180,10 @@ std::vector<LoopContent *> TimeSaved::selectTheOrderOfLoopsToParallelize(
     /*
      * Compute the savings
      */
-    auto savedTimeRelative = ((double)timeSavedLoops[l]) /
-                             ((double)profiles->getTotalInstructions(ls));
-    auto savedTimeTotal = ((double)timeSavedLoops[l]) /
-                          ((double)profiles->getTotalInstructions());
+    auto savedTimeRelative = ((double)timeSavedLoops[l])
+                             / ((double)profiles->getTotalInstructions(ls));
+    auto savedTimeTotal = ((double)timeSavedLoops[l])
+                          / ((double)profiles->getTotalInstructions());
     savedTimeRelative *= 100;
     savedTimeTotal *= 100;
 
@@ -199,8 +205,9 @@ std::vector<LoopContent *> TimeSaved::selectTheOrderOfLoopsToParallelize(
     errs() << "TimeSaved: LoopSelector:      Coverage: " << hotness << "\%\n";
     errs() << "TimeSaved: LoopSelector:      Whole-program savings = "
            << savedTimeTotal << "%\n";
-    errs() << "TimeSaved: LoopSelector:      Loop savings = "
-           << savedTimeRelative << "%\n";
+    errs()
+        << "TimeSaved: LoopSelector:      Loop savings = " << savedTimeRelative
+        << "%\n";
   }
   errs() << "TimeSaved: LoopSelector: End\n";
 
