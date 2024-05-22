@@ -24,7 +24,7 @@
 
 #include "noelle/core/SystemHeaders.hpp"
 
-using namespace arcana::noelle ;
+using namespace arcana::noelle;
 
 namespace arcana::gino {
 

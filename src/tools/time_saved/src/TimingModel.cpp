@@ -25,7 +25,8 @@
 namespace arcana::gino {
 
 LoopTimingModel::LoopTimingModel(Noelle &noelle, LoopContent &ldi)
-    : n{noelle}, loop{ldi} {
+  : n{ noelle },
+    loop{ ldi } {
   return;
 }
 

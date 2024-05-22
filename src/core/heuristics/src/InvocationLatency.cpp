@@ -22,7 +22,7 @@
 #include "arcana/gino/core/InvocationLatency.hpp"
 
 using namespace llvm;
-using namespace arcana::noelle ;
+using namespace arcana::noelle;
 
 namespace arcana::gino {
 
@@ -164,4 +164,4 @@ std::set<SCC *> &InvocationLatency::memoizeParents(
   return clonableParents[scc];
 }
 
-}
+} // namespace arcana::gino

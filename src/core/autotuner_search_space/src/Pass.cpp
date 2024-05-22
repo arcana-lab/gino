@@ -25,7 +25,7 @@
 #include <fstream>
 #include <string>
 
-using namespace arcana::noelle ;
+using namespace arcana::noelle;
 
 namespace arcana::gino {
 

@@ -33,14 +33,18 @@ namespace arcana::gino {
 class PartitionCostAnalysis {
 public:
   PartitionCostAnalysis(
-      InvocationLatency &IL, SCCDAGPartitioner &p, SCCDAGAttrs &, int numCores,
+      InvocationLatency &IL,
+      SCCDAGPartitioner &p,
+      SCCDAGAttrs &,
+      int numCores,
       std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity verbose);
 
   void traverseAllPartitionSubsets();
 
   virtual void checkIfShouldMerge(
-      SCCSet *sA, SCCSet *sB,
+      SCCSet *sA,
+      SCCSet *sB,
       std::function<bool(GenericSCC *scc)> canBeRematerialized) = 0;
 
   void resetCandidateSubsetInfo();

@@ -34,7 +34,7 @@
 namespace arcana::gino {
 
 class HELIX
-    : public ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences {
+  : public ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences {
 public:
   /*
    * Methods
@@ -49,8 +49,8 @@ public:
 
   Function *getTaskFunction(void) const;
 
-  SCC *
-  getTheSequentialSCCThatCreatesTheSequentialPrologue(LoopContent *LDI) const;
+  SCC *getTheSequentialSCCThatCreatesTheSequentialPrologue(
+      LoopContent *LDI) const;
 
   bool doesHaveASequentialPrologue(LoopContent *LDI) const;
 
@@ -65,7 +65,8 @@ public:
 protected:
   virtual HELIXTask *createParallelizableTask(LoopContent *LDI, Heuristics *h);
 
-  virtual bool synchronizeTask(LoopContent *LDI, Heuristics *h,
+  virtual bool synchronizeTask(LoopContent *LDI,
+                               Heuristics *h,
                                HELIXTask *helixTask);
 
   virtual void invokeParallelizedLoop(LoopContent *LDI,
@@ -76,32 +77,39 @@ protected:
                                         HELIXTask *helixTask);
 
   void createLoadsAndStoresToSpilledLCD(
-      LoopContent *LDI, DataFlowResult *reachabilityDFR,
+      LoopContent *LDI,
+      DataFlowResult *reachabilityDFR,
       std::unordered_map<BasicBlock *, BasicBlock *> &cloneToOriginalBlockMap,
-      SpilledLoopCarriedDependence *spill, Value *spillEnvPtr);
+      SpilledLoopCarriedDependence *spill,
+      Value *spillEnvPtr);
 
   void insertStoresToSpilledLCD(
       LoopContent *LDI,
       std::unordered_map<BasicBlock *, BasicBlock *> &cloneToOriginalBlockMap,
-      SpilledLoopCarriedDependence *spill, Value *spillEnvPtr);
+      SpilledLoopCarriedDependence *spill,
+      Value *spillEnvPtr);
 
   void defineFrontierForLoadsToSpilledLCD(
-      LoopContent *LDI, DataFlowResult *reachabilityDFR,
+      LoopContent *LDI,
+      DataFlowResult *reachabilityDFR,
       std::unordered_map<BasicBlock *, BasicBlock *> &cloneToOriginalBlockMap,
-      SpilledLoopCarriedDependence *spill, DominatorSummary *originalLoopDS,
+      SpilledLoopCarriedDependence *spill,
+      DominatorSummary *originalLoopDS,
       std::unordered_set<BasicBlock *> &originalFrontierBlocks);
 
   void replaceUsesOfSpilledPHIWithLoads(
       LoopContent *LDI,
       std::unordered_map<BasicBlock *, BasicBlock *> &cloneToOriginalBlockMap,
-      SpilledLoopCarriedDependence *spill, Value *spillEnvPtr,
+      SpilledLoopCarriedDependence *spill,
+      Value *spillEnvPtr,
       DominatorSummary *originalLoopDS,
       std::unordered_set<BasicBlock *> &originalFrontierBlocks);
 
-  std::vector<SequentialSegment *>
-  identifySequentialSegments(LoopContent *originalLDI, LoopContent *LDI,
-                             DataFlowResult *reachabilityDFR,
-                             HELIXTask *helixTask);
+  std::vector<SequentialSegment *> identifySequentialSegments(
+      LoopContent *originalLDI,
+      LoopContent *LDI,
+      DataFlowResult *reachabilityDFR,
+      HELIXTask *helixTask);
 
   void squeezeSequentialSegments(LoopContent *LDI,
                                  std::vector<SequentialSegment *> *sss,
@@ -119,16 +127,17 @@ protected:
 
   virtual CallInst *injectSignalCall(IRBuilder<> &builder, uint32_t ssID);
 
-  virtual void
-  computeAndCachePointerOfPastSequentialSegment(HELIXTask *helixTask,
-                                                uint32_t ssID);
+  virtual void computeAndCachePointerOfPastSequentialSegment(
+      HELIXTask *helixTask,
+      uint32_t ssID);
 
-  virtual void
-  computeAndCachePointerOfFutureSequentialSegment(HELIXTask *helixTask,
-                                                  uint32_t ssID);
+  virtual void computeAndCachePointerOfFutureSequentialSegment(
+      HELIXTask *helixTask,
+      uint32_t ssID);
 
   virtual Value *getPointerOfSequentialSegment(HELIXTask *helixTask,
-                                               Value *ssArray, uint32_t ssID);
+                                               Value *ssArray,
+                                               uint32_t ssID);
 
   void inlineCalls(Task *task);
 
@@ -137,7 +146,9 @@ protected:
   void rewireLoopForPeriodicVariables(LoopContent *LDI);
 
   BasicBlock *getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
-      LoopContent *LDI, uint32_t taskIndex, BasicBlock &bb) override;
+      LoopContent *LDI,
+      uint32_t taskIndex,
+      BasicBlock &bb) override;
 
   /*
    * Fields
