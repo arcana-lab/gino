@@ -24,9 +24,15 @@
 namespace arcana::gino {
 
 Inliner::Inliner()
-    : ModulePass{ID}, maxNumberOfFunctionCallsToInlinePerLoop{10},
-      maxProgramInstructions{50000}, fnsAffected{}, parentFns{}, childrenFns{},
-      loopsToCheck{}, depthOrderedFns{}, preOrderedLoops{} {
+  : ModulePass{ ID },
+    maxNumberOfFunctionCallsToInlinePerLoop{ 10 },
+    maxProgramInstructions{ 50000 },
+    fnsAffected{},
+    parentFns{},
+    childrenFns{},
+    loopsToCheck{},
+    depthOrderedFns{},
+    preOrderedLoops{} {
 
   return;
 }
@@ -65,8 +71,9 @@ bool Inliner::runOnModule(Module &M) {
    * Check if the program is already too big
    */
   auto programInstructions = noelle.numberOfProgramInstructions();
-  errs() << "Inliner:   Number of program instructions = "
-         << programInstructions << "\n";
+  errs()
+      << "Inliner:   Number of program instructions = " << programInstructions
+      << "\n";
   if (programInstructions >= this->maxProgramInstructions) {
     errs() << "Inliner:     There are too many instructions. We'll not inline "
               "anything\n";
@@ -395,7 +402,9 @@ bool Inliner::canInlineWithoutRecursiveLoop(Function *parentF,
   return true;
 }
 
-bool Inliner::inlineFunctionCall(Hot *p, Function *F, Function *childF,
+bool Inliner::inlineFunctionCall(Hot *p,
+                                 Function *F,
+                                 Function *childF,
                                  CallInst *call) {
 
   /*
@@ -431,17 +440,17 @@ bool Inliner::inlineFunctionCall(Hot *p, Function *F, Function *childF,
    * Try to inline the function.
    */
   if (this->verbose != Verbosity::Disabled) {
-    call->print(errs() << "Inliner:   Inlining in: " << F->getName() << " ("
-                       << p->getStaticInstructions(F)
-                       << " instructions. The inlining will add "
-                       << p->getStaticInstructions(childF)
-                       << " instructions), ");
+    call->print(errs()
+                << "Inliner:   Inlining in: " << F->getName() << " ("
+                << p->getStaticInstructions(F)
+                << " instructions. The inlining will add "
+                << p->getStaticInstructions(childF) << " instructions), ");
     errs() << "\n";
   }
   int loopIndAfterCall = getNextPreorderLoopAfter(F, call);
   auto &parentCalls = orderedCalls[F];
-  auto callInd = std::find(parentCalls.begin(), parentCalls.end(), call) -
-                 parentCalls.begin();
+  auto callInd = std::find(parentCalls.begin(), parentCalls.end(), call)
+                 - parentCalls.begin();
 
   /*
    * Inline the call.
@@ -484,7 +493,8 @@ int Inliner::getNextPreorderLoopAfter(Function *F, CallInst *call) {
 /*
  * Function and loop ordering
  */
-void Inliner::adjustLoopOrdersAfterInline(Function *parentF, Function *childF,
+void Inliner::adjustLoopOrdersAfterInline(Function *parentF,
+                                          Function *childF,
                                           int nextLoopInd) {
   bool parentHasLoops = preOrderedLoops.find(parentF) != preOrderedLoops.end();
   bool childHasLoops = preOrderedLoops.find(childF) != preOrderedLoops.end();
@@ -521,7 +531,8 @@ void Inliner::adjustLoopOrdersAfterInline(Function *parentF, Function *childF,
 // therefore depthOrdered and fnOrder [in collectInDepthOrderFns] doesn't take
 // into account the defferent function that never got an order. This causes the
 // number to be out between successive iterations of this inliner.
-void Inliner::adjustFnGraphAfterInline(Function *parentF, Function *childF,
+void Inliner::adjustFnGraphAfterInline(Function *parentF,
+                                       Function *childF,
                                        int callInd) {
   auto &parentCalled = orderedCalled[parentF];
   auto &childCalled = orderedCalled[childF];
