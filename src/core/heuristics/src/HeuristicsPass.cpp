@@ -26,16 +26,22 @@
 using namespace llvm;
 using namespace arcana::gino;
 
-bool HeuristicsPass::doInitialization(Module &M) { return false; }
+bool HeuristicsPass::doInitialization(Module &M) {
+  return false;
+}
 
 void HeuristicsPass::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.setPreservesAll();
   return;
 }
 
-bool HeuristicsPass::runOnModule(Module &M) { return false; }
+bool HeuristicsPass::runOnModule(Module &M) {
+  return false;
+}
 
-HeuristicsPass::HeuristicsPass() : ModulePass{ID} { return; }
+HeuristicsPass::HeuristicsPass() : ModulePass{ ID } {
+  return;
+}
 
 Heuristics *HeuristicsPass::getHeuristics(Noelle &noelle) {
   return new Heuristics(noelle);
@@ -47,17 +53,18 @@ static RegisterPass<HeuristicsPass> X("heuristics", "Heuristics about code");
 
 // Next there is code to register your pass to "clang"
 static HeuristicsPass *_PassMaker = NULL;
-static RegisterStandardPasses
-    _RegPass1(PassManagerBuilder::EP_OptimizerLast,
-              [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-                if (!_PassMaker) {
-                  PM.add(_PassMaker = new HeuristicsPass());
-                }
-              }); // ** for -Ox
-static RegisterStandardPasses
-    _RegPass2(PassManagerBuilder::EP_EnabledOnOptLevel0,
-              [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-                if (!_PassMaker) {
-                  PM.add(_PassMaker = new HeuristicsPass());
-                }
-              }); // ** for -O0
+static RegisterStandardPasses _RegPass1(PassManagerBuilder::EP_OptimizerLast,
+                                        [](const PassManagerBuilder &,
+                                           legacy::PassManagerBase &PM) {
+                                          if (!_PassMaker) {
+                                            PM.add(_PassMaker =
+                                                       new HeuristicsPass());
+                                          }
+                                        }); // ** for -Ox
+static RegisterStandardPasses _RegPass2(
+    PassManagerBuilder::EP_EnabledOnOptLevel0,
+    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
+      if (!_PassMaker) {
+        PM.add(_PassMaker = new HeuristicsPass());
+      }
+    }); // ** for -O0

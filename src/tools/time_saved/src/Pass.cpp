@@ -23,9 +23,13 @@
 
 namespace arcana::gino {
 
-TimeSaved::TimeSaved() : ModulePass{ID}, forceParallelization{true} { return; }
+TimeSaved::TimeSaved() : ModulePass{ ID }, forceParallelization{ true } {
+  return;
+}
 
-bool TimeSaved::doInitialization(Module &M) { return false; }
+bool TimeSaved::doInitialization(Module &M) {
+  return false;
+}
 
 bool TimeSaved::runOnModule(Module &M) {
   errs() << "TimeSaved: Start\n";
@@ -74,8 +78,12 @@ bool TimeSaved::runOnModule(Module &M) {
      */
     uint64_t maxTimeSaved = 0;
     uint64_t maxTimeSavedWithDOALLOnly = 0;
-    auto loopsToParallelize = this->selectTheOrderOfLoopsToParallelize(
-        noelle, profiles, tree, maxTimeSaved, maxTimeSavedWithDOALLOnly);
+    auto loopsToParallelize =
+        this->selectTheOrderOfLoopsToParallelize(noelle,
+                                                 profiles,
+                                                 tree,
+                                                 maxTimeSaved,
+                                                 maxTimeSavedWithDOALLOnly);
     programMaxTimeSaved += maxTimeSaved;
     programMaxTimeSavedWithDOALLOnly += maxTimeSavedWithDOALLOnly;
 
@@ -90,17 +98,17 @@ bool TimeSaved::runOnModule(Module &M) {
   /*
    * Print statistics.
    */
-  auto savedTimeTotal = ((double)programMaxTimeSaved) /
-                        ((double)profiles->getTotalInstructions());
+  auto savedTimeTotal = ((double)programMaxTimeSaved)
+                        / ((double)profiles->getTotalInstructions());
   savedTimeTotal *= 100;
   errs() << "TimeSaved:   Maximum time saved = " << savedTimeTotal << "% ("
          << programMaxTimeSaved << ")\n";
-  savedTimeTotal = ((double)programMaxTimeSavedWithDOALLOnly) /
-                   ((double)profiles->getTotalInstructions());
+  savedTimeTotal = ((double)programMaxTimeSavedWithDOALLOnly)
+                   / ((double)profiles->getTotalInstructions());
   savedTimeTotal *= 100;
-  errs() << "TimeSaved:   Maximum time saved with DOALL only = "
-         << savedTimeTotal << "% (" << programMaxTimeSavedWithDOALLOnly
-         << ")\n";
+  errs()
+      << "TimeSaved:   Maximum time saved with DOALL only = " << savedTimeTotal
+      << "% (" << programMaxTimeSavedWithDOALLOnly << ")\n";
 
   errs() << "TimeSaved: Exit\n";
   return false;
@@ -128,22 +136,23 @@ void TimeSaved::getAnalysisUsage(AnalysisUsage &AU) const {
 
 // Next there is code to register your pass to "opt"
 char arcana::gino::TimeSaved::ID = 0;
-static RegisterPass<arcana::gino::TimeSaved>
-    X("TimeSaved", "Print estimated time saved by parallelization");
+static RegisterPass<arcana::gino::TimeSaved> X(
+    "TimeSaved",
+    "Print estimated time saved by parallelization");
 
 // Next there is code to register your pass to "clang"
 static arcana::gino::TimeSaved *_PassMaker = NULL;
-static RegisterStandardPasses
-    _RegPass1(PassManagerBuilder::EP_OptimizerLast,
-              [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-                if (!_PassMaker) {
-                  PM.add(_PassMaker = new arcana::gino::TimeSaved());
-                }
-              }); // ** for -Ox
-static RegisterStandardPasses
-    _RegPass2(PassManagerBuilder::EP_EnabledOnOptLevel0,
-              [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-                if (!_PassMaker) {
-                  PM.add(_PassMaker = new arcana::gino::TimeSaved());
-                }
-              }); // ** for -O0
+static RegisterStandardPasses _RegPass1(
+    PassManagerBuilder::EP_OptimizerLast,
+    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
+      if (!_PassMaker) {
+        PM.add(_PassMaker = new arcana::gino::TimeSaved());
+      }
+    }); // ** for -Ox
+static RegisterStandardPasses _RegPass2(
+    PassManagerBuilder::EP_EnabledOnOptLevel0,
+    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
+      if (!_PassMaker) {
+        PM.add(_PassMaker = new arcana::gino::TimeSaved());
+      }
+    }); // ** for -O0

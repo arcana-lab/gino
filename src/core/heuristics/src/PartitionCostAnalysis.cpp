@@ -125,4 +125,4 @@ void PartitionCostAnalysis::printCandidate(raw_ostream &stream) {
          << " Instruction count: " << numInstructionsInSetsBeingMerged << "\n";
 }
 
-}
+} // namespace arcana::gino
