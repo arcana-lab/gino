@@ -47,7 +47,7 @@ if test $? -ne 0 ; then
   echo "ERROR: the following test did not pass because the compilation timed out" ;
   echo "  Test = `pwd`" ;
   echo "  Node = `hostname`" ;
-  echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+  flock $errorFile --command echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
   exit 0 ;
 fi
 
@@ -56,6 +56,13 @@ make input.txt
 
 # Baseline
 ./baseline `cat input.txt` &> output_baseline.txt ;
+if test $? -ne 0 ; then
+   echo "ERROR: the following test did not pass because its baseline execution failed" ;
+  echo "  Test = `pwd`" ;
+  echo "  Node = `hostname`" ;
+  flock $errorFile --command echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+  exit 0 ;
+fi
 
 # Test the parallelized binary
 for i in `seq 0 5` ; do
@@ -66,7 +73,7 @@ for i in `seq 0 5` ; do
     echo "ERROR: the following test did not pass because its parallel execution timed out" ;
     echo "  Test = `pwd`" ;
     echo "  Node = `hostname`" ;
-    echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+    flock $errorFile --command echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
     exit 0 ;
   fi
 
@@ -74,7 +81,7 @@ for i in `seq 0 5` ; do
   cmp output_baseline.txt output_parallelized.txt ;
   if test $? -ne 0 ; then
     echo "ERROR: the test didn't pass" ;
-    echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+    flock $errorFile --command echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
     exit 0;
   fi
 
