@@ -32,6 +32,8 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
 
   auto OuterHeader = BasicBlock::Create(Context, "", F);
 
+  Value *InnerOriginalStartIdx = nullptr;
+
   // All predecessors of the original header (InnerHeader) must
   // now branch to the new header
   for (int i = 0; i < LGInnerPHI->getNumIncomingValues(); i++) {
@@ -40,6 +42,10 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
       // BB is not a latch of the loop.
       // It needs to be rewired to the new header
       BB->getTerminator()->replaceSuccessorWith(InnerHeader, OuterHeader);
+
+      // The induction variable must have only one initial value
+      assert(InnerOriginalStartIdx == nullptr);
+      InnerOriginalStartIdx = LGInnerPHI->getIncomingValue(i);
     }
   }
 
@@ -104,26 +110,33 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
   auto OuterIncrement = Builder.CreateAdd(LGOuterPHI, Builder.getInt32(1));
   Builder.CreateBr(OuterHeader);
   LGOuterPHI->setIncomingValueForBlock(OuterLatch, OuterIncrement);
+  LGOuterPHI->setIncomingValue(0, Builder.getInt32(0));
 
   auto InnerCmp = LGIV->getHeaderCompareInstructionToComputeExitCondition();
-  auto NumIterations = InnerCmp->getOperand(1);
 
   Builder.SetInsertPoint(OuterHeader);
 
-  // InnerStartIdx = i * N / numBlocks
-  auto InnerStartIdx =
+  // N - InnerOriginalStartIdx
+  auto NumIterations =
+      Builder.CreateSub(InnerCmp->getOperand(1), InnerOriginalStartIdx);
+
+  // InnerNewStartIdx = i * (N - i_start) / numBlocks + i_start
+  auto InnerNewStartIdx = Builder.CreateAdd(
       Builder.CreateSDiv(Builder.CreateMul(LGOuterPHI, NumIterations),
-                         Builder.getInt32(numBlocks));
+                         Builder.getInt32(numBlocks)),
+      InnerOriginalStartIdx);
 
-  // InnerEndIdx = (i + 1) * N / numBlocks
-  auto InnerEndIdx = Builder.CreateSDiv(
-      Builder.CreateMul(Builder.CreateAdd(LGOuterPHI, Builder.getInt32(1)),
-                        NumIterations),
-      Builder.getInt32(numBlocks));
+  // InnerNewEndIdx = (i + 1) * (N - i_start) / numBlocks + i_start
+  auto InnerNewEndIdx = Builder.CreateAdd(
+      Builder.CreateSDiv(
+          Builder.CreateMul(Builder.CreateAdd(LGOuterPHI, Builder.getInt32(1)),
+                            NumIterations),
+          Builder.getInt32(numBlocks)),
+      InnerOriginalStartIdx);
 
-  // for (...; j < InnerEndIdx; ...)
-  LGInnerPHI->setIncomingValueForBlock(OuterHeader, InnerStartIdx);
-  InnerCmp->setOperand(1, InnerEndIdx);
+  // for (...; j < InnerNewEndIdx; ...)
+  LGInnerPHI->setIncomingValueForBlock(OuterHeader, InnerNewStartIdx);
+  InnerCmp->setOperand(1, InnerNewEndIdx);
 
   Builder.SetInsertPoint(OuterHeader);
   auto OuterCmp =
