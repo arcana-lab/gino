@@ -15,7 +15,6 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
   auto LoopID = LS->getID().value();
   auto IVM = LC->getInductionVariableManager();
   auto LGIV = IVM->getLoopGoverningInductionVariable(*LC->getLoopStructure());
-  auto IV = LGIV->getInductionVariable();
   auto ECV = LGIV->getExitConditionValue();
   auto LGInnerPHI = LGIV->getInductionVariable()->getLoopEntryPHI();
   auto InnerLatches = LS->getLatches();
@@ -106,13 +105,30 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
   Builder.CreateBr(OuterHeader);
   LGOuterPHI->setIncomingValueForBlock(OuterLatch, OuterIncrement);
 
+  auto InnerCmp = LGIV->getHeaderCompareInstructionToComputeExitCondition();
+  auto NumIterations = InnerCmp->getOperand(1);
+
+  Builder.SetInsertPoint(OuterHeader);
+
+  // InnerStartIdx = i * N / numBlocks
+  auto InnerStartIdx =
+      Builder.CreateSDiv(Builder.CreateMul(LGOuterPHI, NumIterations),
+                         Builder.getInt32(numBlocks));
+
+  // InnerEndIdx = (i + 1) * N / numBlocks
+  auto InnerEndIdx = Builder.CreateSDiv(
+      Builder.CreateMul(Builder.CreateAdd(LGOuterPHI, Builder.getInt32(1)),
+                        NumIterations),
+      Builder.getInt32(numBlocks));
+
+  // for (...; j < InnerEndIdx; ...)
+  LGInnerPHI->setIncomingValueForBlock(OuterHeader, InnerStartIdx);
+  InnerCmp->setOperand(1, InnerEndIdx);
+
   Builder.SetInsertPoint(OuterHeader);
   auto OuterCmp =
       Builder.CreateICmpSLT(LGOuterPHI, Builder.getInt32(numBlocks));
   auto OuterBranch = Builder.CreateCondBr(OuterCmp, InnerHeader, ExitBB);
-
-  Builder.SetInsertPoint(InnerHeader->getFirstNonPHI());
-  auto InnerIV = Builder.CreateMul(LGInnerPHI, Builder.getInt32(numBlocks));
 
   errs() << *F << "\n";
 

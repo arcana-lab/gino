@@ -46,11 +46,13 @@ bool LoopBlockerPass::runOnModule(Module &M) {
 
     if (toBlock) {
       auto LC = noelle.getLoopContent(LS);
-      auto header = blockLoop(LC, 1);
+      const int numBlocks = 4;
+      auto header = blockLoop(LC, numBlocks);
       if (header == nullptr) {
         errs() << "LoopBlocker: loopID = " << loopID << " can't be blocked\n";
       } else {
-        errs() << "LoopBlocker: blocked loopID = " << loopID << "\n";
+        errs() << "LoopBlocker: blocked loopID = " << loopID
+               << ", num blocks = " << numBlocks << "\n";
       }
     }
   }
