@@ -32,14 +32,23 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
   errs() << "LoopBlocker: LGInnerPHI = " << *LGInnerPHI << "\n";
 
   auto OuterHeader = BasicBlock::Create(Context, "", F);
-  auto OuterLatch = BasicBlock::Create(Context, "", F);
 
-  LGInnerPHI->getIncomingBlock(0)->getTerminator()->replaceSuccessorWith(
-      InnerHeader, OuterHeader);
+  // All predecessors of the original header (InnerHeader) must
+  // now branch to the new header
+  for (int i = 0; i < LGInnerPHI->getNumIncomingValues(); i++) {
+    auto BB = LGInnerPHI->getIncomingBlock(i);
+    if (InnerLatches.find(BB) == InnerLatches.end()) {
+      // BB is not a latch of the loop.
+      // It needs to be rewired to the new header
+      BB->getTerminator()->replaceSuccessorWith(InnerHeader, OuterHeader);
+    }
+  }
+
+  auto OuterLatch = BasicBlock::Create(Context, "", F);
   InnerHeader->getTerminator()->replaceSuccessorWith(ExitBB, OuterLatch);
 
-  PHINode *LGOuterPHI =
-      nullptr; // PHI associated to Loop-Governing IV of outer loop
+  // PHI associated to Loop-Governing IV of outer loop
+  PHINode *LGOuterPHI = nullptr;
 
   Builder.SetInsertPoint(OuterHeader);
   for (auto &I : *InnerHeader) {
@@ -70,11 +79,11 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
         LGOuterPHI = OuterPHI;
       }
 
-      // Thanks to LCSSA we onl need to patch the exit BB
-      for (auto &eI : *ExitBB) {
-        if (auto *exitPHI = dyn_cast<PHINode>(&eI)) {
-          if (InnerPHI == exitPHI->getIncomingValueForBlock(InnerHeader)) {
-            exitPHI->setIncomingValueForBlock(InnerHeader, OuterPHI);
+      // Thanks to LCSSA we only need to patch the exit BB
+      for (auto &I : *ExitBB) {
+        if (auto *ExitPHI = dyn_cast<PHINode>(&I)) {
+          if (InnerPHI == ExitPHI->getIncomingValueForBlock(InnerHeader)) {
+            ExitPHI->setIncomingValueForBlock(InnerHeader, OuterPHI);
           }
         } else {
           break;
