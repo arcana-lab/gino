@@ -76,6 +76,8 @@ struct TerminatorAnalysis : public noelle::DependenceAnalysis {
 
   void sanityChecks();
 
+  std::set<noelle::LoopStructure *> getLoopStructuresWithClauses();
+
 private:
   std::set<Clause *> clauses_;
   std::map<noelle::LoopStructure *, std::set<Clause *>> loopToClauses_;

@@ -472,4 +472,14 @@ void TerminatorAnalysis::sanityChecks() {
   }
 }
 
+set<LoopStructure *> TerminatorAnalysis::getLoopStructuresWithClauses() {
+  set<LoopStructure *> LSs;
+
+  for (auto &[LS, _] : loopToClauses_) {
+    LSs.insert(LS);
+  }
+
+  return LSs;
+}
+
 } // namespace arcana::gino

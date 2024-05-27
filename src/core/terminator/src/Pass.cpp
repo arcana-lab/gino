@@ -18,11 +18,12 @@ TerminatorPass::TerminatorPass() : ModulePass{ID}, prefix("Terminator: ") {}
 bool TerminatorPass::doInitialization(Module &M) { return false; }
 
 void TerminatorPass::getAnalysisUsage(AnalysisUsage &AU) const {
-  AU.addRequired<LoopInfoWrapperPass>();
-  AU.addRequired<DominatorTreeWrapperPass>();
-  AU.addRequired<ScalarEvolutionWrapperPass>();
-  AU.addRequired<AssumptionCacheTracker>();
+  // AU.addRequired<LoopInfoWrapperPass>();
+  // AU.addRequired<DominatorTreeWrapperPass>();
+  // AU.addRequired<ScalarEvolutionWrapperPass>();
+  // AU.addRequired<AssumptionCacheTracker>();
   AU.addRequired<Noelle>();
+  AU.addRequired<HeuristicsPass>();
 
   return;
 }
@@ -43,9 +44,21 @@ bool TerminatorPass::runOnModule(Module &M) {
   TA.run(LSs);
   noelle.addAnalysis(&TA);
 
-  for (auto *LS : LSs) {
+  auto optimizations = {LoopContentOptimization::MEMORY_CLONING_ID,
+                        LoopContentOptimization::THREAD_SAFE_LIBRARY_ID};
+  auto targetLSs = TA.getLoopStructuresWithClauses();
+  auto heuristics = getAnalysis<HeuristicsPass>().getHeuristics(noelle);
+
+  for (auto *LS : targetLSs) {
     auto loopID = LS->getID().value();
-    errs() << this->prefix << "loopID = " << loopID << "\n";
+    errs() << this->prefix << "analyzing loopID " << loopID << "\n";
+
+    DOALL doall(noelle);
+    auto LC = noelle.getLoopContent(LS, optimizations);
+    bool isDOALL = doall.canBeAppliedToLoop(LC, heuristics);
+
+    errs() << this->prefix << "loopID " << loopID << " is "
+           << (isDOALL ? "" : "not ") << "DOALL\n";
   }
 
   // // From the old Terminator

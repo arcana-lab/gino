@@ -13,7 +13,7 @@ installDir=$(realpath $( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd
 PARALLELIZATION_TECHNIQUES="-load ${installDir}/lib/ParallelizationTechnique.so -load ${installDir}/lib/DOALL.so"
 
 # Set the command to execute
-cmdToExecute="noelle-load -load ${installDir}/lib/LoopBlocker.so -load ${installDir}/lib/Heuristics.so ${PARALLELIZATION_TECHNIQUES} ${@}"
+cmdToExecute="noelle-load -load ${installDir}/lib/LoopBlocker.so -load ${installDir}/lib/Heuristics.so ${PARALLELIZATION_TECHNIQUES} -load ${installDir}/lib/Terminator.so ${@}"
 echo $cmdToExecute ;
 
 # Execute
