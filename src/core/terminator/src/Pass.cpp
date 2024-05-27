@@ -2,6 +2,7 @@
 
 #include "arcana/gino/core/DOALL.hpp"
 #include "noelle/core/Noelle.hpp"
+#include "llvm/IR/DataLayout.h"
 #include "llvm/IR/Instructions.h"
 
 #include "Analysis.hpp"
@@ -14,7 +15,7 @@ using namespace arcana::noelle;
 
 namespace arcana::gino {
 
-static cl::opt<int> NumBlocks("terminator-blocks", cl::ZeroOrMore, cl::init(8),
+static cl::opt<int> NumBreaks("terminator-breaks", cl::ZeroOrMore, cl::init(8),
                               cl::Hidden,
                               cl::desc("Number of times we break a LCD"));
 
@@ -85,8 +86,8 @@ bool TerminatorPass::runOnModule(Module &M) {
     auto LD = getLoopDescription(LS);
     bool isDOALL = doall.canBeAppliedToLoop(LC, heuristics);
 
-    errs() << this->prefix << "loop " << LD << " is " << (isDOALL ? "" : "not ")
-           << "DOALL\n";
+    errs() << this->prefix << "loop " << LD << " can "
+           << (isDOALL ? "" : "not ") << "be DOALL\n";
 
     if (isDOALL) {
       terminationTargetLCs.insert(LC);
@@ -95,45 +96,68 @@ bool TerminatorPass::runOnModule(Module &M) {
 
   // Phase 4
   // Applying loop blocking transformation to the termination targets
+  IRBuilder<> Builder(M.getContext());
+  const int NumBlocks = NumBreaks + 1;
+
   for (auto *LC : terminationTargetLCs) {
     auto LS = LC->getLoopStructure();
-    auto header = blockLoop(LC, NumBlocks);
+    BasicBlock *NewHeader = blockLoop(LC, NumBlocks);
     auto LD = getLoopDescription(LS);
-    if (header == nullptr) {
+    if (NewHeader == nullptr) {
       errs() << this->prefix << "Failed to block loop " << LD << "\n";
     } else {
       errs() << this->prefix << "Blocked loop " << LD
              << ", blocks=" << NumBlocks << "\n";
     }
 
+    auto &FirstPHI = *NewHeader->phis().begin();
+    auto PreHeader = FirstPHI.getIncomingBlock(0);
+    auto Zero = Builder.getInt32(0);
+    Builder.SetInsertPoint(PreHeader->getTerminator());
+
     // Applying termination clauses
-    // TODO
+    for (auto &clause : TA.getClausesOf(LS)) {
+      auto ClausePtrTy = clause->getVariable()->getType();
+      auto ClauseElemTy = ClausePtrTy->getPointerElementType();
+      auto ArrayTy = ArrayType::get(ClauseElemTy, NumBlocks);
+      auto name = "TCValues.loopid." + to_string(LS->getID().value());
+
+      // Generating the necessary calls to the clause function
+      auto OriginalVariableValue =
+          Builder.CreateLoad(ClauseElemTy, clause->getVariable());
+      auto TCValues = Builder.CreateAlloca(ArrayTy, nullptr, name);
+
+      for (int i = 0; i < NumBlocks; i++) {
+        auto GEP = Builder.CreateInBoundsGEP(ArrayTy, TCValues,
+                                             {Zero, Builder.getInt32(i)});
+        if (i == 0) {
+          Builder.CreateStore(OriginalVariableValue, GEP);
+        } else {
+          auto TCValue = Builder.CreateCall(clause->getFunction(),
+                                            clause->getCallArguments());
+          Builder.CreateStore(TCValue, GEP);
+        }
+      }
+
+      // Patching the clause variable with a value from TCValues
+      Builder.SetInsertPoint(NewHeader->getTerminator());
+      auto GEP =
+          Builder.CreateInBoundsGEP(ArrayTy, TCValues, {Zero, &FirstPHI});
+      auto LoadTCValue = Builder.CreateLoad(ClauseElemTy, GEP);
+      Builder.SetInsertPoint(clause->getBegin());
+      Builder.CreateStore(LoadTCValue, clause->getVariable());
+    }
 
     // Moving the looporder metadata to the new outer loop
     auto LO = MM->getMetadata(LS, "noelle.parallelizer.looporder");
     MM->deleteMetadata(LS->getHeader()->getTerminator(),
                        "noelle.parallelizer.looporder");
-    MM->addMetadata(header->getTerminator(), "noelle.parallelizer.looporder",
+    MM->addMetadata(NewHeader->getTerminator(), "noelle.parallelizer.looporder",
                     LO);
 
     // Marking the new loop as DOALL
-    MM->addMetadata(header->getTerminator(), "gino.doall", "");
+    MM->addMetadata(NewHeader->getTerminator(), "gino.doall", "");
   }
-
-  // // From the old Terminator
-  // for (auto &clause : clauses) {
-  //   auto *F = clause->getFunction();
-  //   auto branchInst = LS->getPreHeader()->getTerminator();
-  //   auto TCName = "TCValue." + to_string(terminationCounter);
-  //   auto TCValue =
-  //       CallInst::Create(F, clause->getCallArguments(), TCName, branchInst);
-  //   StoreInst *SI = new StoreInst(TCValue, clause->getVariable(),
-  //   branchInst); terminationCounter++;
-  // }
-
-  // // Add metadata
-  // auto MM = noelle.getMetadataManager();
-  // MM->addMetadata(header->getTerminator(), "gino.doall", "");
 
   return false;
 }
