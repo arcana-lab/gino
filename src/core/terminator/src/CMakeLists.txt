@@ -23,14 +23,10 @@ message(STATUS "LLVM_DIR IS ${LLVM_CMAKE_DIR}.")
 include_directories(${LLVM_INCLUDE_DIRS}
   ../../heuristics/include 
   ../../parallelization_technique/include 
-  ../../dswp/include 
   ../../doall/include 
-  ../../helix/include 
-  ../../loop_distribution/include
-  ../../talkdown/include
+  ../../loop_blocker/include 
   ../include
   ./
-  ${CMAKE_INSTALL_PREFIX}/include
   )
 
 # Declare the LLVM pass to compile
