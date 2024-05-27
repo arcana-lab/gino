@@ -27,8 +27,7 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
   auto InnerCond = LGIV->getHeaderCompareInstructionToComputeExitCondition();
   auto InnerHeader = LS->getHeader();
 
-  errs() << "LoopBlocker: loopID = " << LoopID << "\n";
-  errs() << "LoopBlocker: LGInnerPHI = " << *LGInnerPHI << "\n";
+  // errs() << "LoopBlocker: LGInnerPHI = " << *LGInnerPHI << "\n";
 
   auto OuterHeader = BasicBlock::Create(Context, "", F);
 

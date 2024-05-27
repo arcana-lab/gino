@@ -44,8 +44,14 @@ bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
   auto loopEnv = LDI->getEnvironment();
 
   if (MM->doesHaveMetadata(loopStructure, "gino.doall")) {
-    errs() << "DOALL: looporder " << LO << " is marked as DOALL\n";
-    return true;
+    auto isDOALL = MM->getMetadata(loopStructure, "gino.doall");
+    if (isDOALL == "yes") {
+      errs() << "DOALL: looporder " << LO << " is marked as DOALL\n";
+      return true;
+    } else if (isDOALL == "no") {
+      errs() << "DOALL: looporder " << LO << " is marked as non-DOALL\n";
+      return false;
+    }
   }
 
   /*

@@ -58,7 +58,7 @@ bool TerminatorPass::runOnModule(Module &M) {
   };
 
   set<LoopStructure *> retryLSs;
-  DOALL doall(noelle);
+  const DOALL doall(noelle);
 
   // Phase 2
   // Identifying non-DOALL loops
@@ -70,7 +70,9 @@ bool TerminatorPass::runOnModule(Module &M) {
     errs() << this->prefix << "loop " << LD << " is " << (isDOALL ? "" : "not ")
            << "DOALL\n";
 
-    if (!isDOALL) {
+    if (isDOALL) {
+      MM->addMetadata(LS, "gino.doall", "yes");
+    } else {
       retryLSs.insert(LS);
     }
   }
@@ -91,6 +93,9 @@ bool TerminatorPass::runOnModule(Module &M) {
 
     if (isDOALL) {
       terminationTargetLCs.insert(LC);
+    } else {
+      // Despite the termination clauses, this loop is stil hopeless
+      MM->addMetadata(LS, "gino.doall", "no");
     }
   }
 
@@ -156,7 +161,7 @@ bool TerminatorPass::runOnModule(Module &M) {
                     LO);
 
     // Marking the new loop as DOALL
-    MM->addMetadata(NewHeader->getTerminator(), "gino.doall", "");
+    MM->addMetadata(NewHeader->getTerminator(), "gino.doall", "yes");
   }
 
   return false;
