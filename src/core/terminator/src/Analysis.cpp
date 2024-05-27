@@ -1,5 +1,3 @@
-#include "TerminatorAnalysis.hpp"
-
 #include <algorithm>
 #include <map>
 #include <queue>
@@ -10,6 +8,8 @@
 #include "noelle/core/LoopCarriedUnknownSCC.hpp"
 #include "noelle/core/Noelle.hpp"
 #include "llvm/IR/Instructions.h"
+
+#include "Analysis.hpp"
 
 using namespace std;
 using namespace llvm;

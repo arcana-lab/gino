@@ -25,7 +25,6 @@
 #include <vector>
 
 #include "Parallelizer.hpp"
-#include "TerminatorAnalysis.hpp"
 #include "noelle/core/LoopStructure.hpp"
 
 using namespace std;
@@ -118,9 +117,6 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
   /*
    * Parallelize the loops in order.
    */
-  TerminatorAnalysis TA(noelle);
-  TA.run(selectedLSs);
-  noelle.addAnalysis(&TA);
 
   auto modified = false;
   unordered_map<BasicBlock *, bool> modifiedBBs{};
@@ -164,8 +160,7 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
     auto optimizations = {LoopContentOptimization::MEMORY_CLONING_ID,
                           LoopContentOptimization::THREAD_SAFE_LIBRARY_ID};
     auto ldi = noelle.getLoopContent(ls, optimizations);
-    auto loopIsParallelized =
-        this->parallelizeLoop(ldi, noelle, heuristics, TA);
+    auto loopIsParallelized = this->parallelizeLoop(ldi, noelle, heuristics);
 
     /*
      * Keep track of the parallelization.

@@ -20,13 +20,11 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "Parallelizer.hpp"
-#include "Termination.hpp"
-#include "TerminatorAnalysis.hpp"
 
 namespace arcana::gino {
 
 bool Parallelizer::parallelizeLoop(LoopContent *loopContent, Noelle &noelle,
-                                   Heuristics *h, TerminatorAnalysis &TA) {
+                                   Heuristics *h) {
   auto prefix = "Parallelizer: parallelizerLoop: ";
 
   /*
@@ -38,9 +36,9 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent, Noelle &noelle,
   /*
    * Allocate the parallelization techniques.
    */
-  Winchester winchester{noelle};
-  std::vector<ParallelizationTechnique *> parallelizationTechniques{
-      &winchester};
+  // Winchester winchester{noelle};
+  DOALL doall{noelle};
+  std::vector<ParallelizationTechnique *> parallelizationTechniques{&doall};
 
   /*
    * Fetch the profiles.
@@ -151,12 +149,6 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent, Noelle &noelle,
     if (noelle.isTransformationEnabled(noelleID) &&
         ltm->isTransformationEnabled(noelleID) &&
         parallelizationTechnique->canBeAppliedToLoop(loopContent, h)) {
-
-      /*
-       * Parallelize the current loop with the current parallelization
-       * technique.
-       */
-      // terminateLCDs(noelle, loopContent, TA);
 
       codeModified = parallelizationTechnique->apply(loopContent, h);
       usedTechnique = parallelizationTechnique;

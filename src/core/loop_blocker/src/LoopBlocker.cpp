@@ -143,7 +143,7 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
       Builder.CreateICmpSLT(LGOuterPHI, Builder.getInt32(numBlocks));
   auto OuterBranch = Builder.CreateCondBr(OuterCmp, InnerHeader, ExitBB);
 
-  errs() << *F << "\n";
+  // errs() << *F << "\n";
 
   return OuterHeader;
 }

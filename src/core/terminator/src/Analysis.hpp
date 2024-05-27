@@ -26,9 +26,6 @@ struct TerminatorAnalysis : public noelle::DependenceAnalysis {
 
   TerminatorAnalysis(noelle::Noelle &noelle);
 
-  TerminatorAnalysis(noelle::Noelle &noelle,
-                     const std::vector<noelle::LoopStructure *> &LSs);
-
   ~TerminatorAnalysis();
 
   void run();

@@ -25,10 +25,11 @@
 namespace arcana::gino {
 
 bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
+  auto MM = this->n.getMetadataManager();
+  auto LS = LDI->getLoopStructure();
+  auto LO = MM->getMetadata(LS, "noelle.parallelizer.looporder");
+
   if (this->verbose != Verbosity::Disabled) {
-    auto mm = this->n.getMetadataManager();
-    auto LS = LDI->getLoopStructure();
-    auto LO = mm->getMetadata(LS, "noelle.parallelizer.looporder");
     errs() << "DOALL: Checking if the loop is DOALL ";
     errs() << "(";
     errs() << "noelle.loop.id = " << LS->getID().value() << ", ";
@@ -41,6 +42,11 @@ bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
    */
   auto loopStructure = LDI->getLoopStructure();
   auto loopEnv = LDI->getEnvironment();
+
+  if (MM->doesHaveMetadata(loopStructure, "gino.doall")) {
+    errs() << "DOALL: looporder " << LO << " is marked as DOALL\n";
+    return true;
+  }
 
   /*
    * The loop must have one single exit path.
