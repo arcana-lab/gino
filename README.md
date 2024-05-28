@@ -60,7 +60,7 @@ Next is the status of Gino for different LLVM versions.
 | LLVM    | Gino's branch   | NOELLE's branch | Regression tests failed out of 30492 tests | Performance tests failed out of 23 tests    |
 | ------: | --------------: | --------------: | -----------------------------------------: | ------------------------------------------: | 
 |   9.0.0 | master          | master          |                                        684 |                                           0 |
-|  14.0.6 | v14             | v14             |                                       1401 |                                           2 |
+|  14.0.6 | v14             | v14             |                                       1167 |                                           2 |
 
 
 ## Prerequisites
