@@ -8,7 +8,7 @@ fi
 
 mkdir -p ${installDir}/bin ;
 
-for i in `ls scripts/gino*` ; do
+for i in `ls scripts/gino* scripts/winchester` ; do
   fileName=`basename $i` ;
   cp $i ${installDir}/bin/ ;
   chmod 744 ${installDir}/bin/$fileName ;

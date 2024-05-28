@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [[ $# < 2 ]]; then
+  echo "usage: $(basename $0) INPUT_BITCODE MAX_CORES"
+  exit 1
+fi
+
+input=$1
+cores=$2
+outputTerminated=terminated.bc
+outputParallel=terminated.parallel.bc
+outputExe=terminated.parallel.out
+breaks=$((cores-1))
+
+# 1. Termination analysis and transformation
+gino-load $input -Terminator -terminator-breaks=$breaks -o $outputTerminated
+
+# 2. Re-normalization
+noelle-norm $outputTerminated -o $outputTerminated
+
+# 3. Parallelization
+gino-loops -noelle-verbose=0 $outputTerminated -o $outputParallel
+
+# 4. Generation of executable
+llvm-link $outputParallel Parallelizer_utils.bc NOELLE_APIs.bc -o $outputParallel
+clang++ -O3 $outputParallel -lpthread -o $outputExe
