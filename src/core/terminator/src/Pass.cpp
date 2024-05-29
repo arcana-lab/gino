@@ -46,9 +46,6 @@ bool TerminatorPass::runOnModule(Module &M) {
   TerminatorAnalysis TA(noelle);
   TA.run(LSs);
 
-  auto optimizations = {LoopContentOptimization::MEMORY_CLONING_ID,
-                        LoopContentOptimization::THREAD_SAFE_LIBRARY_ID};
-  auto plannedLSs = TA.getLoopStructuresWithClauses();
   auto heuristics = getAnalysis<HeuristicsPass>().getHeuristics(noelle);
 
   auto getLoopDescription = [&MM](LoopStructure *LS) {
@@ -61,7 +58,10 @@ bool TerminatorPass::runOnModule(Module &M) {
   const DOALL doall(noelle);
 
   // Phase 2
-  // Identifying non-DOALL loops
+  // Identifying non-DOALL loops from the loop with clauses
+  auto optimizations = {LoopContentOptimization::MEMORY_CLONING_ID,
+                        LoopContentOptimization::THREAD_SAFE_LIBRARY_ID};
+  auto plannedLSs = TA.getLoopStructuresWithClauses();
   for (auto *LS : plannedLSs) {
     auto LC = noelle.getLoopContent(LS, optimizations);
     auto LD = getLoopDescription(LS);
