@@ -358,6 +358,10 @@ bool HELIX::synchronizeTask(LoopContent *LDI,
                                                         LDI,
                                                         reachabilityDFR,
                                                         helixTask);
+  if (this->verbose >= Verbosity::Maximal) {
+    errs() << this->prefixString << "    There are "
+           << sequentialSegments.size() << " sequential segments\n";
+  }
 
   /*
    * Schedule the sequential segments to overlap parallel and sequential
