@@ -298,6 +298,7 @@ TerminatorAnalysis::findMatchingBegin(Instruction *end,
 
 void TerminatorAnalysis::resolveClauses(LoopStructure *LS) {
   auto &pragmas = loopToPragmas_[LS];
+  auto loopID = LS->getID().value();
 
   // Find `end` pragmas
   set<Instruction *> ends;
@@ -322,7 +323,7 @@ void TerminatorAnalysis::resolveClauses(LoopStructure *LS) {
   loopToClauses_[LS] = foundClauses;
   clauses_.insert(foundClauses.begin(), foundClauses.end());
   errs() << "Terminator: Analysis: Info: Found " << clauses_.size()
-         << " clauses\n";
+         << " clauses in loop.id " << loopID << "\n";
 }
 
 void TerminatorAnalysis::resolveClauses(set<LoopStructure *> &targetLSs) {
