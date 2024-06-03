@@ -20,16 +20,19 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcana/gino/core/ParallelizationTechnique.hpp"
+#include "noelle/core/ReductionSCC.hpp"
 #include "noelle/core/BinaryReductionSCC.hpp"
 #include "noelle/core/LoopCarriedUnknownSCC.hpp"
-#include "noelle/core/ReductionSCC.hpp"
 
 namespace arcana::gino {
 
 ParallelizationTechnique::ParallelizationTechnique(Noelle &n)
-    : noelle{n}, envBuilder{nullptr}, tasks{},
-      entryPointOfParallelizedLoop{nullptr},
-      exitPointOfParallelizedLoop{nullptr}, numTaskInstances{0} {
+  : noelle{ n },
+    envBuilder{ nullptr },
+    tasks{},
+    entryPointOfParallelizedLoop{ nullptr },
+    exitPointOfParallelizedLoop{ nullptr },
+    numTaskInstances{ 0 } {
   this->verbose = n.getVerbosity();
 }
 
@@ -38,8 +41,8 @@ Value *ParallelizationTechnique::getEnvArray(void) const {
   return this->envBuilder->getEnvironmentArray();
 }
 
-uint32_t
-ParallelizationTechnique::getIndexOfEnvironmentVariable(uint32_t id) const {
+uint32_t ParallelizationTechnique::getIndexOfEnvironmentVariable(
+    uint32_t id) const {
   assert(this->envBuilder != nullptr);
 
   auto envVar = this->envBuilder->getIndexOfEnvironmentVariable(id);
@@ -48,14 +51,16 @@ ParallelizationTechnique::getIndexOfEnvironmentVariable(uint32_t id) const {
 }
 
 void ParallelizationTechnique::initializeEnvironmentBuilder(
-    LoopContent *loopContent, std::set<uint32_t> nonReducableVars) {
+    LoopContent *loopContent,
+    std::set<uint32_t> nonReducableVars) {
   std::set<uint32_t> emptySet{};
 
   this->initializeEnvironmentBuilder(loopContent, nonReducableVars, emptySet);
 }
 
 void ParallelizationTechnique::initializeEnvironmentBuilder(
-    LoopContent *loopContent, std::set<uint32_t> simpleVars,
+    LoopContent *loopContent,
+    std::set<uint32_t> simpleVars,
     std::set<uint32_t> reducableVars) {
   auto isReducable = [&reducableVars](uint32_t variableID,
                                       bool isLiveOut) -> bool {
@@ -73,7 +78,8 @@ void ParallelizationTechnique::initializeEnvironmentBuilder(
         shouldThisVariableBeReduced) {
   auto shouldThisVariableBeSkipped =
       [](uint32_t variableID, bool isLiveOut) -> bool { return false; };
-  this->initializeEnvironmentBuilder(loopContent, shouldThisVariableBeReduced,
+  this->initializeEnvironmentBuilder(loopContent,
+                                     shouldThisVariableBeReduced,
                                      shouldThisVariableBeSkipped);
 }
 
@@ -106,9 +112,12 @@ void ParallelizationTechnique::initializeEnvironmentBuilder(
    * Generate code to allocate and initialize the loop environment.
    */
   auto program = this->noelle.getProgram();
-  this->envBuilder = new LoopEnvironmentBuilder(
-      program->getContext(), environment, shouldThisVariableBeReduced,
-      shouldThisVariableBeSkipped, this->numTaskInstances, this->tasks.size());
+  this->envBuilder = new LoopEnvironmentBuilder(program->getContext(),
+                                                environment,
+                                                shouldThisVariableBeReduced,
+                                                shouldThisVariableBeSkipped,
+                                                this->numTaskInstances,
+                                                this->tasks.size());
 
   /*
    * Create the users of the environment: one user per task.
@@ -221,9 +230,10 @@ void ParallelizationTechnique::populateLiveInEnvironment(
   }
 }
 
-BasicBlock *
-ParallelizationTechnique::performReductionToAllReducableLiveOutVariables(
-    LoopContent *loopContent, Value *numberOfThreadsExecuted) {
+BasicBlock *ParallelizationTechnique::
+    performReductionToAllReducableLiveOutVariables(
+        LoopContent *loopContent,
+        Value *numberOfThreadsExecuted) {
 
   /*
    * Fetch the loop structure.
@@ -279,9 +289,9 @@ ParallelizationTechnique::performReductionToAllReducableLiveOutVariables(
   /*
    * Generate the code to perform the reduction.
    */
-  IRBuilder<> builder{this->entryPointOfParallelizedLoop};
-  auto castF = [this, &builder,
-                &fromReductionToProducer](ReductionSCC *red) -> Value * {
+  IRBuilder<> builder{ this->entryPointOfParallelizedLoop };
+  auto castF =
+      [this, &builder, &fromReductionToProducer](ReductionSCC *red) -> Value * {
     auto p = fromReductionToProducer.at(red);
     auto initialValue = red->getInitialValue();
     auto i =
@@ -289,8 +299,11 @@ ParallelizationTechnique::performReductionToAllReducableLiveOutVariables(
     return i;
   };
   auto afterReductionB = this->envBuilder->reduceLiveOutVariables(
-      this->entryPointOfParallelizedLoop, builder, reductions,
-      numberOfThreadsExecuted, castF);
+      this->entryPointOfParallelizedLoop,
+      builder,
+      reductions,
+      numberOfThreadsExecuted,
+      castF);
 
   /*
    * If reduction occurred, then all environment loads to propagate live outs
@@ -316,7 +329,8 @@ ParallelizationTechnique::performReductionToAllReducableLiveOutVariables(
       auto envVarDescriptor = envBuilder->getEnvironmentVariable(envID);
       envVar = afterReductionBuilder->CreateLoad(
           envVarDescriptor->getType()->getPointerElementType(),
-          envVarDescriptor, "noelle.environment_variable.live_out.reduction");
+          envVarDescriptor,
+          "noelle.environment_variable.live_out.reduction");
     }
     assert(envVar != nullptr);
 
@@ -341,7 +355,8 @@ ParallelizationTechnique::performReductionToAllReducableLiveOutVariables(
 }
 
 void ParallelizationTechnique::addPredecessorAndSuccessorsBasicBlocksToTasks(
-    LoopContent *loopContent, std::vector<Task *> taskStructs) {
+    LoopContent *loopContent,
+    std::vector<Task *> taskStructs) {
   assert(this->tasks.size() == 0);
 
   /*
@@ -428,7 +443,9 @@ void ParallelizationTechnique::cloneSequentialLoop(LoopContent *loopContent,
 }
 
 void ParallelizationTechnique::cloneSequentialLoopSubset(
-    LoopContent *loopContent, int taskIndex, std::set<Instruction *> subset) {
+    LoopContent *loopContent,
+    int taskIndex,
+    std::set<Instruction *> subset) {
 
   /*
    * Fetch the task.
@@ -462,7 +479,8 @@ void ParallelizationTechnique::cloneSequentialLoopSubset(
 }
 
 void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
-    LoopContent *loopContent, int taskIndex) {
+    LoopContent *loopContent,
+    int taskIndex) {
 
   /*
    * Fetch the task.
@@ -660,7 +678,8 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
            *
            * Make space in the environment for the new live-in.
            */
-          auto newLiveInEnvironmentID = environment->addLiveInValue(opJ, {opI});
+          auto newLiveInEnvironmentID =
+              environment->addLiveInValue(opJ, { opI });
           this->envBuilder->addVariableToEnvironment(newLiveInEnvironmentID,
                                                      opJ->getType());
 
@@ -675,10 +694,13 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
            * Add the load inside the task to load from the environment the new
            * live-in.
            */
-          auto envVarPtr = envUser->createEnvironmentVariablePointer(
-              entryBuilder, newLiveInEnvironmentID, opJ->getType());
+          auto envVarPtr =
+              envUser->createEnvironmentVariablePointer(entryBuilder,
+                                                        newLiveInEnvironmentID,
+                                                        opJ->getType());
           auto environmentLocationLoad = entryBuilder.CreateLoad(
-              envVarPtr->getType()->getPointerElementType(), envVarPtr,
+              envVarPtr->getType()->getPointerElementType(),
+              envVarPtr,
               "noelle.environment_variable.live_in");
 
           /*
@@ -740,10 +762,13 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
         IRBuilder<> entryBuilderAtTheEnd(&entryBlock);
         auto lastInstruction = &*(--entryBlock.end());
         entryBuilderAtTheEnd.SetInsertPoint(lastInstruction);
-        auto envVarPtr = envUser->createEnvironmentVariablePointer(
-            entryBuilderAtTheEnd, newLiveInEnvironmentID, alloca->getType());
+        auto envVarPtr =
+            envUser->createEnvironmentVariablePointer(entryBuilderAtTheEnd,
+                                                      newLiveInEnvironmentID,
+                                                      alloca->getType());
         auto environmentLocationLoad = entryBuilderAtTheEnd.CreateLoad(
-            envVarPtr->getType()->getPointerElementType(), envVarPtr,
+            envVarPtr->getType()->getPointerElementType(),
+            envVarPtr,
             "noelle.environment_variable.live_in");
 
         /*
@@ -776,10 +801,14 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
       } else {
         bytes = typesManager->getSizeOfType(t);
       }
-      auto allocaCloneCasted = cast<Instruction>(entryBuilder.CreateBitCast(
-          allocaClone, ptrOfOriginalStackObject->getType()));
-      auto initInst = entryBuilder.CreateMemCpy(
-          allocaCloneCasted, {}, ptrOfOriginalStackObject, {}, bytes);
+      auto allocaCloneCasted = cast<Instruction>(
+          entryBuilder.CreateBitCast(allocaClone,
+                                     ptrOfOriginalStackObject->getType()));
+      auto initInst = entryBuilder.CreateMemCpy(allocaCloneCasted,
+                                                {},
+                                                ptrOfOriginalStackObject,
+                                                {},
+                                                bytes);
       ptrOfOriginalStackObject->moveAfter(beforePtrOfOriginalStackObject);
       allocaCloneCasted->moveAfter(allocaClone);
 
@@ -798,7 +827,8 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
 }
 
 void ParallelizationTechnique::generateCodeToLoadLiveInVariables(
-    LoopContent *loopContent, int taskIndex) {
+    LoopContent *loopContent,
+    int taskIndex) {
 
   /*
    * Fetch the task.
@@ -832,8 +862,10 @@ void ParallelizationTechnique::generateCodeToLoadLiveInVariables(
     /*
      * Create GEP access of the environment variable at the given index
      */
-    auto envPointer = envUser->createEnvironmentVariablePointer(
-        builder, envID, producer->getType());
+    auto envPointer =
+        envUser->createEnvironmentVariablePointer(builder,
+                                                  envID,
+                                                  producer->getType());
 
     /*
      * Load the live-in value from the environment pointer.
@@ -842,10 +874,12 @@ void ParallelizationTechnique::generateCodeToLoadLiveInVariables(
            << "\n";
     errs() << "GenerateCodeToLoadLiveInVariables:     Pointer = " << *envPointer
            << "\n";
-    auto metaString = std::string{"noelle_environment_variable_"};
+    auto metaString = std::string{ "noelle_environment_variable_" };
     metaString.append(std::to_string(envID));
-    auto envLoad = builder.CreateLoad(
-        envPointer->getType()->getPointerElementType(), envPointer, metaString);
+    auto envLoad =
+        builder.CreateLoad(envPointer->getType()->getPointerElementType(),
+                           envPointer,
+                           metaString);
 
     /*
      * Register the load as a "clone" of the original producer
@@ -856,7 +890,8 @@ void ParallelizationTechnique::generateCodeToLoadLiveInVariables(
 }
 
 void ParallelizationTechnique::generateCodeToStoreLiveOutVariables(
-    LoopContent *loopContent, int taskIndex) {
+    LoopContent *loopContent,
+    int taskIndex) {
 
   /*
    * Fetch the metadata manager
@@ -936,7 +971,9 @@ void ParallelizationTechnique::generateCodeToStoreLiveOutVariables(
     auto envType = producer->getType();
     auto isReduced = this->envBuilder->hasVariableBeenReduced(envID);
     if (isReduced) {
-      envUser->createReducableEnvPtr(entryBuilder, envID, envType,
+      envUser->createReducableEnvPtr(entryBuilder,
+                                     envID,
+                                     envType,
                                      numTaskInstances,
                                      task->getTaskInstanceID());
     } else {
@@ -1000,8 +1037,12 @@ void ParallelizationTechnique::generateCodeToStoreLiveOutVariables(
        * Fetch all points in the CFG where we need to insert the store
        * instruction.
        */
-      auto insertBBs = this->determineLatestPointsToInsertLiveOutStore(
-          loopContent, taskIndex, producerClone, isReduced, *taskDS);
+      auto insertBBs =
+          this->determineLatestPointsToInsertLiveOutStore(loopContent,
+                                                          taskIndex,
+                                                          producerClone,
+                                                          isReduced,
+                                                          *taskDS);
       for (auto BB : insertBBs) {
 
         /*
@@ -1010,7 +1051,11 @@ void ParallelizationTechnique::generateCodeToStoreLiveOutVariables(
         auto producerValueToStore =
             isReduced
                 ? this->fetchOrCreatePHIForIntermediateProducerValueOfReducibleLiveOutVariable(
-                      loopContent, taskIndex, envID, BB, *taskDS)
+                    loopContent,
+                    taskIndex,
+                    envID,
+                    BB,
+                    *taskDS)
                 : producerClone;
 
         /*
@@ -1052,7 +1097,8 @@ void ParallelizationTechnique::generateCodeToStoreLiveOutVariables(
            *
            * Attach the metadata to the new store
            */
-          mm->addMetadata(store, "noelle.environment_variable.live_out.store",
+          mm->addMetadata(store,
+                          "noelle.environment_variable.live_out.store",
                           std::to_string(envID));
 
           /*
@@ -1073,9 +1119,11 @@ void ParallelizationTechnique::generateCodeToStoreLiveOutVariables(
              */
             auto lastIterationBB =
                 this->getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
-                    loopContent, taskIndex, *BB);
+                    loopContent,
+                    taskIndex,
+                    *BB);
             assert(lastIterationBB != nullptr);
-            IRBuilder<> b{lastIterationBB};
+            IRBuilder<> b{ lastIterationBB };
             auto lastIterationBBTerminator = lastIterationBB->getTerminator();
             if (lastIterationBBTerminator != nullptr) {
               store->insertBefore(lastIterationBBTerminator);
@@ -1097,10 +1145,12 @@ void ParallelizationTechnique::generateCodeToStoreLiveOutVariables(
   }
 }
 
-std::set<BasicBlock *>
-ParallelizationTechnique::determineLatestPointsToInsertLiveOutStore(
-    LoopContent *loopContent, int taskIndex, Instruction *liveOut,
-    bool isReduced, DominatorSummary &taskDS) {
+std::set<BasicBlock *> ParallelizationTechnique::
+    determineLatestPointsToInsertLiveOutStore(LoopContent *loopContent,
+                                              int taskIndex,
+                                              Instruction *liveOut,
+                                              bool isReduced,
+                                              DominatorSummary &taskDS) {
   auto task = this->tasks[taskIndex];
 
   /*
@@ -1152,8 +1202,11 @@ ParallelizationTechnique::determineLatestPointsToInsertLiveOutStore(
 
 Instruction *ParallelizationTechnique::
     fetchOrCreatePHIForIntermediateProducerValueOfReducibleLiveOutVariable(
-        LoopContent *loopContent, int taskIndex, int envID,
-        BasicBlock *insertBasicBlock, DominatorSummary &taskDS) {
+        LoopContent *loopContent,
+        int taskIndex,
+        int envID,
+        BasicBlock *insertBasicBlock,
+        DominatorSummary &taskDS) {
 
   /*
    * Fetch the SCC manager.
@@ -1199,8 +1252,9 @@ Instruction *ParallelizationTechnique::
   for (auto intermediateValue : intermediateValues) {
     if (intermediateValue->getParent() != insertBasicBlock)
       continue;
-    if (lastIntermediateAtInsertBlock &&
-        taskDS.DT.dominates(intermediateValue, lastIntermediateAtInsertBlock))
+    if (lastIntermediateAtInsertBlock
+        && taskDS.DT.dominates(intermediateValue,
+                               lastIntermediateAtInsertBlock))
       continue;
     lastIntermediateAtInsertBlock = intermediateValue;
   }
@@ -1221,27 +1275,31 @@ Instruction *ParallelizationTechnique::
    * intermediates in the set
    */
   for (auto predIter = pred_begin(insertBasicBlock);
-       predIter != pred_end(insertBasicBlock); ++predIter) {
+       predIter != pred_end(insertBasicBlock);
+       ++predIter) {
     auto predecessor = *predIter;
 
     auto dominatingValues =
         taskDS.DT.getDominatorsOf(intermediateValues, predecessor);
-    assert(dominatingValues.size() > 0 &&
-           "Cannot store reducible live out where no producer value dominates "
+    assert(
+        dominatingValues.size() > 0
+        && "Cannot store reducible live out where no producer value dominates "
            "the point");
 
     auto lastDominatingValues =
         taskDS.DT.getInstructionsThatDoNotDominateAnyOther(dominatingValues);
-    assert(lastDominatingValues.size() == 1 &&
-           "Cannot store reducible live out where no last produced value is "
-           "known");
+    assert(lastDominatingValues.size() == 1
+           && "Cannot store reducible live out where no last produced value is "
+              "known");
     auto lastDominatingIntermediateValue = *lastDominatingValues.begin();
 
     auto predecessorTerminator = predecessor->getTerminator();
     IRBuilder<> builderAtValue(predecessorTerminator);
 
-    auto correctlyTypedValue = this->castToCorrectReducibleType(
-        builderAtValue, lastDominatingIntermediateValue, producer->getType());
+    auto correctlyTypedValue =
+        this->castToCorrectReducibleType(builderAtValue,
+                                         lastDominatingIntermediateValue,
+                                         producer->getType());
     phiNode->addIncoming(correctlyTypedValue, predecessor);
   }
 
@@ -1249,7 +1307,9 @@ Instruction *ParallelizationTechnique::
 }
 
 Value *ParallelizationTechnique::castToCorrectReducibleType(
-    IRBuilder<> &builder, Value *value, Type *targetType) {
+    IRBuilder<> &builder,
+    Value *value,
+    Type *targetType) {
   auto valueTy = value->getType();
   if (valueTy == targetType)
     return value;
@@ -1269,7 +1329,8 @@ Value *ParallelizationTechnique::castToCorrectReducibleType(
 }
 
 void ParallelizationTechnique::setReducableVariablesToBeginAtIdentityValue(
-    LoopContent *loopContent, int taskIndex) {
+    LoopContent *loopContent,
+    int taskIndex) {
 
   /*
    * Fetch the task.
@@ -1358,7 +1419,8 @@ void ParallelizationTechnique::setReducableVariablesToBeginAtIdentityValue(
 }
 
 void ParallelizationTechnique::generateCodeToStoreExitBlockIndex(
-    LoopContent *loopContent, int taskIndex) {
+    LoopContent *loopContent,
+    int taskIndex) {
 
   /*
    * Fetch the NOELLE's managers
@@ -1434,7 +1496,8 @@ void ParallelizationTechnique::generateCodeToStoreExitBlockIndex(
 }
 
 void ParallelizationTechnique::doNestedInlineOfCalls(
-    Function *function, std::set<CallInst *> &calls) {
+    Function *function,
+    std::set<CallInst *> &calls) {
   std::queue<CallInst *> callsToInline;
   for (auto call : calls)
     callsToInline.push(call);
@@ -1471,8 +1534,8 @@ void ParallelizationTechnique::doNestedInlineOfCalls(
     for (auto &B : *function) {
       for (auto &I : B) {
         if (auto call = dyn_cast<CallInst>(&I)) {
-          if (funcToInline.find(call->getCalledFunction()) !=
-              funcToInline.end()) {
+          if (funcToInline.find(call->getCalledFunction())
+              != funcToInline.end()) {
             callsToInline.push(call);
           }
         }
@@ -1481,9 +1544,10 @@ void ParallelizationTechnique::doNestedInlineOfCalls(
   }
 }
 
-std::unordered_map<InductionVariable *, Value *>
-ParallelizationTechnique::cloneIVStepValueComputation(
-    LoopContent *loopContent, int taskIndex, IRBuilder<> &insertBlock) {
+std::unordered_map<InductionVariable *, Value *> ParallelizationTechnique::
+    cloneIVStepValueComputation(LoopContent *loopContent,
+                                int taskIndex,
+                                IRBuilder<> &insertBlock) {
 
   /*
    * Fetch the task
@@ -1559,7 +1623,8 @@ ParallelizationTechnique::cloneIVStepValueComputation(
   }
 
   this->adjustStepValueOfPointerTypeIVToReflectPointerArithmetic(
-      clonedStepSizeMap, insertBlock);
+      clonedStepSizeMap,
+      insertBlock);
 
   return clonedStepSizeMap;
 }
@@ -1720,7 +1785,7 @@ void ParallelizationTechnique::makePRVGsReentrant(void) {
        */
       auto seedI = entryBuilder.CreateAlloca(tm->getIntegerType(32));
       IRBuilder<> prvgBuilder(callI);
-      auto newCallI = prvgBuilder.CreateCall(reentrantPRVG, {seedI});
+      auto newCallI = prvgBuilder.CreateCall(reentrantPRVG, { seedI });
       callI->replaceAllUsesWith(newCallI);
       callI->eraseFromParent();
     }
@@ -1763,6 +1828,8 @@ BasicBlock *ParallelizationTechnique::getParLoopExitPoint(void) const {
   return this->exitPointOfParallelizedLoop;
 }
 
-ParallelizationTechnique::~ParallelizationTechnique() { return; }
+ParallelizationTechnique::~ParallelizationTechnique() {
+  return;
+}
 
 } // namespace arcana::gino

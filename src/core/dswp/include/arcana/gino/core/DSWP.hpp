@@ -22,15 +22,15 @@
 #ifndef NOELLE_SRC_TOOLS_DSWP_H_
 #define NOELLE_SRC_TOOLS_DSWP_H_
 
-#include "arcana/gino/core/DSWPTask.hpp"
+#include "noelle/core/Noelle.hpp"
 #include "arcana/gino/core/HeuristicsPass.hpp"
 #include "arcana/gino/core/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp"
-#include "noelle/core/Noelle.hpp"
+#include "arcana/gino/core/DSWPTask.hpp"
 
 namespace arcana::gino {
 
 class DSWP
-    : public ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences {
+  : public ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences {
 public:
   /*
    * Methods
@@ -52,7 +52,9 @@ public:
 
 protected:
   BasicBlock *getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
-      LoopContent *LDI, uint32_t taskIndex, BasicBlock &bb) override;
+      LoopContent *LDI,
+      uint32_t taskIndex,
+      BasicBlock &bb) override;
 
 private:
   uint32_t minCores;
@@ -100,10 +102,12 @@ private:
   void popValueQueues(LoopContent *LDI, Noelle &par, int taskIndex);
   void pushValueQueues(LoopContent *LDI, Noelle &par, int taskIndex);
   void createPipelineFromStages(LoopContent *LDI, Noelle &par);
-  Value *createStagesArrayFromStages(LoopContent *LDI, IRBuilder<> &funcBuilder,
+  Value *createStagesArrayFromStages(LoopContent *LDI,
+                                     IRBuilder<> &funcBuilder,
                                      Noelle &par);
   Value *createQueueSizesArrayFromStages(LoopContent *LDI,
-                                         IRBuilder<> &funcBuilder, Noelle &par);
+                                         IRBuilder<> &funcBuilder,
+                                         Noelle &par);
 
   bool canBeCloned(GenericSCC *scc) const;
 
@@ -118,12 +122,16 @@ private:
    */
   void collectDataAndMemoryQueueInfo(LoopContent *LDI, Noelle &par);
   void collectControlQueueInfo(LoopContent *LDI, Noelle &par);
-  std::set<Task *>
-  collectTransitivelyControlledTasks(LoopContent *LDI,
-                                     DGNode<Value> *conditionalBranchNodei);
-  void registerQueue(Noelle &par, LoopContent *LDI, DSWPTask *fromStage,
-                     DSWPTask *toStage, Instruction *producer,
-                     Instruction *consumer, bool isMemoryDependence);
+  std::set<Task *> collectTransitivelyControlledTasks(
+      LoopContent *LDI,
+      DGNode<Value> *conditionalBranchNodei);
+  void registerQueue(Noelle &par,
+                     LoopContent *LDI,
+                     DSWPTask *fromStage,
+                     DSWPTask *toStage,
+                     Instruction *producer,
+                     Instruction *consumer,
+                     bool isMemoryDependence);
   void collectLiveInEnvInfo(LoopContent *LDI);
   void collectLiveOutEnvInfo(LoopContent *LDI);
   bool areQueuesAcyclical() const;

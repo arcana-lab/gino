@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "arcana/gino/core/HELIX.hpp"
 #include "noelle/core/Architecture.hpp"
+#include "arcana/gino/core/HELIX.hpp"
 
 namespace arcana::gino {
 
@@ -154,7 +154,8 @@ void HELIX::addSynchronizations(LoopContent *LDI,
      */
     IRBuilder<> beforeEntryBuilder(beforeEntryBB);
     auto ssStateLoad = beforeEntryBuilder.CreateLoad(
-        ssState->getType()->getPointerElementType(), ssState);
+        ssState->getType()->getPointerElementType(),
+        ssState);
     auto needToWait = beforeEntryBuilder.CreateICmpEQ(ssStateLoad, const0);
     beforeEntryBuilder.CreateCondBr(needToWait, ssWaitBB, ssEntryBB);
 
@@ -324,8 +325,8 @@ void HELIX::addSynchronizations(LoopContent *LDI,
     ss->forEachExit([&exits](Instruction *justBeforeExit) -> void {
       auto block = justBeforeExit->getParent();
       auto terminator = block->getTerminator();
-      if ((terminator != justBeforeExit) ||
-          (terminator->getNumSuccessors() == 1)) {
+      if ((terminator != justBeforeExit)
+          || (terminator->getNumSuccessors() == 1)) {
         exits.insert(justBeforeExit);
         return;
       }
@@ -363,13 +364,14 @@ void HELIX::addSynchronizations(LoopContent *LDI,
 }
 
 Value *HELIX::getPointerOfSequentialSegment(HELIXTask *helixTask,
-                                            Value *ssArray, uint32_t ssID) {
+                                            Value *ssArray,
+                                            uint32_t ssID) {
 
   /*
    * Fetch the builder that points to the entry basic block of the task
    * function.
    */
-  IRBuilder<> entryBuilder{helixTask->getEntry()->getTerminator()};
+  IRBuilder<> entryBuilder{ helixTask->getEntry()->getTerminator() };
 
   /*
    * Fetch the integer type of 64 bits.
@@ -403,7 +405,7 @@ CallInst *HELIX::injectWaitCall(IRBuilder<> &builder, uint32_t ssID) {
   /*
    * Inject the Wait.
    */
-  auto wait = builder.CreateCall(this->waitSSCall, {ptr});
+  auto wait = builder.CreateCall(this->waitSSCall, { ptr });
 
   return wait;
 }
@@ -418,7 +420,7 @@ CallInst *HELIX::injectSignalCall(IRBuilder<> &builder, uint32_t ssID) {
   /*
    * Inject the Signal.
    */
-  auto signal = builder.CreateCall(this->signalSSCall, {ptr});
+  auto signal = builder.CreateCall(this->signalSSCall, { ptr });
 
   return signal;
 }
@@ -429,8 +431,9 @@ void HELIX::computeAndCachePointerOfPastSequentialSegment(HELIXTask *helixTask,
   /*
    * Compute the pointer.
    */
-  auto ptr = this->getPointerOfSequentialSegment(
-      helixTask, helixTask->ssPastArrayArg, ssID);
+  auto ptr = this->getPointerOfSequentialSegment(helixTask,
+                                                 helixTask->ssPastArrayArg,
+                                                 ssID);
 
   /*
    * Cache the pointer.
@@ -439,13 +442,15 @@ void HELIX::computeAndCachePointerOfPastSequentialSegment(HELIXTask *helixTask,
 }
 
 void HELIX::computeAndCachePointerOfFutureSequentialSegment(
-    HELIXTask *helixTask, uint32_t ssID) {
+    HELIXTask *helixTask,
+    uint32_t ssID) {
 
   /*
    * Compute the pointer.
    */
-  auto ptr = this->getPointerOfSequentialSegment(
-      helixTask, helixTask->ssFutureArrayArg, ssID);
+  auto ptr = this->getPointerOfSequentialSegment(helixTask,
+                                                 helixTask->ssFutureArrayArg,
+                                                 ssID);
 
   /*
    * Cache the pointer.
