@@ -103,8 +103,7 @@ void ParallelizationTechnique::initializeEnvironmentBuilder(
   if (this->tasks.size() == 0) {
     errs()
         << "ERROR: Parallelization technique tasks haven't been created yet!\n"
-        << "\tTheir environment builders can't be initialized until they "
-           "are.\n";
+        << "\tTheir environment builders can't be initialized until they are.\n";
     abort();
   }
 
@@ -1005,10 +1004,10 @@ void ParallelizationTechnique::generateCodeToStoreLiveOutVariables(
       /*
        * Attach the metadata to the new store
        */
-      mm->addMetadata(newStore,
-                      "noelle.environment_variable.live_out.reducable."
-                      "initialize_private_copy",
-                      std::to_string(envID));
+      mm->addMetadata(
+          newStore,
+          "noelle.environment_variable.live_out.reducable.initialize_private_copy",
+          std::to_string(envID));
     }
 
     /*
@@ -1085,10 +1084,10 @@ void ParallelizationTechnique::generateCodeToStoreLiveOutVariables(
           /*
            * Attach the metadata to the new store
            */
-          mm->addMetadata(store,
-                          "noelle.environment_variable.live_out.reducable."
-                          "update_private_copy",
-                          std::to_string(envID));
+          mm->addMetadata(
+              store,
+              "noelle.environment_variable.live_out.reducable.update_private_copy",
+              std::to_string(envID));
 
         } else {
 
@@ -1283,14 +1282,13 @@ Instruction *ParallelizationTechnique::
         taskDS.DT.getDominatorsOf(intermediateValues, predecessor);
     assert(
         dominatingValues.size() > 0
-        && "Cannot store reducible live out where no producer value dominates "
-           "the point");
+        && "Cannot store reducible live out where no producer value dominates the point");
 
     auto lastDominatingValues =
         taskDS.DT.getInstructionsThatDoNotDominateAnyOther(dominatingValues);
-    assert(lastDominatingValues.size() == 1
-           && "Cannot store reducible live out where no last produced value is "
-              "known");
+    assert(
+        lastDominatingValues.size() == 1
+        && "Cannot store reducible live out where no last produced value is known");
     auto lastDominatingIntermediateValue = *lastDominatingValues.begin();
 
     auto predecessorTerminator = predecessor->getTerminator();

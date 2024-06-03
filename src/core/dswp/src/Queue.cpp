@@ -145,8 +145,7 @@ void DSWP::collectControlQueueInfo(LoopContent *LDI, Noelle &par) {
          conditionalBranchNode->getIncomingEdges()) {
       assert(
           (!isa<MemoryDependence<Value, Value>>(conditionToBranchDependency))
-          && "Node producing control dependencies is expected not to consume a "
-             "memory dependence");
+          && "Node producing control dependencies is expected not to consume a memory dependence");
       if (isa<ControlDependence<Value, Value>>(conditionToBranchDependency)) {
         continue;
       }
