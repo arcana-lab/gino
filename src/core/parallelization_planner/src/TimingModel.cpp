@@ -59,8 +59,11 @@ uint64_t LoopTimingModel::getTimeSavedByParallelizingLoop(void) {
    */
   auto instsPerIteration =
       profiles->getAverageTotalInstructionsPerIteration(ls);
-  auto instsInBiggestSCCPerIteration =
-      ((double)seq) / ((double)profiles->getIterations(ls));
+  auto instsInBiggestSCCPerIteration = 0.0;
+  if (instsPerIteration != 0) {
+    instsInBiggestSCCPerIteration =
+        ((double)seq) / ((double)profiles->getIterations(ls));
+  }
   assert(instsInBiggestSCCPerIteration <= instsPerIteration);
   auto timeSavedPerIteration =
       (double)(instsPerIteration - instsInBiggestSCCPerIteration);
