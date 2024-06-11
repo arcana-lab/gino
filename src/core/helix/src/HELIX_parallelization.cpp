@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/core/Architecture.hpp"
-#include "noelle/core/ReductionSCC.hpp"
+#include "arcana/noelle/core/Architecture.hpp"
+#include "arcana/noelle/core/ReductionSCC.hpp"
 #include "arcana/gino/core/HELIX.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 

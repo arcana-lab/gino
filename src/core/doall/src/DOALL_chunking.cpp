@@ -19,9 +19,9 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/core/LoopIterationSCC.hpp"
-#include "noelle/core/ReductionSCC.hpp"
-#include "noelle/core/SingleAccumulatorRecomputableSCC.hpp"
+#include "arcana/noelle/core/LoopIterationSCC.hpp"
+#include "arcana/noelle/core/ReductionSCC.hpp"
+#include "arcana/noelle/core/SingleAccumulatorRecomputableSCC.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 #include "arcana/gino/core/DOALLTask.hpp"
 

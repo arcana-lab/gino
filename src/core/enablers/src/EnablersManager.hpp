@@ -22,9 +22,9 @@
 #ifndef NOELLE_SRC_TOOLS_ENABLERS_ENABLERSMANAGER_H_
 #define NOELLE_SRC_TOOLS_ENABLERS_ENABLERSMANAGER_H_
 
-#include "noelle/core/Noelle.hpp"
-#include "noelle/tools/LoopInvariantCodeMotion.hpp"
-#include "noelle/tools/SCEVSimplification.hpp"
+#include "arcana/noelle/core/Noelle.hpp"
+#include "arcana/noelle/tools/LoopInvariantCodeMotion.hpp"
+#include "arcana/noelle/tools/SCEVSimplification.hpp"
 
 using namespace arcana::noelle;
 

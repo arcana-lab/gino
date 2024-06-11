@@ -20,8 +20,8 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcana/gino/core/DSWP.hpp"
-#include "noelle/core/Architecture.hpp"
-#include "noelle/core/LoopIterationSCC.hpp"
+#include "arcana/noelle/core/Architecture.hpp"
+#include "arcana/noelle/core/LoopIterationSCC.hpp"
 
 namespace arcana::gino {
 

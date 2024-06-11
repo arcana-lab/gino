@@ -22,7 +22,7 @@
 #ifndef NOELLE_SRC_TOOLS_DSWP_H_
 #define NOELLE_SRC_TOOLS_DSWP_H_
 
-#include "noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/Noelle.hpp"
 #include "arcana/gino/core/HeuristicsPass.hpp"
 #include "arcana/gino/core/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp"
 #include "arcana/gino/core/DSWPTask.hpp"

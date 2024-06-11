@@ -22,8 +22,8 @@
 #ifndef NOELLE_SRC_TOOLS_DOALL_H_
 #define NOELLE_SRC_TOOLS_DOALL_H_
 
-#include "noelle/core/IVStepperUtility.hpp"
-#include "noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/IVStepperUtility.hpp"
+#include "arcana/noelle/core/Noelle.hpp"
 
 #include "arcana/gino/core/DOALLTask.hpp"
 #include "arcana/gino/core/HeuristicsPass.hpp"

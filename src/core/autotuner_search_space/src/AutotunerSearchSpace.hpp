@@ -22,7 +22,7 @@
 #ifndef NOELLE_SRC_TOOLS_AUTOTUNER_SEARCH_SPACE_AUTOTUNERSEARCHSPACE_H_
 #define NOELLE_SRC_TOOLS_AUTOTUNER_SEARCH_SPACE_AUTOTUNERSEARCHSPACE_H_
 
-#include "noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/Noelle.hpp"
 
 namespace arcana::gino {
 
