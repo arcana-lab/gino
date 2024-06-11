@@ -20,9 +20,9 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcana/gino/core/ParallelizationTechnique.hpp"
-#include "noelle/core/ReductionSCC.hpp"
-#include "noelle/core/BinaryReductionSCC.hpp"
-#include "noelle/core/LoopCarriedUnknownSCC.hpp"
+#include "arcana/noelle/core/ReductionSCC.hpp"
+#include "arcana/noelle/core/BinaryReductionSCC.hpp"
+#include "arcana/noelle/core/LoopCarriedUnknownSCC.hpp"
 
 namespace arcana::gino {
 

@@ -20,8 +20,8 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcana/gino/core/HELIX.hpp"
-#include "noelle/core/InductionVariableSCC.hpp"
-#include "noelle/core/ReductionSCC.hpp"
+#include "arcana/noelle/core/InductionVariableSCC.hpp"
+#include "arcana/noelle/core/ReductionSCC.hpp"
 
 namespace arcana::gino {
 

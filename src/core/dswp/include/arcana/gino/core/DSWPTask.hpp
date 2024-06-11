@@ -22,10 +22,10 @@
 #ifndef NOELLE_SRC_TOOLS_DSWP_DSWPTASK_H_
 #define NOELLE_SRC_TOOLS_DSWP_DSWPTASK_H_
 
-#include "noelle/core/SystemHeaders.hpp"
-#include "noelle/core/Task.hpp"
-#include "noelle/core/PDG.hpp"
-#include "noelle/core/SCC.hpp"
+#include "arcana/noelle/core/SystemHeaders.hpp"
+#include "arcana/noelle/core/Task.hpp"
+#include "arcana/noelle/core/PDG.hpp"
+#include "arcana/noelle/core/SCC.hpp"
 
 using namespace arcana::noelle;
 
