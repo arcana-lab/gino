@@ -193,7 +193,7 @@ BasicBlock *DOALL::getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
             origValueUsedToCompareAgainstExitConditionValue);
     assert(
         cmpInst->getOperand(0) == valueUsedToCompareAgainstExitConditionValue
-        && "IV is not the first operand in the cloned compare instruction to compare against the exist condition value");
+        && "IV is not the first operand in the cloned compare instruction to compare against the exit condition value");
     clonedCmpInst->replaceUsesOfWith(
         valueUsedToCompareAgainstExitConditionValue,
         prevIterationValue);
