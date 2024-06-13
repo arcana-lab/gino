@@ -26,6 +26,7 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
   auto ExitBB = LGIV->getExitBlockFromHeader();
   auto InnerCond = LGIV->getHeaderCompareInstructionToComputeExitCondition();
   auto InnerHeader = LS->getHeader();
+  auto InnerPreheader = LS->getPreHeader();
 
   // errs() << "LoopBlocker: LGInnerPHI = " << *LGInnerPHI << "\n";
 
@@ -33,6 +34,7 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
 
   Value *InnerOriginalStartIdx = nullptr;
 
+  // TODO can be simplified through the use of the preheader
   // All predecessors of the original header (InnerHeader) must
   // now branch to the new header
   for (int i = 0; i < LGInnerPHI->getNumIncomingValues(); i++) {
@@ -106,10 +108,11 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
   }
 
   Builder.SetInsertPoint(OuterLatch);
-  auto OuterIncrement = Builder.CreateAdd(LGOuterPHI, Builder.getInt32(1));
+  auto OuterIncrement = Builder.CreateAdd(LGOuterPHI, Builder.getInt64(1));
   Builder.CreateBr(OuterHeader);
   LGOuterPHI->setIncomingValueForBlock(OuterLatch, OuterIncrement);
-  LGOuterPHI->setIncomingValue(0, Builder.getInt32(0));
+  LGOuterPHI->setIncomingValueForBlock(InnerPreheader,
+                                       Builder.getInt64(0)); // TODO fix
 
   auto InnerCmp = LGIV->getHeaderCompareInstructionToComputeExitCondition();
 
@@ -122,15 +125,15 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
   // InnerNewStartIdx = i * (N - i_start) / numBlocks + i_start
   auto InnerNewStartIdx = Builder.CreateAdd(
       Builder.CreateSDiv(Builder.CreateMul(LGOuterPHI, NumIterations),
-                         Builder.getInt32(numBlocks)),
+                         Builder.getInt64(numBlocks)),
       InnerOriginalStartIdx);
 
   // InnerNewEndIdx = (i + 1) * (N - i_start) / numBlocks + i_start
   auto InnerNewEndIdx = Builder.CreateAdd(
       Builder.CreateSDiv(
-          Builder.CreateMul(Builder.CreateAdd(LGOuterPHI, Builder.getInt32(1)),
+          Builder.CreateMul(Builder.CreateAdd(LGOuterPHI, Builder.getInt64(1)),
                             NumIterations),
-          Builder.getInt32(numBlocks)),
+          Builder.getInt64(numBlocks)),
       InnerOriginalStartIdx);
 
   // for (...; j < InnerNewEndIdx; ...)
@@ -139,7 +142,7 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
 
   Builder.SetInsertPoint(OuterHeader);
   auto OuterCmp =
-      Builder.CreateICmpSLT(LGOuterPHI, Builder.getInt32(numBlocks));
+      Builder.CreateICmpSLT(LGOuterPHI, Builder.getInt64(numBlocks));
   auto OuterBranch = Builder.CreateCondBr(OuterCmp, InnerHeader, ExitBB);
 
   // errs() << *F << "\n";
