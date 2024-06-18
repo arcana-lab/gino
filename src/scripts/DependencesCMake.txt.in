@@ -23,6 +23,6 @@ list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 include(AddLLVM)
 
 # Configure LLVM 
-find_package(LLVM 9 REQUIRED CONFIG)
+find_package(LLVM 14 REQUIRED CONFIG)
 
 # Include NOELLE
