@@ -108,11 +108,13 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
   }
 
   Builder.SetInsertPoint(OuterLatch);
-  auto OuterIncrement = Builder.CreateAdd(LGOuterPHI, Builder.getInt64(1));
+  auto OuterTy = LGOuterPHI->getType();
+  auto OuterIncrement =
+      Builder.CreateAdd(LGOuterPHI, ConstantInt::get(OuterTy, 1));
   Builder.CreateBr(OuterHeader);
   LGOuterPHI->setIncomingValueForBlock(OuterLatch, OuterIncrement);
   LGOuterPHI->setIncomingValueForBlock(InnerPreheader,
-                                       Builder.getInt64(0)); // TODO fix
+                                       ConstantInt::get(OuterTy, 0));
 
   auto InnerCmp = LGIV->getHeaderCompareInstructionToComputeExitCondition();
 
@@ -125,15 +127,16 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
   // InnerNewStartIdx = i * (N - i_start) / numBlocks + i_start
   auto InnerNewStartIdx = Builder.CreateAdd(
       Builder.CreateSDiv(Builder.CreateMul(LGOuterPHI, NumIterations),
-                         Builder.getInt64(numBlocks)),
+                         ConstantInt::get(OuterTy, numBlocks)),
       InnerOriginalStartIdx);
 
   // InnerNewEndIdx = (i + 1) * (N - i_start) / numBlocks + i_start
   auto InnerNewEndIdx = Builder.CreateAdd(
       Builder.CreateSDiv(
-          Builder.CreateMul(Builder.CreateAdd(LGOuterPHI, Builder.getInt64(1)),
-                            NumIterations),
-          Builder.getInt64(numBlocks)),
+          Builder.CreateMul(
+              Builder.CreateAdd(LGOuterPHI, ConstantInt::get(OuterTy, 1)),
+              NumIterations),
+          ConstantInt::get(OuterTy, numBlocks)),
       InnerOriginalStartIdx);
 
   // for (...; j < InnerNewEndIdx; ...)
@@ -142,7 +145,7 @@ BasicBlock *blockLoop(LoopContent *LC, int numBlocks) {
 
   Builder.SetInsertPoint(OuterHeader);
   auto OuterCmp =
-      Builder.CreateICmpSLT(LGOuterPHI, Builder.getInt64(numBlocks));
+      Builder.CreateICmpSLT(LGOuterPHI, ConstantInt::get(OuterTy, numBlocks));
   auto OuterBranch = Builder.CreateCondBr(OuterCmp, InnerHeader, ExitBB);
 
   // errs() << *F << "\n";
