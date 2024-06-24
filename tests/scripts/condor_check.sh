@@ -106,8 +106,13 @@ done < "$currentResults"
 
 # Check the results
 if test "$newTestsFailed" != "" ; then
-  echo -e "    $newTestsFailedCounter new tests ${RED}failed${NC}: $newTestsFailed" ;
-  echo -e "    The regression tests ${RED}failed${NC}" ;
+  echo -n -e "    $newTestsFailedCounter new tests ${RED}failed${NC}";
+  printList=`echo "$newTestsFailedCounter < 100" | bc` ;
+  if test "$printList" != "0" ; then
+    echo -e ": $newTestsFailed" ;
+  else
+    echo -e ". The list is too long to be printed. Please check the list by running \"cat regression_*/errors.txt\"" ;
+  fi
 
 elif test "$stillRunningRegressionTests" == "0" ; then
 
