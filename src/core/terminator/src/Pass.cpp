@@ -116,7 +116,10 @@ bool TerminatorPass::runOnModule(Module &M) {
     }
 
     auto &FirstPHI = *NewHeader->phis().begin();
-    auto PreHeader = FirstPHI.getIncomingBlock(0);
+    // The old preheader is still stored in LS.
+    // At this point, this is the preheader of the new loop introduced
+    // by the loop blocking transformation.
+    auto PreHeader = LS->getPreHeader();
     auto Zero = Builder.getInt32(0);
     Builder.SetInsertPoint(PreHeader->getTerminator());
 
