@@ -39,7 +39,7 @@ The only documentation available for GINO is:
 
 
 ## Version
-The latest stable version is 9.1.0 (tag = `v9.1.0`).
+The latest stable version is 9.2.0 (tag = `v9.2.0`).
 
 
 ### Version Numbering Scheme
@@ -65,7 +65,7 @@ Next is the status of Gino for different LLVM versions.
 
 ## Prerequisites
 - LLVM 9.0.0
-- NOELLE 9.15.0
+- NOELLE 9.16.0
 
 ### Northwestern
 Next is the information for those that have access to the Zythos cluster at Northwestern.
@@ -77,7 +77,7 @@ source /project/extra/llvm/9.0.0/enable
 
 To enable the correct NOELLE, run the following command from any node of the Zythos cluster:
 ```
-source /project/extra/noelle/9.15.0/enable
+source /project/extra/noelle/9.16.0/enable
 ```
 
 The guide about the Zythos cluster can be downloaded [here](http://www.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf).
