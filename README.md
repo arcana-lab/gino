@@ -77,7 +77,7 @@ source /project/extra/llvm/9.0.0/enable
 
 To enable the correct NOELLE, run the following command from any node of the Zythos cluster:
 ```
-source /project/extra/noelle/9.15.0/enable
+source /project/extra/noelle/9.16.0/enable
 ```
 
 The guide about the Zythos cluster can be downloaded [here](http://www.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf).
