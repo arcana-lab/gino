@@ -26,7 +26,7 @@
 #include "arcana/gino/core/DSWP.hpp"
 #include "arcana/gino/core/HELIX.hpp"
 #include "arcana/gino/core/HeuristicsPass.hpp"
-#include "arcana/noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/NoellePass.hpp"
 
 namespace arcana::gino {
 

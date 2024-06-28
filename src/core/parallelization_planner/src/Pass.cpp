@@ -50,7 +50,7 @@ bool Planner::runOnModule(Module &M) {
   /*
    * Fetch the outputs of the passes we rely on.
    */
-  auto &noelle = getAnalysis<Noelle>();
+  auto &noelle = getAnalysis<NoellePass>().getNoelle();
 
   /*
    * Fetch the profiles.
@@ -166,7 +166,7 @@ void Planner::getAnalysisUsage(AnalysisUsage &AU) const {
   /*
    * Noelle.
    */
-  AU.addRequired<Noelle>();
+  AU.addRequired<NoellePass>();
 
   return;
 }

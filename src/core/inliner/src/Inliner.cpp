@@ -42,7 +42,7 @@ bool Inliner::runOnModule(Module &M) {
   /*
    * Fetch NOELLE.
    */
-  auto &noelle = getAnalysis<Noelle>();
+  auto &noelle = getAnalysis<NoellePass>().getNoelle();
 
   /*
    * Check if the inliner has been enabled.

@@ -43,7 +43,7 @@ bool PlanInfo::doInitialization(Module &M) {
 }
 
 void PlanInfo::getAnalysisUsage(AnalysisUsage &AU) const {
-  AU.addRequired<Noelle>();
+  AU.addRequired<NoellePass>();
   return;
 }
 
