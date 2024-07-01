@@ -22,7 +22,7 @@
 #ifndef NOELLE_SRC_TOOLS_INLINER_H_
 #define NOELLE_SRC_TOOLS_INLINER_H_
 
-#include "arcana/noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/NoellePass.hpp"
 #include <fstream>
 
 using namespace arcana::noelle;

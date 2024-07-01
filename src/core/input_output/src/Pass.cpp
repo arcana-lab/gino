@@ -19,7 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "arcana/noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/NoellePass.hpp"
 #include "InputOutput.hpp"
 
 namespace arcana::gino {
@@ -29,7 +29,7 @@ bool InputOutput::doInitialization(Module &M) {
 }
 
 void InputOutput::getAnalysisUsage(AnalysisUsage &AU) const {
-  AU.addRequired<Noelle>();
+  AU.addRequired<NoellePass>();
   return;
 }
 

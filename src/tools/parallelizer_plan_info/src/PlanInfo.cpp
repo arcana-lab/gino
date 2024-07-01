@@ -29,7 +29,7 @@ PlanInfo::PlanInfo() : ModulePass{ ID }, printAllHeaders{ false } {
 }
 
 bool PlanInfo::runOnModule(Module &M) {
-  auto &noelle = getAnalysis<Noelle>();
+  auto &noelle = getAnalysis<NoellePass>().getNoelle();
   auto verbosity = noelle.getVerbosity();
 
   errs() << "Parallelizer: PlanInfo: Start\n";

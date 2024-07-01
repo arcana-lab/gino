@@ -38,7 +38,7 @@ bool AutotunerDoallFilter::runOnModule(Module &M) {
   /*
    * Fetch noelle.
    */
-  auto &noelle = getAnalysis<Noelle>();
+  auto &noelle = getAnalysis<NoellePass>().getNoelle();
 
   /*
    * Get autotuner_space.info file name
@@ -115,7 +115,7 @@ void AutotunerDoallFilter::getAnalysisUsage(AnalysisUsage &AU) const {
   /*
    * Noelle.
    */
-  AU.addRequired<Noelle>();
+  AU.addRequired<NoellePass>();
 
   return;
 }

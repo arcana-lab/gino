@@ -22,7 +22,7 @@
 #ifndef NOELLE_SRC_TOOLS_AUTOTUNER_DOALL_FILTER_AUTOTUNERDOALLFILTER_H_
 #define NOELLE_SRC_TOOLS_AUTOTUNER_DOALL_FILTER_AUTOTUNERDOALLFILTER_H_
 
-#include "arcana/noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/NoellePass.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 
 namespace arcana::gino {

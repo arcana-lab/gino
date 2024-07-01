@@ -49,7 +49,7 @@ void EnablersManager::getAnalysisUsage(AnalysisUsage &AU) const {
   /*
    * Noelle framework.
    */
-  AU.addRequired<Noelle>();
+  AU.addRequired<NoellePass>();
 
   return;
 }

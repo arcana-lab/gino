@@ -23,7 +23,7 @@
 #define NOELLE_SRC_TOOLS_PARALLELIZATION_PLANNER_PLANNER_H_
 
 #include "arcana/gino/core/DOALL.hpp"
-#include "arcana/noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/NoellePass.hpp"
 
 namespace arcana::gino {
 

@@ -70,7 +70,7 @@ bool Parallelizer::runOnModule(Module &M) {
   /*
    * Fetch the outputs of the passes we rely on.
    */
-  auto &noelle = getAnalysis<Noelle>();
+  auto &noelle = getAnalysis<NoellePass>().getNoelle();
   auto heuristics = getAnalysis<HeuristicsPass>().getHeuristics(noelle);
 
   /*
@@ -86,7 +86,7 @@ void Parallelizer::getAnalysisUsage(AnalysisUsage &AU) const {
   /*
    * Noelle.
    */
-  AU.addRequired<Noelle>();
+  AU.addRequired<NoellePass>();
   AU.addRequired<HeuristicsPass>();
 }
 
