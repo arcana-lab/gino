@@ -11,9 +11,12 @@ using namespace arcana::noelle;
 
 namespace arcana::gino {
 
-static cl::list<int> WhiteList("loop-block-white-list", cl::ZeroOrMore,
+static cl::list<int> WhiteList("blocker-white-list", cl::ZeroOrMore,
                                cl::CommaSeparated,
-                               cl::desc("Loop blocker white list"));
+                               cl::desc("Loop Blocker white list"));
+
+static cl::list<int> NumBlocks("blocker-num-blocks", cl::ZeroOrMore,
+                               cl::desc("Loop Blocker number of blocks"));
 
 LoopBlockerPass::LoopBlockerPass() : ModulePass{ID} {}
 
