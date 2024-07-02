@@ -9,11 +9,13 @@ input=$1
 breaks=$2
 cores=$3
 outputTerminated=terminated.bc
+outputTerminatedExe=terminated.out
 outputParallel=terminated.parallel.bc
-outputExe=terminated.parallel.out
+outputParallelExe=terminated.parallel.out
 
 # 1. Termination analysis and transformation
 gino-load $input -Terminator -terminator-breaks=$breaks -o $outputTerminated
+clang++ $outputTerminated -o $outputTerminatedExe
 
 # 2. Re-normalization
 noelle-norm $outputTerminated -o $outputTerminated
@@ -23,4 +25,4 @@ gino-loops -noelle-verbose=0 -noelle-max-cores=$cores $outputTerminated -o $outp
 
 # 4. Generation of executable
 llvm-link $outputParallel Parallelizer_utils.bc NOELLE_APIs.bc -o $outputParallel
-clang++ -O3 $outputParallel -lpthread -o $outputExe
+clang++ -O3 $outputParallel -lpthread -o $outputParallelExe
