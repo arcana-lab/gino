@@ -371,7 +371,11 @@ void DSWP::generateLoadsOfQueuePointers(Noelle &par, int taskIndex) {
 
     auto queueInstrs = std::make_unique<QueueInstrs>();
     queueInstrs->queuePtr = entryBuilder.CreateLoad(queueCast);
-    queueInstrs->alloca = entryBuilder.CreateAlloca(queueInfo->dependentType);
+    auto allocaDataType = queueInfo->dependentType;
+    if (queueInfo->dependentType->getPrimitiveSizeInBits() == 1) {
+      allocaDataType = par.getTypesManager()->getIntegerType(8);
+    }
+    queueInstrs->alloca = entryBuilder.CreateAlloca(allocaDataType);
     queueInstrs->allocaCast =
         entryBuilder.CreateBitCast(queueInstrs->alloca,
                                    PointerType::getUnqual(queueElemType));
@@ -406,7 +410,13 @@ void DSWP::popValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
         par.queues.queuePops[par.queues.queueSizeToIndex[queueInfo->bitLength]];
     queueInstrs->queueCall =
         builder.CreateCall(queuePopFunction, queueCallArgs);
-    queueInstrs->load = builder.CreateLoad(queueInstrs->alloca);
+    if (queueInfo->dependentType->getPrimitiveSizeInBits() == 1) {
+      queueInstrs->load =
+          builder.CreateTrunc(builder.CreateLoad(queueInstrs->alloca),
+                              queueInfo->dependentType);
+    } else {
+      queueInstrs->load = builder.CreateLoad(queueInstrs->alloca);
+    }
 
     /*
      * Map from producer to queue load
@@ -442,6 +452,15 @@ void DSWP::pushValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
     }
     IRBuilder<> builder(insertPoint);
     builder.CreateStore(producerClone, queueInstrs->alloca);
+    if (queueInfo->dependentType->getPrimitiveSizeInBits() == 1) {
+      builder.CreateStore(
+          builder.CreateZExt(
+              producerClone,
+              queueInstrs->alloca->getType()->getPointerElementType()),
+          queueInstrs->alloca);
+    } else {
+      builder.CreateStore(producerClone, queueInstrs->alloca);
+    }
     queueInstrs->queueCall =
         builder.CreateCall(queuePushFunction, queueCallArgs);
   }
