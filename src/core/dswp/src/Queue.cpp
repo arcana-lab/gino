@@ -451,7 +451,6 @@ void DSWP::pushValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
       insertPoint = producerCloneBlock->getFirstNonPHIOrDbgOrLifetime();
     }
     IRBuilder<> builder(insertPoint);
-    builder.CreateStore(producerClone, queueInstrs->alloca);
     if (queueInfo->dependentType->getPrimitiveSizeInBits() == 1) {
       builder.CreateStore(
           builder.CreateZExt(
