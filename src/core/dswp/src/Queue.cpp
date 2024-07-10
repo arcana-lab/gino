@@ -415,13 +415,11 @@ void DSWP::popValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
         builder.CreateCall(queuePopFunction, queueCallArgs);
     auto loadInst = builder.CreateLoad(
         queueInstrs->alloca->getType()->getPointerElementType(),
-        queueInstrs->alloca) if (queueInfo->dependentType
-                                     ->getPrimitiveSizeInBits()
-                                 == 1) {
+        queueInstrs->alloca);
+    if (queueInfo->dependentType->getPrimitiveSizeInBits() == 1) {
       queueInstrs->load =
           builder.CreateTrunc(loadInst, queueInfo->dependentType);
-    }
-    else {
+    } else {
       queueInstrs->load = loadInst;
     }
 
