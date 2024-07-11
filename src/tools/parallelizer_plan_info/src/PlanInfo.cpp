@@ -77,7 +77,8 @@ bool PlanInfo::runOnModule(Module &M) {
 
   for (const auto &[order, ldi] : order2ldi) {
     if (this->printAllHeaders || shouldPrint(order)) {
-      errs() << "Parallelizer: PlanInfo:    Loop order: " << order << "\n";
+      errs() << "Parallelizer: PlanInfo:    Loop order: " << order << ", ";
+      errs() << "Loop ID: " << ldi->getLoopStructure()->getID().value() << "\n";
       auto ls = ldi->getLoopStructure();
       errs() << "Parallelizer: PlanInfo:    Function name: "
              << ls->getFunction()->getName().str() << "\n";
