@@ -2,6 +2,7 @@
 
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Operator.h"
+#include <ios>
 
 using namespace std;
 using namespace llvm;
@@ -14,6 +15,7 @@ Clause::Clause(Instruction *begin, Instruction *end)
   auto args_it = CI->arg_begin();
 
   variable_ = *(args_it++);
+  default_ = *(args_it++);
 
   auto &f = *(args_it++);
   assert(isa<Function>(f));
@@ -49,6 +51,8 @@ void Clause::print() const {
 }
 
 Value *Clause::getVariable() const { return variable_; }
+
+Value *Clause::getDefaultValue() const { return default_; }
 
 Function *Clause::getFunction() const { return function_; }
 

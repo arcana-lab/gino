@@ -14,6 +14,7 @@ public:
   void print() const;
 
   llvm::Value *getVariable() const;
+  llvm::Value *getDefaultValue() const;
   llvm::Function *getFunction() const;
   llvm::Instruction *getBegin() const;
   llvm::Instruction *getEnd() const;
@@ -21,6 +22,7 @@ public:
 
 private:
   llvm::Value *variable_;
+  llvm::Value *default_;
   llvm::Function *function_;
   llvm::Instruction *begin_;
   llvm::Instruction *end_;

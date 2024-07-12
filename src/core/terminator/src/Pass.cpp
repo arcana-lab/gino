@@ -139,7 +139,7 @@ bool TerminatorPass::runOnModule(Module &M) {
         auto GEP = Builder.CreateInBoundsGEP(ArrayTy, TCValues,
                                              {Zero, Builder.getInt32(i)});
         if (i == 0) {
-          Builder.CreateStore(OriginalVariableValue, GEP);
+          Builder.CreateStore(clause->getDefaultValue(), GEP);
         } else {
           auto TCValue = Builder.CreateCall(clause->getFunction(),
                                             clause->getCallArguments());
