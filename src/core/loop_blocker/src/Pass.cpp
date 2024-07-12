@@ -15,8 +15,8 @@ static cl::list<int> WhiteList("blocker-white-list", cl::ZeroOrMore,
                                cl::CommaSeparated,
                                cl::desc("Loop Blocker white list"));
 
-static cl::list<int> NumBlocks("blocker-num-blocks", cl::ZeroOrMore,
-                               cl::desc("Loop Blocker number of blocks"));
+static cl::opt<int> NumBlocks("blocker-num-blocks", cl::ZeroOrMore,
+                              cl::desc("Loop Blocker number of blocks"));
 
 LoopBlockerPass::LoopBlockerPass() : ModulePass{ID} {}
 
@@ -49,13 +49,12 @@ bool LoopBlockerPass::runOnModule(Module &M) {
 
     if (toBlock) {
       auto LC = noelle.getLoopContent(LS);
-      const int numBlocks = 4;
-      auto header = blockLoop(LC, numBlocks);
+      auto header = blockLoop(LC, NumBlocks);
       if (header == nullptr) {
         errs() << "LoopBlocker: loopID = " << loopID << " can't be blocked\n";
       } else {
         errs() << "LoopBlocker: blocked loopID = " << loopID
-               << ", num blocks = " << numBlocks << "\n";
+               << ", num blocks = " << NumBlocks << "\n";
       }
     }
   }
