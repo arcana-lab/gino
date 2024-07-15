@@ -57,10 +57,10 @@ The version number is in the form of \[v _Major.Minor.Revision_ \]
 ## Status
 Next is the status of Gino for different LLVM versions.
 
-| LLVM    | Gino's branch   | NOELLE's branch | Regression tests failed out of 30723 tests | Performance tests failed out of 23 tests    |
-| ------: | --------------: | --------------: | -----------------------------------------: | ------------------------------------------: | 
-|  14.0.6 | v14             | v14             |                                        377 |                                           2 |
-|   9.0.0 | master          | master          |                                        381 |                                           0 |
+| LLVM    | Gino's branch   | NOELLE's branch | Regression tests failed out of 30723 tests | Performance tests failed out of 23 tests    | Maintained         |
+| ------: | --------------: | --------------: | -----------------------------------------: | ------------------------------------------: | :----------------: |
+|  14.0.6 | v14             | v14             |                                        381 |                                           2 | :heavy_check_mark: |
+|   9.0.0 | master          | master          |                                        377 |                                           0 | :heavy_check_mark: |
 
 
 ## Prerequisites
