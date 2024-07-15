@@ -62,4 +62,9 @@ Instruction *Clause::getEnd() const { return end_; }
 
 vector<Value *> Clause::getCallArguments() const { return arguments_; }
 
+void Clause::erase() {
+  getBegin()->eraseFromParent();
+  getEnd()->eraseFromParent();
+}
+
 } // namespace arcana::gino

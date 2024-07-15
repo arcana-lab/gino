@@ -19,6 +19,10 @@ static cl::opt<int> NumBreaks("terminator-breaks", cl::ZeroOrMore, cl::init(8),
                               cl::Hidden,
                               cl::desc("Number of times we break a LCD"));
 
+static cl::opt<bool> EraseClauses("erase-clauses", cl::ZeroOrMore,
+                                  cl::init(false), cl::Hidden,
+                                  cl::desc("Removes calls to LDTC pragmas"));
+
 TerminatorPass::TerminatorPass() : ModulePass{ID}, prefix("Terminator: ") {}
 
 bool TerminatorPass::doInitialization(Module &M) { return false; }
@@ -33,6 +37,22 @@ void TerminatorPass::getAnalysisUsage(AnalysisUsage &AU) const {
 bool TerminatorPass::runOnModule(Module &M) {
   auto &noelle = getAnalysis<Noelle>();
   auto MM = noelle.getMetadataManager();
+
+  if (EraseClauses) {
+    TerminatorAnalysis TA(noelle);
+    TA.run();
+    auto LSs = TA.getLoopStructuresWithClauses();
+    int counter = 0;
+    for (auto LS : LSs) {
+      auto clauses = TA.getClausesOf(LS);
+      for (auto clause : clauses) {
+        clause->erase();
+        counter++;
+      }
+    }
+    errs() << "Terminator: Erased " << counter << " clauses\n";
+    return counter > 0;
+  }
 
   // Phase 1
   // Analyzing only LoopStructures selected by the planner

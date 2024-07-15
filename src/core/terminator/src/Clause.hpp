@@ -19,6 +19,7 @@ public:
   llvm::Instruction *getBegin() const;
   llvm::Instruction *getEnd() const;
   std::vector<llvm::Value *> getCallArguments() const;
+  void erase();
 
 private:
   llvm::Value *variable_;

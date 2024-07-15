@@ -1,8 +1,8 @@
 # Sources
 set(Srcs 
+  Analysis.cpp
   Clause.cpp
   Pass.cpp
-  Analysis.cpp
 )
 
 # Compilation flags
