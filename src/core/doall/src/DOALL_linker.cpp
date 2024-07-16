@@ -49,8 +49,7 @@ void DOALL::invokeParallelizedLoop(LoopContent *LDI) {
   /*
    * Fetch the chunk size.
    */
-  auto chunkSize = cm->getIntegerConstant(ltm->getChunkSize(), 64);
-  chunkSize = 1;
+  auto chunkSize = cm->getIntegerConstant(1, 64);
 
   /*
    * Call the dispatcher that will dispatch the tasks that execute the
