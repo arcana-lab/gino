@@ -19,10 +19,10 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/core/ReductionSCC.hpp"
-#include "noelle/core/InductionVariableSCC.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 #include "arcana/gino/core/DOALLTask.hpp"
+#include "noelle/core/InductionVariableSCC.hpp"
+#include "noelle/core/ReductionSCC.hpp"
 
 namespace arcana::gino {
 
@@ -50,6 +50,7 @@ void DOALL::invokeParallelizedLoop(LoopContent *LDI) {
    * Fetch the chunk size.
    */
   auto chunkSize = cm->getIntegerConstant(ltm->getChunkSize(), 64);
+  chunkSize = 1;
 
   /*
    * Call the dispatcher that will dispatch the tasks that execute the
@@ -57,9 +58,8 @@ void DOALL::invokeParallelizedLoop(LoopContent *LDI) {
    */
   IRBuilder<> doallBuilder(this->entryPointOfParallelizedLoop);
   auto doallCallInst = doallBuilder.CreateCall(
-      this->taskDispatcher,
-      ArrayRef<Value *>(
-          { tasks[0]->getTaskBody(), envPtr, numCores, chunkSize }));
+      this->taskDispatcher, ArrayRef<Value *>({tasks[0]->getTaskBody(), envPtr,
+                                               numCores, chunkSize}));
 
   /*
    * Get the return value of the dispatcher, which has the information about how
@@ -79,7 +79,7 @@ void DOALL::invokeParallelizedLoop(LoopContent *LDI) {
    * Jump to the unique successor of the loop.
    * This loop can only have one successor because it is a DOALL.
    */
-  IRBuilder<> afterDOALLBuilder{ latestBBAfterDOALLCall };
+  IRBuilder<> afterDOALLBuilder{latestBBAfterDOALLCall};
   afterDOALLBuilder.CreateBr(this->exitPointOfParallelizedLoop);
 }
 
