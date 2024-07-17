@@ -565,11 +565,6 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
     for (auto I : taskInstructions) {
       instructionsToConvertOperandsOf.push(I);
     }
-    auto locationOutsideUses =
-        location->getInstructionsUsingLocationOutsideLoop();
-    for (auto I : locationOutsideUses) {
-      instructionsToConvertOperandsOf.push(I);
-    }
     while (!instructionsToConvertOperandsOf.empty()) {
 
       /*
