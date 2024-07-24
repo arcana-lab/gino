@@ -157,7 +157,8 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
         && "DOALL: PHINode in periodic variable SCC doesn't have exactly two entries!");
     auto taskPHI = cast<PHINode>(task->getCloneOfOriginalInstruction(phi));
 
-    unsigned entryBlock, loopBlock;
+    uint64_t entryBlock = 0;
+    uint64_t loopBlock = 0;
     if (phi->getIncomingValue(0) == initialValue) {
       entryBlock = 0;
       loopBlock = 1;
@@ -169,9 +170,12 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
     }
     auto taskLoopBlock =
         task->getCloneOfOriginalBasicBlock(phi->getIncomingBlock(loopBlock));
+    assert(taskLoopBlock != nullptr);
     auto loopValue = phi->getIncomingValue(loopBlock);
+    assert(isa<Instruction>(loopValue));
     auto taskLoopValue =
         task->getCloneOfOriginalInstruction(cast<Instruction>(loopValue));
+    assert(taskLoopValue != nullptr);
 
     /*
      * Calculate the periodic variable's initial value for the task.
