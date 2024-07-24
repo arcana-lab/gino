@@ -10,10 +10,14 @@ mkdir -p $installDir ;
 
 # Set the enable file
 enableFile="../enable" ;
-
 echo "#!/bin/bash" > ${enableFile} ;
 echo "" >> ${enableFile} ;
 
+# Enable NOELLE
+noelleEnablePath="`noelle-config --prefix`/../";
+echo "source `realpath $noelleEnablePath`/enable" >> ${enableFile};
+
+# Enable GINO
 echo "GINO_HOME=${installDir}" >> ${enableFile} ;
 echo "export PATH=\${GINO_HOME}/bin:\$PATH" >> ${enableFile} ;
 echo "export LD_LIBRARY_PATH=\${GINO_HOME}/lib:\$LD_LIBRARY_PATH" >> ${enableFile} ;
