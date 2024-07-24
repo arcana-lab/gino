@@ -101,11 +101,17 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
     };
     tree->visitPreOrder(selector);
   }
-  errs() << "Parallelizer:    Selected loops with index: ";
-  for (const auto &[k, v] : loopParallelizationOrder) {
-    errs() << k << " ";
+  if (loopParallelizationOrder.size() > 0) {
+    errs() << "Parallelizer:    Selected loops with index: ";
+    for (const auto &[k, v] : loopParallelizationOrder) {
+      errs() << k << " ";
+    }
+    errs() << "\n";
+
+  } else {
+    errs()
+        << "Parallelizer:    No loops have been selected for parallelization\n";
   }
-  errs() << "\n";
 
   /*
    * Parallelize the loops in order.
