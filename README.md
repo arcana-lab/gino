@@ -40,7 +40,7 @@ The only documentation available for Gino is:
 
 
 ## Version
-The latest stable version is 14.0.0 (tag = `v14.0.0`).
+The latest stable version is 14.1.0 (tag = `v14.1.0`).
 
 
 ### Version Numbering Scheme
@@ -58,27 +58,27 @@ The version number is in the form of \[v _Major.Minor.Revision_ \]
 ## Status
 Next is the status of Gino for different LLVM versions.
 
-| LLVM    | Gino's branch   | NOELLE's branch | Regression tests failed out of 30723 tests | Performance tests failed out of 23 tests    | Maintained         |
-| ------: | --------------: | --------------: | -----------------------------------------: | ------------------------------------------: | :----------------: |
-|  14.0.6 | v14             | v14             |                                        379 |                                           1 | :heavy_check_mark: |
-|   9.0.0 | master          | master          |                                        379 |                                           0 | :heavy_check_mark: |
+| LLVM    | Gino's branch   | NOELLE's branch | Regression tests failed out of 30723 tests | Performance tests failed out of 23 tests    | Latest version | Maintained         |
+| ------: | --------------: | --------------: | -----------------------------------------: | ------------------------------------------: | -------------: | :----------------: |
+|  14.0.6 | master          | master          |                                        379 |                                           0 |         14.1.0 | :white_check_mark: |
+|   9.0.0 | v9              | v9              |                                        379 |                                           0 |          9.3.0 |                :x: |
 
 
 ## Prerequisites
 - LLVM 14.0.6
-- NOELLE 14.0.0
+- NOELLE 14.1.0
 
 ### Northwestern
 Next is the information for those that have access to the Zythos cluster at Northwestern.
 
 To enable the correct LLVM, run the following command from any node of the Zythos cluster:
 ```
-source /project/extra/llvm/9.0.0/enable
+source /project/extra/llvm/14.0.6/enable
 ```
 
 To enable the correct NOELLE, run the following command from any node of the Zythos cluster:
 ```
-source /project/extra/noelle/9.16.0/enable
+source /project/extra/noelle/14.1.0/enable
 ```
 
 The guide about the Zythos cluster can be downloaded [here](http://www.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf).
