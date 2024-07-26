@@ -2,11 +2,11 @@ DOALL_almost_lbm	    9.6
 DOALL_challenge        0.35
 DOALL_devirtualizer   52
 DOALL_IV               1
-DOALL_IV_inner         3.1
+DOALL_IV_inner         1
 DOALL_lbm	       6.261
 DOALL_limit	      23.6
 DOALL_object_cloning  23.5
-DOALL_periodic_variable  80
+DOALL_periodic_variable 0.8
 DOALL_reduction	       3.560
 DOALL_streamclusters  23.9
 DSWP_communication     0.4
