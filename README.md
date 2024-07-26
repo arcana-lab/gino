@@ -69,19 +69,17 @@ Next is the status of Gino for different LLVM versions.
 - NOELLE 14.1.0
 
 ### Northwestern
-Next is the information for those that have access to the Zythos cluster at Northwestern.
+Next is the information for those that have access to the [Zythos](https://users.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf) cluster at Northwestern.
 
-To enable the correct LLVM, run the following command from any node of the Zythos cluster:
+To enable the correct LLVM, run the following command from any node of the [Zythos](https://users.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf) cluster:
 ```
 source /project/extra/llvm/14.0.6/enable
 ```
 
-To enable the correct NOELLE, run the following command from any node of the Zythos cluster:
+To enable the correct NOELLE, run the following command from any node of the [Zythos](https://users.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf) cluster:
 ```
 source /project/extra/noelle/14.1.0/enable
 ```
-
-The guide about the Zythos cluster can be downloaded [here](http://www.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf).
 
 
 ## Building Gino
