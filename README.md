@@ -40,7 +40,7 @@ The only documentation available for Gino is:
 
 
 ## Version
-The latest stable version is 9.2.0 (tag = `v9.2.0`).
+The latest stable version is 9.3.0 (tag = `v9.3.0`).
 
 
 ### Version Numbering Scheme
@@ -66,7 +66,7 @@ Next is the status of Gino for different LLVM versions.
 
 ## Prerequisites
 - LLVM 9.0.0
-- NOELLE 9.16.0
+- NOELLE 9.17.0
 
 ### Northwestern
 Next is the information for those that have access to the Zythos cluster at Northwestern.
