@@ -35,6 +35,10 @@ make clean ;
 
 echo "Machine = `hostname`" > node.txt ;
 
+# Mark the test as not having finished running
+echo "This test is still running" > is_running.txt ;
+chmod 644 is_running.txt ;
+
 # Dump the script to run to re-produce the configuration
 echo "#!/bin/bash" > run_me.sh ; 
 echo "source ../../../enable ; " >> run_me.sh ;
@@ -49,6 +53,7 @@ if test $? -ne 0 ; then
   echo "  Test = `pwd`" ;
   echo "  Node = `hostname`" ;
   flock $errorFile echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+  rm is_running.txt ;
   exit 0 ;
 fi
 
@@ -62,6 +67,7 @@ if test $? -ne 0 ; then
   echo "  Test = `pwd`" ;
   echo "  Node = `hostname`" ;
   flock $errorFile echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+  rm is_running.txt ;
   exit 0 ;
 fi
 
@@ -75,6 +81,7 @@ for i in `seq 0 5` ; do
     echo "  Test = `pwd`" ;
     echo "  Node = `hostname`" ;
     flock $errorFile echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+    rm is_running.txt ;
     exit 0 ;
   fi
 
@@ -83,6 +90,7 @@ for i in `seq 0 5` ; do
   if test $? -ne 0 ; then
     echo "ERROR: the test didn't pass" ;
     flock $errorFile echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+    rm is_running.txt ;
     exit 0;
   fi
 
