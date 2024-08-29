@@ -45,6 +45,14 @@ function printTestsThatDoNotFailAnymore {
   return 0;
 }
 
+# Fetch the inputs
+verbose="0";
+for var in "$@" ; do
+  if test "$var" == "-v" ; then
+    verbose="1" ;
+  fi
+done
+
 totalTests=`grep Queue condor/regression.con_* | wc -l | awk '{print $1}'` ;
 failedTests=`wc -l regression/failing_tests | awk '{print $1}'` ;
 failedTestsPerc=`echo "scale=6;($failedTests / $totalTests) * 100" | bc` ;
@@ -108,10 +116,10 @@ done < "$currentResults"
 if test "$newTestsFailed" != "" ; then
   echo -n -e "    $newTestsFailedCounter new tests ${RED}failed${NC}";
   printList=`echo "$newTestsFailedCounter < 100" | bc` ;
-  if test "$printList" != "0" ; then
+  if test "$printList" != "0" -o "$verbose" != "0" ; then
     echo -e ": $newTestsFailed" ;
   else
-    echo -e ". The list is too long to be printed. Please check the list by running \"cat regression_*/errors.txt\"" ;
+    echo -e ". The list is too long to be printed. Please check the list by running \"cat regression_*/errors.txt\" or by running \"$0 -v\"" ;
   fi
 
 elif test "$stillRunningRegressionTests" == "0" ; then

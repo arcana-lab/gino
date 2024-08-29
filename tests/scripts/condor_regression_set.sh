@@ -5,7 +5,7 @@ tmpOut="`mktemp`" ;
 tmpOut2="`mktemp`" ;
 
 # Dump the set of tests that failed
-make condor_check &> $tmpOut ;
+./scripts/condor_check.sh -v &> $tmpOut ;
 
 # Fetch the list of tests that failed
 grep regression_ $tmpOut &> $tmpOut2 ;
