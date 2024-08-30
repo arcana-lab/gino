@@ -13,13 +13,14 @@ if(DEFINED GINO_INSTALL_DIR)
   set(CMAKE_INSTALL_PREFIX ${GINO_INSTALL_DIR})
 endif()
 
-set(GINO_CXX_FLAGS 
-  -O0
-  -g
-  -fPIC
-  -std=c++17
-  -Wall
-)
+if(NOT DEFINED GINO_BUILD_TYPE)
+  set(GINO_BUILD_TYPE "Debug")
+endif()
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(LLVM 14 REQUIRED CONFIG)
 
 string(ASCII 27 Esc)
 set(Purple "${Esc}[35m")

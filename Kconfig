@@ -5,3 +5,7 @@ config GINO_INSTALL_DIR
 config GINO_TOOLS
   bool "Install all the tools build on top of Gino"
   default y
+
+config GINO_BUILD_TYPE
+  string "Set build type for Gino"
+  default "Debug"
