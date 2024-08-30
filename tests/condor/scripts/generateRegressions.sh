@@ -84,9 +84,9 @@ function generateCondorJobs {
 
 function generateAllCondorJobs {
   generateCondorJobs "8" "" ;
-  generateCondorJobs "8" "-gino-disable-enablers -noelle-disable-inliner -noelle-disable-dead" ;
+  generateCondorJobs "8" "-gino-disable-enablers -noelle-disable-inliner -gino-disable-dead" ;
   generateCondorJobs "2" "" ;
-  generateCondorJobs "2" "-gino-disable-enablers -noelle-disable-inliner -noelle-disable-dead" ;
+  generateCondorJobs "2" "-gino-disable-enablers -noelle-disable-inliner -gino-disable-dead" ;
   generateCondorJobs "7" "" ;
 
   noelleOptions="-noelle-inliner-avoid-hoist-to-main -noelle-disable-helix" ;
