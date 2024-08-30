@@ -19,9 +19,9 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/core/InductionVariableSCC.hpp"
-#include "noelle/core/LoopCarriedUnknownSCC.hpp"
-#include "noelle/core/UnknownClosedFormSCC.hpp"
+#include "arcana/noelle/core/InductionVariableSCC.hpp"
+#include "arcana/noelle/core/LoopCarriedUnknownSCC.hpp"
+#include "arcana/noelle/core/UnknownClosedFormSCC.hpp"
 #include "arcana/gino/core/HELIX.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 

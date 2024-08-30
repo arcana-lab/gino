@@ -22,7 +22,7 @@
 #ifndef GINO_SRC_CORE_INPUT_OUTPUT_INPUTOUTPUT_H_
 #define GINO_SRC_CORE_INPUT_OUTPUT_INPUTOUTPUT_H_
 
-#include "noelle/core/SystemHeaders.hpp"
+#include "arcana/noelle/core/SystemHeaders.hpp"
 
 using namespace arcana::noelle;
 

@@ -22,9 +22,9 @@
 #ifndef GINO_SRC_CORE_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_
 #define GINO_SRC_CORE_HEURISTICS_MINMAXSIZEPARTITIONANALYSIS_H_
 
-#include "noelle/core/SCC.hpp"
-#include "noelle/core/SCCDAGAttrs.hpp"
-#include "noelle/core/SCCDAGPartition.hpp"
+#include "arcana/noelle/core/SCC.hpp"
+#include "arcana/noelle/core/SCCDAGAttrs.hpp"
+#include "arcana/noelle/core/SCCDAGPartition.hpp"
 
 #include "arcana/gino/core/PartitionCostAnalysis.hpp"
 

@@ -20,8 +20,8 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcana/gino/core/HELIX.hpp"
-#include "noelle/core/InductionVariableSCC.hpp"
-#include "noelle/core/ReductionSCC.hpp"
+#include "arcana/noelle/core/InductionVariableSCC.hpp"
+#include "arcana/noelle/core/ReductionSCC.hpp"
 
 namespace arcana::gino {
 
@@ -462,9 +462,10 @@ void HELIX::replaceUsesOfSpilledPHIWithLoads(
     }
 
     IRBuilder<> spillValueBuilder(insertPoint);
-    auto spillLoad =
-        spillValueBuilder.CreateLoad(spillEnvPtr,
-                                     "noelle.helix.spilled_variable");
+    auto spillLoad = spillValueBuilder.CreateLoad(
+        spillEnvPtr->getType()->getPointerElementType(),
+        spillEnvPtr,
+        "noelle.helix.spilled_variable");
     spill->environmentLoads.insert(spillLoad);
 
     /*

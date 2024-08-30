@@ -22,7 +22,7 @@
 #ifndef GINO_SRC_CORE_PARALLELIZATION_PLANNER_TIMINGMODEL_H_
 #define GINO_SRC_CORE_PARALLELIZATION_PLANNER_TIMINGMODEL_H_
 
-#include "noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/Noelle.hpp"
 
 namespace arcana::gino {
 

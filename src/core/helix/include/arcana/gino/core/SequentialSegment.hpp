@@ -23,7 +23,7 @@
 #define GINO_SRC_CORE_HELIX_SEQUENTIALSEGMENT_H_
 
 #include "llvm/ADT/iterator_range.h"
-#include "noelle/core/SCCDAGPartition.hpp"
+#include "arcana/noelle/core/SCCDAGPartition.hpp"
 #include "arcana/gino/core/HELIX.hpp"
 
 namespace arcana::gino {

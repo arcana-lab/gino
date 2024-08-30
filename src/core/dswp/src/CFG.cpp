@@ -93,8 +93,9 @@ void DSWP::generateLoopSubsetForStage(LoopContent *LDI, int taskIndex) {
   while (!queueToFindMissingBBs.empty()) {
     auto originalB = queueToFindMissingBBs.front();
     queueToFindMissingBBs.pop();
-    if (visitedBBs.find(originalB) != visitedBBs.end())
+    if (visitedBBs.find(originalB) != visitedBBs.end()) {
       continue;
+    }
     visitedBBs.insert(originalB);
 
     assert(task->isAnOriginalBasicBlock(originalB)
@@ -103,15 +104,24 @@ void DSWP::generateLoopSubsetForStage(LoopContent *LDI, int taskIndex) {
 
     if (!clonedB->getTerminator()
         || !clonedB->getTerminator()->isTerminator()) {
+
+      /*
+       * Fetch the basic block that post-dominates @originalB
+       */
       auto postDominatingBB = this->originalFunctionDS->PDT.getNode(originalB)
                                   ->getParent()
                                   ->getBlock();
       assert(loopExits.find(postDominatingBB) == loopExits.end()
              && "Loop exiting terminator not cloned by task!");
+      auto cloneOfPostDominatingBB =
+          task->getCloneOfOriginalBasicBlock(postDominatingBB);
+      assert(cloneOfPostDominatingBB != nullptr);
 
+      /*
+       * Add a jump to it.
+       */
       IRBuilder<> builder(clonedB);
-      builder.Insert(BranchInst::Create(
-          task->getCloneOfOriginalBasicBlock(postDominatingBB)));
+      builder.CreateBr(cloneOfPostDominatingBB);
       queueToFindMissingBBs.push(postDominatingBB);
 
     } else {

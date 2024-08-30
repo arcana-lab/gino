@@ -21,7 +21,7 @@
  */
 #include "llvm/IR/CFG.h"
 #include "arcana/gino/core/HELIX.hpp"
-#include "noelle/core/SCCPartitionScheduler.hpp"
+#include "arcana/noelle/core/SCCPartitionScheduler.hpp"
 
 using namespace llvm;
 using namespace arcana::gino;

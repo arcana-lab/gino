@@ -22,7 +22,7 @@
 #ifndef GINO_SRC_CORE_HELIX_SPILLEDLOOPCARRIEDDEPENDENCE_H_
 #define GINO_SRC_CORE_HELIX_SPILLEDLOOPCARRIEDDEPENDENCE_H_
 
-#include "noelle/core/SystemHeaders.hpp"
+#include "arcana/noelle/core/SystemHeaders.hpp"
 
 namespace arcana::gino {
 

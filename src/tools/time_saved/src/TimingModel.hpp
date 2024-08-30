@@ -22,7 +22,7 @@
 #ifndef GINO_SRC_TOOLS_TIME_SAVED_TIMINGMODEL_H_
 #define GINO_SRC_TOOLS_TIME_SAVED_TIMINGMODEL_H_
 
-#include "noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/NoellePass.hpp"
 
 using namespace arcana::noelle;
 

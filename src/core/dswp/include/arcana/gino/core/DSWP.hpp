@@ -22,7 +22,7 @@
 #ifndef GINO_SRC_CORE_DSWP_H_
 #define GINO_SRC_CORE_DSWP_H_
 
-#include "noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/Noelle.hpp"
 #include "arcana/gino/core/HeuristicsPass.hpp"
 #include "arcana/gino/core/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp"
 #include "arcana/gino/core/DSWPTask.hpp"
@@ -103,10 +103,10 @@ private:
   void pushValueQueues(LoopContent *LDI, Noelle &par, int taskIndex);
   void createPipelineFromStages(LoopContent *LDI, Noelle &par);
   Value *createStagesArrayFromStages(LoopContent *LDI,
-                                     IRBuilder<> funcBuilder,
+                                     IRBuilder<> &funcBuilder,
                                      Noelle &par);
   Value *createQueueSizesArrayFromStages(LoopContent *LDI,
-                                         IRBuilder<> funcBuilder,
+                                         IRBuilder<> &funcBuilder,
                                          Noelle &par);
 
   bool canBeCloned(GenericSCC *scc) const;

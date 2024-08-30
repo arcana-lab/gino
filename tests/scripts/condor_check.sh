@@ -45,6 +45,14 @@ function printTestsThatDoNotFailAnymore {
   return 0;
 }
 
+# Fetch the inputs
+verbose="0";
+for var in "$@" ; do
+  if test "$var" == "-v" ; then
+    verbose="1" ;
+  fi
+done
+
 totalTests=`grep Queue condor/regression.con_* | wc -l | awk '{print $1}'` ;
 failedTests=`wc -l regression/failing_tests | awk '{print $1}'` ;
 failedTestsPerc=`echo "scale=6;($failedTests / $totalTests) * 100" | bc` ;
@@ -106,8 +114,13 @@ done < "$currentResults"
 
 # Check the results
 if test "$newTestsFailed" != "" ; then
-  echo -e "    $newTestsFailedCounter new tests ${RED}failed${NC}: $newTestsFailed" ;
-  echo -e "    The regression tests ${RED}failed${NC}" ;
+  echo -n -e "    $newTestsFailedCounter new tests ${RED}failed${NC}";
+  printList=`echo "$newTestsFailedCounter < 100" | bc` ;
+  if test "$printList" != "0" -o "$verbose" != "0" ; then
+    echo -e ": $newTestsFailed" ;
+  else
+    echo -e ". The list is too long to be printed. Please check the list by running \"cat regression_*/errors.txt\" or by running \"$0 -v\"" ;
+  fi
 
 elif test "$stillRunningRegressionTests" == "0" ; then
 
@@ -185,7 +198,7 @@ if test -f performance/speedups.txt ; then
     else 
       echo -e "  All performance tests ${GREEN}succeded!${NC}" ;
       awk '{
-        if (     (($2 > ($4 * 1.1)) && (($2 - $4) > 0.2)) || (($2 - $4) >= 1) ){
+        if (     (($2 > ($4 * 1.1)) && (($2 - $4) > 0.2))){
               printf("    Performance increase for %s (from %.1fx to %.1fx)\n", $1, $4, $2);
             }
         }' $tempCompare > $tempOutput ;

@@ -19,7 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/NoellePass.hpp"
 #include "EnablersManager.hpp"
 
 namespace arcana::gino {
@@ -42,7 +42,7 @@ bool EnablersManager::runOnModule(Module &M) {
   /*
    * Fetch the outputs of the passes we rely on.
    */
-  auto &noelle = getAnalysis<Noelle>();
+  auto &noelle = getAnalysis<NoellePass>().getNoelle();
 
   /*
    * Create the enablers.

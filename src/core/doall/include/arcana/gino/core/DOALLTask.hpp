@@ -22,8 +22,8 @@
 #ifndef GINO_SRC_CORE_DOALL_DOALLTASK_H_
 #define GINO_SRC_CORE_DOALL_DOALLTASK_H_
 
-#include "noelle/core/Task.hpp"
-#include "noelle/core/SCCDAGAttrs.hpp"
+#include "arcana/noelle/core/Task.hpp"
+#include "arcana/noelle/core/SCCDAGAttrs.hpp"
 
 using namespace arcana::noelle;
 

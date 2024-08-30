@@ -191,21 +191,14 @@ BasicBlock *DOALL::getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
     auto valueUsedToCompareAgainstExitConditionValue =
         task->getCloneOfOriginalInstruction(
             origValueUsedToCompareAgainstExitConditionValue);
+    assert(
+        cmpInst->getOperand(0) == valueUsedToCompareAgainstExitConditionValue
+        && "IV is not the first operand in the cloned compare instruction to compare against the exit condition value");
     clonedCmpInst->replaceUsesOfWith(
         valueUsedToCompareAgainstExitConditionValue,
         prevIterationValue);
     lastBBBuilder.Insert(clonedCmpInst, "isLastLoopIteration");
-    lastBBBuilder.CreateCondBr(clonedCmpInst, newBB, newJoinBB);
-
-    /*
-     * Step 6: update the condition to check if the last loop iteration (last of
-     * the sequential original loop) was executed by the current task.
-     */
-    bool ivInLeftOperand =
-        (cmpInst->getOperand(0) == valueUsedToCompareAgainstExitConditionValue);
-    ivUtility.updateConditionToCheckIfTheLastLoopIterationWasExecuted(
-        ivInLeftOperand,
-        cast<CmpInst>(clonedCmpInst));
+    lastBBBuilder.CreateCondBr(clonedCmpInst, newJoinBB, newBB);
 
     return;
   };

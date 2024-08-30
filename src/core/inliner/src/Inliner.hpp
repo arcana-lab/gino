@@ -22,7 +22,7 @@
 #ifndef GINO_SRC_CORE_INLINER_H_
 #define GINO_SRC_CORE_INLINER_H_
 
-#include "noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/NoellePass.hpp"
 #include <fstream>
 
 using namespace arcana::noelle;

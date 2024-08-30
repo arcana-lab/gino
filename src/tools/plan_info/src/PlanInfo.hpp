@@ -23,7 +23,8 @@
 #define GINO_SRC_TOOLS_PLAN_INFO_PLANINFO_H_
 
 #include <string>
-#include "noelle/core/Noelle.hpp"
+
+#include "arcana/noelle/core/NoellePass.hpp"
 
 using namespace arcana::noelle;
 

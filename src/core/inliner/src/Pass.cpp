@@ -40,7 +40,7 @@ bool Inliner::doInitialization(Module &M) {
 }
 
 void Inliner::getAnalysisUsage(AnalysisUsage &AU) const {
-  AU.addRequired<Noelle>();
+  AU.addRequired<NoellePass>();
   AU.addRequired<LoopInfoWrapperPass>();
   AU.addRequired<CallGraphWrapperPass>();
   AU.addRequired<DominatorTreeWrapperPass>();

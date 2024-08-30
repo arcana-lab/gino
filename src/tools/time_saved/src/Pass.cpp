@@ -20,6 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "TimeSaved.hpp"
+#include "arcana/noelle/core/NoellePass.hpp"
 
 namespace arcana::gino {
 
@@ -37,7 +38,7 @@ bool TimeSaved::runOnModule(Module &M) {
   /*
    * Fetch the outputs of the passes we rely on.
    */
-  auto &noelle = getAnalysis<Noelle>();
+  auto &noelle = getAnalysis<NoellePass>().getNoelle();
 
   /*
    * Fetch the profiles.
@@ -127,7 +128,7 @@ void TimeSaved::getAnalysisUsage(AnalysisUsage &AU) const {
   /*
    * Noelle.
    */
-  AU.addRequired<Noelle>();
+  AU.addRequired<NoellePass>();
 
   return;
 }

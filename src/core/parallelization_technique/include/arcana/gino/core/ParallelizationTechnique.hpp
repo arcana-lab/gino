@@ -23,10 +23,10 @@
 #define GINO_SRC_CORE_PARALLELIZATION_TECHNIQUE_PARALLELIZATIONTECHNIQUE_H_
 
 #include "arcana/gino/core/Heuristics.hpp"
-#include "noelle/core/Noelle.hpp"
-#include "noelle/core/PDGPrinter.hpp"
-#include "noelle/core/SubCFGs.hpp"
-#include "noelle/core/Task.hpp"
+#include "arcana/noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/PDGPrinter.hpp"
+#include "arcana/noelle/core/SubCFGs.hpp"
+#include "arcana/noelle/core/Task.hpp"
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
 

@@ -20,7 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "EnablersManager.hpp"
-#include "noelle/core/LoopDistribution.hpp"
+#include "arcana/noelle/core/LoopDistribution.hpp"
 
 namespace arcana::gino {
 
@@ -49,7 +49,7 @@ void EnablersManager::getAnalysisUsage(AnalysisUsage &AU) const {
   /*
    * Noelle framework.
    */
-  AU.addRequired<Noelle>();
+  AU.addRequired<NoellePass>();
 
   return;
 }

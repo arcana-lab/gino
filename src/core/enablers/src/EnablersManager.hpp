@@ -22,9 +22,9 @@
 #ifndef GINO_SRC_CORE_ENABLERS_ENABLERSMANAGER_H_
 #define GINO_SRC_CORE_ENABLERS_ENABLERSMANAGER_H_
 
-#include "noelle/core/Noelle.hpp"
-#include "noelle/tools/LoopInvariantCodeMotion.hpp"
-#include "noelle/tools/SCEVSimplification.hpp"
+#include "arcana/noelle/core/NoellePass.hpp"
+#include "arcana/noelle/tools/LoopInvariantCodeMotion.hpp"
+#include "arcana/noelle/tools/SCEVSimplification.hpp"
 
 using namespace arcana::noelle;
 

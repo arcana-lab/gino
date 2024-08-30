@@ -20,7 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "EnablersManager.hpp"
-#include "noelle/core/LoopCarriedUnknownSCC.hpp"
+#include "arcana/noelle/core/LoopCarriedUnknownSCC.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 
 namespace arcana::gino {

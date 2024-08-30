@@ -20,9 +20,9 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcana/gino/core/ParallelizationTechnique.hpp"
-#include "noelle/core/ReductionSCC.hpp"
-#include "noelle/core/BinaryReductionSCC.hpp"
-#include "noelle/core/LoopCarriedUnknownSCC.hpp"
+#include "arcana/noelle/core/ReductionSCC.hpp"
+#include "arcana/noelle/core/BinaryReductionSCC.hpp"
+#include "arcana/noelle/core/LoopCarriedUnknownSCC.hpp"
 
 namespace arcana::gino {
 
@@ -325,8 +325,10 @@ BasicBlock *ParallelizationTechnique::
     if (isReduced) {
       envVar = envBuilder->getAccumulatedReducedEnvironmentVariable(envID);
     } else {
+      auto envVarDescriptor = envBuilder->getEnvironmentVariable(envID);
       envVar = afterReductionBuilder->CreateLoad(
-          envBuilder->getEnvironmentVariable(envID),
+          envVarDescriptor->getType()->getPointerElementType(),
+          envVarDescriptor,
           "noelle.environment_variable.live_out.reduction");
     }
     assert(envVar != nullptr);
@@ -563,11 +565,6 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
     for (auto I : taskInstructions) {
       instructionsToConvertOperandsOf.push(I);
     }
-    auto locationOutsideUses =
-        location->getInstructionsUsingLocationOutsideLoop();
-    for (auto I : locationOutsideUses) {
-      instructionsToConvertOperandsOf.push(I);
-    }
     while (!instructionsToConvertOperandsOf.empty()) {
 
       /*
@@ -695,9 +692,10 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
               envUser->createEnvironmentVariablePointer(entryBuilder,
                                                         newLiveInEnvironmentID,
                                                         opJ->getType());
-          auto environmentLocationLoad =
-              entryBuilder.CreateLoad(envVarPtr,
-                                      "noelle.environment_variable.live_in");
+          auto environmentLocationLoad = entryBuilder.CreateLoad(
+              envVarPtr->getType()->getPointerElementType(),
+              envVarPtr,
+              "noelle.environment_variable.live_in");
 
           /*
            * Make the task aware that the new load represents the live-in value.
@@ -763,6 +761,7 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
                                                       newLiveInEnvironmentID,
                                                       alloca->getType());
         auto environmentLocationLoad = entryBuilderAtTheEnd.CreateLoad(
+            envVarPtr->getType()->getPointerElementType(),
             envVarPtr,
             "noelle.environment_variable.live_in");
 
@@ -871,7 +870,10 @@ void ParallelizationTechnique::generateCodeToLoadLiveInVariables(
            << "\n";
     auto metaString = std::string{ "noelle_environment_variable_" };
     metaString.append(std::to_string(envID));
-    auto envLoad = builder.CreateLoad(envPointer, metaString);
+    auto envLoad =
+        builder.CreateLoad(envPointer->getType()->getPointerElementType(),
+                           envPointer,
+                           metaString);
 
     /*
      * Register the load as a "clone" of the original producer
@@ -1516,7 +1518,7 @@ void ParallelizationTechnique::doNestedInlineOfCalls(
       }
 
       InlineFunctionInfo IFI;
-      InlineFunction(callToInline, IFI);
+      InlineFunction(*callToInline, IFI);
     }
 
     /*

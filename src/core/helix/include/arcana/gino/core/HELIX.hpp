@@ -27,9 +27,9 @@
 #include "arcana/gino/core/ParallelizationTechniqueForLoopsWithLoopCarriedDataDependences.hpp"
 #include "arcana/gino/core/SequentialSegment.hpp"
 #include "arcana/gino/core/SpilledLoopCarriedDependence.hpp"
-#include "noelle/core/ControlFlowEquivalence.hpp"
-#include "noelle/core/Noelle.hpp"
-#include "noelle/core/SubCFGs.hpp"
+#include "arcana/noelle/core/ControlFlowEquivalence.hpp"
+#include "arcana/noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/SubCFGs.hpp"
 
 namespace arcana::gino {
 

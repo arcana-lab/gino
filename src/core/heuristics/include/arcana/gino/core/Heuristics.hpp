@@ -22,7 +22,7 @@
 #ifndef GINO_SRC_CORE_HEURISTICS_H_
 #define GINO_SRC_CORE_HEURISTICS_H_
 
-#include "noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/Noelle.hpp"
 
 #include "arcana/gino/core/InvocationLatency.hpp"
 #include "arcana/gino/core/MinMaxSizePartitionAnalysis.hpp"

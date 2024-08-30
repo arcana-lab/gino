@@ -18,11 +18,12 @@ errorFile="$8" ;
 source ~/.bash_profile ;
 cd $repoDir/ ;
 
+# Check if the directory still exists
 if ! test -e $testDir ; then
-  fileName="TestDir_not_exists_`echo ${testDir} | tr -s '/' '_'`" ;
-  echo "TestDir not exists : $testDir" > ${fileName}.txt ;
-  echo "RepoDir : $repoDir" >> ${fileName}.txt ;
-  echo "Machine : `hostname`" >> ${fileName}.txt ;
+
+  # The directory doesn't exist. 
+  # This happen when condor re-run the same job because the previous one wasn't responding. 
+  # The reason why it wasn't responding is because it was trying to delete the directory.
   exit 0 ;
 fi
 
@@ -47,7 +48,7 @@ if test $? -ne 0 ; then
   echo "ERROR: the following test did not pass because the compilation timed out" ;
   echo "  Test = `pwd`" ;
   echo "  Node = `hostname`" ;
-  echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+  flock $errorFile echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
   exit 0 ;
 fi
 
@@ -56,17 +57,24 @@ make input.txt
 
 # Baseline
 ./baseline `cat input.txt` &> output_baseline.txt ;
+if test $? -ne 0 ; then
+   echo "ERROR: the following test did not pass because its baseline execution failed" ;
+  echo "  Test = `pwd`" ;
+  echo "  Node = `hostname`" ;
+  flock $errorFile echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+  exit 0 ;
+fi
 
 # Test the parallelized binary
 for i in `seq 0 5` ; do
 
   # Run the parallelized binary
-  timeout 1h ./parallelized `cat input.txt` &> output_parallelized.txt ;
+  timeout 6h ./parallelized `cat input.txt` &> output_parallelized.txt ;
   if test $? -ne 0 ; then
     echo "ERROR: the following test did not pass because its parallel execution timed out" ;
     echo "  Test = `pwd`" ;
     echo "  Node = `hostname`" ;
-    echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+    flock $errorFile echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
     exit 0 ;
   fi
 
@@ -74,7 +82,7 @@ for i in `seq 0 5` ; do
   cmp output_baseline.txt output_parallelized.txt ;
   if test $? -ne 0 ; then
     echo "ERROR: the test didn't pass" ;
-    echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
+    flock $errorFile echo "$testDir $noelleOptions $toOptions $parallelizationOptions $frontendOptions $meOptions" >> $errorFile ;
     exit 0;
   fi
 

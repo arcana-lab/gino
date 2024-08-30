@@ -19,7 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "noelle/core/Architecture.hpp"
+#include "arcana/noelle/core/Architecture.hpp"
 #include "arcana/gino/core/HELIX.hpp"
 
 namespace arcana::gino {
@@ -153,7 +153,9 @@ void HELIX::addSynchronizations(LoopContent *LDI,
      * HELIX_wait.
      */
     IRBuilder<> beforeEntryBuilder(beforeEntryBB);
-    auto ssStateLoad = beforeEntryBuilder.CreateLoad(ssState);
+    auto ssStateLoad = beforeEntryBuilder.CreateLoad(
+        ssState->getType()->getPointerElementType(),
+        ssState);
     auto needToWait = beforeEntryBuilder.CreateICmpEQ(ssStateLoad, const0);
     beforeEntryBuilder.CreateCondBr(needToWait, ssWaitBB, ssEntryBB);
 
@@ -260,7 +262,9 @@ void HELIX::addSynchronizations(LoopContent *LDI,
     }
 
     IRBuilder<> checkFlagBuilder(beforeCheckBB);
-    auto flagValue = checkFlagBuilder.CreateLoad(helixTask->loopIsOverFlagArg);
+    auto flagValue = checkFlagBuilder.CreateLoad(
+        helixTask->loopIsOverFlagArg->getType()->getPointerElementType(),
+        helixTask->loopIsOverFlagArg);
     auto isFlagSet = checkFlagBuilder.CreateICmpEQ(const1, flagValue);
     checkFlagBuilder.CreateCondBr(isFlagSet, failedCheckBB, afterCheckBB);
 

@@ -22,8 +22,8 @@
 #ifndef GINO_SRC_CORE_HEURISTICS_INVOCATIONLATENCY_H_
 #define GINO_SRC_CORE_HEURISTICS_INVOCATIONLATENCY_H_
 
-#include "noelle/core/Noelle.hpp"
-#include "noelle/core/SCCDAGPartition.hpp"
+#include "arcana/noelle/core/Noelle.hpp"
+#include "arcana/noelle/core/SCCDAGPartition.hpp"
 
 using namespace arcana::noelle;
 
