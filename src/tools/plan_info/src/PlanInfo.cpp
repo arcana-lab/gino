@@ -20,8 +20,8 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "arcana/noelle/core/LoopStructure.hpp"
 #include "PlanInfo.hpp"
-#include "noelle/core/LoopStructure.hpp"
 
 namespace arcana::gino {
 
@@ -31,7 +31,6 @@ PlanInfo::PlanInfo() : ModulePass{ ID }, prefix{ "PlanInfo: " } {
 
 bool PlanInfo::runOnModule(Module &M) {
   auto &noelle = getAnalysis<NoellePass>().getNoelle();
-  auto verbosity = noelle.getVerbosity();
 
   /*
    * Fetch all the loops we want to parallelize.
@@ -57,17 +56,8 @@ bool PlanInfo::runOnModule(Module &M) {
       if (!mm->doesHaveMetadata(LS, "gino.looporder")) {
         return false;
       }
-<<<<<<< HEAD:src/tools/plan_info/src/PlanInfo.cpp
       auto order = std::stoi(mm->getMetadata(LS, "gino.looporder"));
       order2LS[order] = LS;
-=======
-      auto order =
-          std::stoi(mm->getMetadata(ls, "noelle.parallelizer.looporder"));
-      auto optimizations = { LoopContentOptimization::MEMORY_CLONING_ID,
-                             LoopContentOptimization::THREAD_SAFE_LIBRARY_ID };
-      auto ldi = noelle.getLoopContent(ls, optimizations);
-      order2ldi[order] = ldi;
->>>>>>> master:src/tools/parallelizer_plan_info/src/PlanInfo.cpp
       return false;
     };
     tree->visitPreOrder(collector);
