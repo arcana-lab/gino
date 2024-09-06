@@ -22,6 +22,8 @@
 #include "Planner.hpp"
 #include "TimingModel.hpp"
 
+using namespace arcana::noelle;
+
 namespace arcana::gino {
 
 void Planner::removeLoopsNotWorthParallelizing(Noelle &noelle,
@@ -254,6 +256,11 @@ std::vector<LoopContent *> Planner::selectTheOrderOfLoopsToParallelize(
   tree->visitPreOrder(selector);
 
   /*
+   * Exporting DOALL information through `gino.doall` metadata
+   */
+  exportDoallMetadata(noelle, doallLoops);
+
+  /*
    * Filter out loops that should not be parallelized.
    */
   for (auto loopPair : timeSavedLoops) {
@@ -391,4 +398,14 @@ std::vector<LoopContent *> Planner::selectTheOrderOfLoopsToParallelize(
 
   return selectedLoops;
 }
+
+void Planner::exportDoallMetadata(
+    Noelle &noelle,
+    const std::map<LoopStructure *, bool> &loops) {
+  auto MM = noelle.getMetadataManager();
+  for (auto &[LS, isDoall] : loops) {
+    MM->addMetadata(LS, "gino.doall", isDoall ? "yes" : "no");
+  }
+}
+
 } // namespace arcana::gino
