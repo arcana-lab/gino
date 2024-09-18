@@ -24,6 +24,7 @@
 #include "arcana/noelle/core/SingleAccumulatorRecomputableSCC.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 #include "arcana/gino/core/DOALLTask.hpp"
+#include "llvm/IR/IRBuilder.h"
 
 namespace arcana::gino {
 
@@ -130,11 +131,13 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
    * Generates code for periodic variable SCCs to match the DOALL chunking
    * strategy.
    */
+  PHINode* getOrInjectIterCounter = nullptr;
   for (auto scc : sccdag->getSCCs()) {
     auto sccInfo = sccManager->getSCCAttrs(scc);
     auto periodicVariableSCC = dyn_cast<PeriodicVariableSCC>(sccInfo);
     if (periodicVariableSCC == nullptr)
       continue;
+
 
     if (this->verbose >= Verbosity::Maximal) {
       errs()
@@ -177,14 +180,49 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
         task->getCloneOfOriginalInstruction(cast<Instruction>(loopValue));
     assert(taskLoopValue != nullptr);
 
-    /*
+    auto isChunkCompleted =
+        cast<SelectInst>(chunkPHI->getIncomingValueForBlock(taskLoopBlock))
+            ->getCondition();
+    IRBuilder<> headerBuilder(task->getCloneOfOriginalBasicBlock(LDI->getLoopStructure()->getHeader()));
+    headerBuilder.SetInsertPoint(&*headerBuilder.GetInsertBlock()->begin());
+    IRBuilder<> latchBuilder(task->getCloneOfOriginalBasicBlock(*LDI->getLoopStructure()->getLatches().begin()));
+    latchBuilder.SetInsertPoint(latchBuilder.GetInsertBlock()->getTerminator());
+    if(getOrInjectIterCounter == nullptr) {
+      /*
+      * Determine value of the start of this core's next chunk
+      * from the beginning of the next core's chunk.
+      * Formula: (next_chunk_initialValue + (step_size * (num_cores - 1) *
+      * chunk_size)) % period
+      */
+      auto onesValueForChunking = ConstantInt::get(chunkCounterType, 1);
+      auto coreIDxChunkSize = entryBuilder.CreateMul(task->taskInstanceID,
+                                                   task->chunkSizeArg,
+                                                   "coreIdx_X_chunkSize");
+      auto numCoresMinus1 = entryBuilder.CreateSub(task->numTaskInstances,
+                                                  onesValueForChunking,
+                                                  "numCoresMinus1");
+      auto chunkStepSize = entryBuilder.CreateMul(numCoresMinus1,
+                                                  task->chunkSizeArg,
+                                                  "numCoresMinus1_X_chunkSize"); //is this really correct? I guess we use it for regular IVs too
+      
+      getOrInjectIterCounter = headerBuilder.CreatePHI(llvm::Type::getInt64Ty(headerBuilder.getContext()), 2, "iterCounter");
+      getOrInjectIterCounter->addIncoming(coreIDxChunkSize, preheaderClone);
+
+      auto iterIncrement = latchBuilder.CreateAdd(getOrInjectIterCounter, onesValueForChunking);
+      auto iterChunkStep = latchBuilder.CreateAdd(iterIncrement, chunkStepSize);
+      auto iterSelect = latchBuilder.CreateSelect(isChunkCompleted, iterChunkStep, iterIncrement);
+      getOrInjectIterCounter->addIncoming(iterSelect, latchBuilder.GetInsertBlock());
+    }    
+
+    assert((getOrInjectIterCounter != nullptr) && "DOALL_chunking: no iterCounter\n");
+
+    /* DD: we choose to not do this and instead replace the whole PVSCC with a computation based on the iteration.
+     * DD: there are other options here but we kind of just arbitrarily select this one. It is very convenient
+     * for capturing the 2-phis PVSCC.
      * Calculate the periodic variable's initial value for the task.
      * This value is: initialValue + step_size * ((task_id * chunk_size) %
      * period)
-     */
-    auto coreIDxChunkSize = entryBuilder.CreateMul(task->taskInstanceID,
-                                                   task->chunkSizeArg,
-                                                   "coreIdx_X_chunkSize");
+     
     auto numSteps =
         entryBuilder.CreateSRem(coreIDxChunkSize, period, "numSteps");
     auto numStepsTrunc = entryBuilder.CreateTrunc(numSteps, step->getType());
@@ -195,56 +233,26 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
     auto chunkInitialValue = entryBuilder.CreateAdd(initialValue,
                                                     numStepsxStepSizeTrunc,
                                                     "initialValuePlusStep");
-    taskPHI->setIncomingValue(entryBlock, chunkInitialValue);
+    taskPHI->setIncomingValue(entryBlock, chunkInitialValue);*/
 
-    /*
-     * Determine value of the start of this core's next chunk
-     * from the beginning of the next core's chunk.
-     * Formula: (next_chunk_initialValue + (step_size * (num_cores - 1) *
-     * chunk_size)) % period
-     */
-    auto onesValueForChunking = ConstantInt::get(chunkCounterType, 1);
-    auto numCoresMinus1 = entryBuilder.CreateSub(task->numTaskInstances,
-                                                 onesValueForChunking,
-                                                 "numCoresMinus1");
-    auto chunkStepSize = entryBuilder.CreateMul(numCoresMinus1,
-                                                task->chunkSizeArg,
-                                                "numCoresMinus1_X_chunkSize");
-    auto chunkStepSizeTrunc =
-        entryBuilder.CreateTrunc(chunkStepSize, step->getType());
-    auto chunkStep =
-        entryBuilder.CreateMul(chunkStepSizeTrunc, step, "chunkStep");
+
 
     /*
      * Add the instructions for the calculation of the next chunk's start value
      * in the loop's body.
      */
-    IRBuilder<> loopBuilder(taskLoopBlock);
-    loopBuilder.SetInsertPoint(taskLoopBlock->getTerminator());
-    auto chunkStepTrunc =
-        loopBuilder.CreateTrunc(chunkStep, taskLoopValue->getType());
-    auto nextChunkValueBeforeMod =
-        loopBuilder.CreateAdd(taskLoopValue,
-                              chunkStepTrunc,
-                              "nextChunkValueBeforeMod");
-    auto periodTrunc =
-        loopBuilder.CreateTrunc(period, taskLoopValue->getType());
-    auto nextChunkValue = loopBuilder.CreateSRem(nextChunkValueBeforeMod,
-                                                 periodTrunc,
-                                                 "nextChunkValue");
 
-    /*
-     * Determine if we have reached the end of the chunk, and choose the
-     * periodic variable's next value accordingly.
-     */
-    auto isChunkCompleted =
-        cast<SelectInst>(chunkPHI->getIncomingValueForBlock(taskLoopBlock))
-            ->getCondition();
-    auto nextValue = loopBuilder.CreateSelect(isChunkCompleted,
-                                              nextChunkValue,
-                                              taskLoopValue,
-                                              "nextValue");
-    taskPHI->setIncomingValueForBlock(taskLoopBlock, nextValue);
+    headerBuilder.SetInsertPoint(&*headerBuilder.GetInsertBlock()->getFirstInsertionPt());
+    //If there's some problem in here, consider whether e.g. the initialValue might be an instruction or
+    //smth that would need to be replaced w/ a corresponding clone from inside the task
+    auto period64 = headerBuilder.CreateSExt(period, getOrInjectIterCounter->getType());
+    auto pvIter = headerBuilder.CreateSRem(getOrInjectIterCounter, period64, "pvIter");
+    auto step64 = headerBuilder.CreateSExt(step, getOrInjectIterCounter->getType());
+    auto pvStepXpvIter = headerBuilder.CreateMul(step64, pvIter, "pvStepXpvIter");
+    auto pvSITrunc = headerBuilder.CreateTrunc(pvStepXpvIter, initialValue->getType());
+    auto pvCurr = headerBuilder.CreateAdd(pvSITrunc, initialValue, "pvCurr");
+    assert((taskPHI->getType() == pvCurr->getType()) && "issue with typing periodic variables in doall_chunking\n");
+    taskPHI->replaceAllUsesWith(pvCurr);
   }
 
   /*
