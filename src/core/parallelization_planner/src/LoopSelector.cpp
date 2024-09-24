@@ -21,8 +21,7 @@
  */
 #include "Planner.hpp"
 #include "TimingModel.hpp"
-
-using namespace arcana::noelle;
+#include "arcana/gino/core/DOALL.hpp"
 
 namespace arcana::gino {
 
@@ -237,11 +236,8 @@ std::vector<LoopContent *> Planner::selectTheOrderOfLoopsToParallelize(
     /*
      * Tag DOALL loops.
      */
-    if (loopTimeModel->getTimeSpentInCriticalPathPerIteration() == 0) {
-      doallLoops[ls] = true;
-    } else {
-      doallLoops[ls] = false;
-    }
+    DOALL doall(noelle);
+    doallLoops[ls] = doall.canBeAppliedToLoop(ldi, /*heuristics=*/nullptr);
 
     /*
      * Compute the maximum amount of time saved by any parallelization
