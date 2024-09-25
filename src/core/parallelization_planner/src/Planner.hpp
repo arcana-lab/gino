@@ -75,6 +75,9 @@ private:
                            noelle::LoopTree *tree,
                            const std::map<LoopStructure *, uint64_t> &timeSaved,
                            std::function<bool(LoopStructure *)> considerLoop);
+
+  void exportDoallMetadata(Noelle &noelle,
+                           const std::map<LoopStructure *, bool> &loops);
 };
 
 } // namespace arcana::gino
