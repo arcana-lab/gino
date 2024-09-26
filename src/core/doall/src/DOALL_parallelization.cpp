@@ -213,6 +213,10 @@ bool DOALL::apply(LoopContent *LDI, Heuristics *h) {
   if (this->verbose >= Verbosity::Maximal) {
     errs() << "DOALL:  Rewired induction variables and reducible variables\n";
   }
+  if (this->verbose >= Verbosity::Maximal) {
+    doallTask->getTaskBody()->print(errs() << "DOALL:  Post chunking loop:\n");
+    errs() << "\n";
+  }
 
   /*
    * Store final results to loop live-out variables. Note this occurs after
