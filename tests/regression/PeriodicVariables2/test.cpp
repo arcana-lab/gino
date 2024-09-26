@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <iostream>
 
+/*
+ * This test was written to capture case where the formula for advancing a
+ * periodic variable across a chunkstep is not computed correctly.
+ */
+
 int main(int argc, char *argv[]) {
   auto ntimes = atoll(argv[1]);
   ntimes *= 1000;

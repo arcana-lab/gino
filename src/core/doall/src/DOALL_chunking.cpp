@@ -247,7 +247,6 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
      * Calculate the periodic variable's initial value for the task.
      * This value is: initialValue + step_size * ((task_id * chunk_size) %
      * period)
-
     auto numSteps =
         entryBuilder.CreateSRem(coreIDxChunkSize, period, "numSteps");
     auto numStepsTrunc = entryBuilder.CreateTrunc(numSteps, step->getType());
