@@ -117,7 +117,7 @@ void AutotunerSearchSpace::getAnalysisUsage(AnalysisUsage &AU) const {
 // Next there is code to register your pass to "opt"
 char arcana::gino::AutotunerSearchSpace::ID = 0;
 static RegisterPass<arcana::gino::AutotunerSearchSpace> X(
-    "autotunersearchspace",
+    "AutotunerSearchSpace",
     "Generate file with number of loops that can be parallelized");
 
 // Next there is code to register your pass to "clang"

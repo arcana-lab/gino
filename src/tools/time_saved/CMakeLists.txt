@@ -1,9 +1,9 @@
-# Project
-cmake_minimum_required(VERSION 3.13)
-project(TimeSaved)
-
-# Dependences
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/DependencesCMake.txt)
-
-# Pass
-add_subdirectory(src)
+gino_tool_declare(TimeSaved)
+target_sources(
+  TimeSaved # component name
+  PRIVATE
+  src/LoopEvaluation.cpp
+  src/LoopSelector.cpp
+  src/Pass.cpp
+  src/TimingModel.cpp
+)

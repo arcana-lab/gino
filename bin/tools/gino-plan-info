@@ -1,0 +1,18 @@
+#!/bin/bash -e
+
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
+
+if test $# -lt 1 ; then
+  echo "USAGE: `basename $0` IR_FILE [OPTIONS]..."
+  echo
+  echo "Print information about loops in a parallel plan."
+  echo
+  echo "IR_FILE                     Input bitcode with an embedded parallel plan."
+  echo
+  echo "--info-print-headers        Comma separated values. Print the headers of some loops."
+  exit 1
+fi
+
+installDir=$(gino-config --prefix)
+
+noelle-load -load $installDir/lib/PlanInfo.so -PlanInfo -disable-output $@

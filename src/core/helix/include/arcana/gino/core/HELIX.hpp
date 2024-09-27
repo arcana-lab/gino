@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef NOELLE_SRC_TOOLS_HELIX_H_
-#define NOELLE_SRC_TOOLS_HELIX_H_
+#ifndef GINO_SRC_CORE_HELIX_H_
+#define GINO_SRC_CORE_HELIX_H_
 
 #include "arcana/gino/core/HELIXTask.hpp"
 #include "arcana/gino/core/HeuristicsPass.hpp"
@@ -177,4 +177,4 @@ private:
 
 } // namespace arcana::gino
 
-#endif // NOELLE_SRC_TOOLS_HELIX_H_
+#endif // GINO_SRC_CORE_HELIX_H_

@@ -1,0 +1,75 @@
+#!/bin/bash
+
+function show_help() {
+  echo "usage: $(basename $0) <OPTIONS>..."
+  echo
+  echo "Options"
+  echo "  --help              Print this help message"
+  echo "  --flags             Print special options used during compilation"
+  echo "  --prefix            Print the installation directory path"
+  echo "  --version           Print the library version"
+  echo "  --include           Print the include directory"
+  echo "  --core-libs         Print the shared libraries used by the Gino core"
+  echo "  --tool-libs         Print the shared libraries of the Gino tools"
+  echo "  --git-commit        Print the git commit hash used at compilation time"
+  echo "  --git-origin        Print the git origin used during compilation"
+  echo "  --build-type        Print the build type used for Gino. E.g. Debug"
+  echo "  --llvm-build        Print the build type of the specific LLVM used by Gino"
+  echo "  --llvm-prefix       Print the installation prefix of the specific LLVM used by Gino"
+  echo "  --llvm-version      Print the version of the specific LLVM used by Gino"
+}
+
+if [[ $# < 1 ]]; then
+  show_help
+  exit 0
+fi
+
+for arg in "$@"; do
+  case $arg in
+    -h | --help ) 
+      show_help
+      break
+      ;;
+    --flags) 
+      echo "@gino_config_CXX_FLAGS@"
+      ;;
+    --prefix) 
+      echo "@CMAKE_INSTALL_PREFIX@"
+      ;;
+    --version)
+      echo "@GINO_VERSION@"
+      ;;
+    --include)
+      echo "@CMAKE_INSTALL_PREFIX@/include"
+      ;;
+    --core-libs)
+      echo "@gino_config_CORE_LIBS@"
+      ;;
+    --tool-libs)
+      echo "@gino_config_TOOL_LIBS@"
+      ;;
+    --git-commit)
+      echo "@gino_config_GIT_COMMIT@"
+      ;;
+    --git-origin)
+      echo "@gino_config_GIT_ORIGIN@"
+      ;;
+    --build-type)
+      echo "@GINO_BUILD_TYPE@"
+      ;;
+    --llvm-build)
+      echo "@LLVM_BUILD_TYPE@"
+      ;;
+    --llvm-prefix)
+      echo "@LLVM_INSTALL_PREFIX@"
+      ;;
+    --llvm-version)
+      echo "@LLVM_PACKAGE_VERSION@"
+      ;;
+    *)
+    echo "Unknown argument: $arg"
+    show_help
+    exit 1
+    ;;
+  esac
+done
