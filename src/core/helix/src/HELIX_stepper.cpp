@@ -521,8 +521,7 @@ void HELIX::rewireLoopForPeriodicVariables(LoopContent *LDI) {
       continue;
     }
 
-    // set builder insert points. Pray these LoC will work for HELIX, copied
-    // straight from DOALL
+    // Set builder insert points.
     IRBuilder<> headerBuilder(task->getCloneOfOriginalBasicBlock(
         LDI->getLoopStructure()->getHeader()));
     headerBuilder.SetInsertPoint(&*headerBuilder.GetInsertBlock()->begin());
@@ -530,8 +529,11 @@ void HELIX::rewireLoopForPeriodicVariables(LoopContent *LDI) {
         *LDI->getLoopStructure()->getLatches().begin()));
     latchBuilder.SetInsertPoint(latchBuilder.GetInsertBlock()->getTerminator());
 
-    // PVSCC will use the absolute iteration as part of our handling for them:
-    // get the counter for that or inject it
+    /*
+     * PeriodicVariableSCC will use the absolute iteration as part of our handling for them:
+     * get the counter for that or inject it
+     */
+
     if (getOrInjectIterCounter == nullptr) {
       /*
        * Determine value of the start of this core's next chunk
@@ -565,8 +567,11 @@ void HELIX::rewireLoopForPeriodicVariables(LoopContent *LDI) {
     auto period = periodicInfo->getPeriod();
     auto taskPHI = cast<PHINode>(this->fetchCloneInTask(task, accumulatorPHI));
 
-    // rather than track the PVSCC with a phi and update the phi we just
-    // calculate the PVSCC val directly from the absolute iteration counter.
+    /*
+     * Rather than track the PVSCC with a phi and update the phi we just
+     * calculate the PVSCC val directly from the absolute iteration counter.
+     */
+
     headerBuilder.SetInsertPoint(
         &*headerBuilder.GetInsertBlock()->getFirstInsertionPt());
     auto period64 =

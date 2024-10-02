@@ -159,23 +159,23 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
         && "DOALL: PHINode in periodic variable SCC doesn't have exactly two entries!");
     auto taskPHI = cast<PHINode>(task->getCloneOfOriginalInstruction(phi));
 
-    // We have a crummy assumption that periodic vars have only two incoming
-    // vals in their phis, so determine which is from the entry and which is
-    // from the latch
-    uint64_t entryBlock = 0;
+    /*
+     * We have a crummy assumption that periodic vars have only two incoming
+     * vals in their phis, so determine which is from the entry and which is
+     * from the latch
+     */
+     
     uint64_t loopBlock = 0;
     if (phi->getIncomingValue(0) == initialValue) {
-      entryBlock = 0;
       loopBlock = 1;
     } else {
       // if the phinode doesnt have the incoming value for the periodic var,
       // something is wrong with the PVSCC analysis
       assert(phi->getIncomingValue(1) == initialValue
              && "DOALL: periodic variable SCC selected the wrong PHINode!");
-      entryBlock = 1;
       loopBlock = 0;
     }
-    // get clones of PVSCC vals
+    // get clones of PeriodicVariableSCC vals
     auto taskLoopBlock =
         task->getCloneOfOriginalBasicBlock(phi->getIncomingBlock(loopBlock));
     assert(taskLoopBlock != nullptr);
@@ -185,7 +185,7 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
         task->getCloneOfOriginalInstruction(cast<Instruction>(loopValue));
     assert(taskLoopValue != nullptr);
 
-    // create code to check if the PVSCC must chunkstep
+    // create code to check if the PeriodicVariableSCC must chunkstep
     auto isChunkCompleted =
         cast<SelectInst>(chunkPHI->getIncomingValueForBlock(taskLoopBlock))
             ->getCondition();
@@ -198,7 +198,7 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
         *LDI->getLoopStructure()->getLatches().begin()));
     latchBuilder.SetInsertPoint(latchBuilder.GetInsertBlock()->getTerminator());
 
-    // PVSCC will use the absolute iteration as part of our handling for them:
+    // PeriodicVariableSCC will use the absolute iteration as part of our handling for them:
     // get the counter for that or inject it
     if (getOrInjectIterCounter == nullptr) {
       /*
@@ -239,26 +239,6 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
     assert((getOrInjectIterCounter != nullptr)
            && "DOALL_chunking: no iterCounter\n");
 
-    /* DD: we choose to not do this and instead replace the whole PVSCC with a
-    computation based on the iteration.
-     * DD: there are other options here but we kind of just arbitrarily select
-    this one. It is very convenient
-     * for capturing the 2-phis PVSCC.
-     * Calculate the periodic variable's initial value for the task.
-     * This value is: initialValue + step_size * ((task_id * chunk_size) %
-     * period)
-    auto numSteps =
-        entryBuilder.CreateSRem(coreIDxChunkSize, period, "numSteps");
-    auto numStepsTrunc = entryBuilder.CreateTrunc(numSteps, step->getType());
-    auto numStepsxStepSize =
-        entryBuilder.CreateMul(step, numStepsTrunc, "stepSize_X_numSteps");
-    auto numStepsxStepSizeTrunc =
-        entryBuilder.CreateTrunc(numStepsxStepSize, initialValue->getType());
-    auto chunkInitialValue = entryBuilder.CreateAdd(initialValue,
-                                                    numStepsxStepSizeTrunc,
-                                                    "initialValuePlusStep");
-    taskPHI->setIncomingValue(entryBlock, chunkInitialValue);*/
-
     /*
      * Add the instructions for the calculation of the next chunk's start value
      * in the loop's body.
@@ -266,9 +246,7 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
 
     headerBuilder.SetInsertPoint(
         &*headerBuilder.GetInsertBlock()->getFirstInsertionPt());
-    // If there's some problem in here, consider whether e.g. the initialValue
-    // might be an instruction or smth that would need to be replaced w/ a
-    // corresponding clone from inside the task
+
     auto period64 =
         headerBuilder.CreateSExt(period, getOrInjectIterCounter->getType());
     auto pvIter =
