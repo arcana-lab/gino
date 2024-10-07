@@ -3,8 +3,8 @@
 #include <iostream>
 
 /*
- * This test was written to capture case where the formula for advancing a periodic variable across a chunkstep
- * is not computed correctly.
+ * This test was written to capture case where the formula for advancing a
+ * periodic variable across a chunkstep is not computed correctly.
  */
 
 int main(int argc, char *argv[]) {

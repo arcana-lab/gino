@@ -505,6 +505,7 @@ void HELIX::rewireLoopForPeriodicVariables(LoopContent *LDI) {
   /*
    * Iterate through periodic variables.
    */
+  PHINode *getOrInjectIterCounter = nullptr;
   auto sccManager = LDI->getSCCManager();
   for (auto sccInfo :
        sccManager->getSCCsOfKind(GenericSCC::SCCKind::PERIODIC_VARIABLE)) {
@@ -520,63 +521,73 @@ void HELIX::rewireLoopForPeriodicVariables(LoopContent *LDI) {
       continue;
     }
 
+    // Set builder insert points.
+    IRBuilder<> headerBuilder(task->getCloneOfOriginalBasicBlock(
+        LDI->getLoopStructure()->getHeader()));
+    headerBuilder.SetInsertPoint(&*headerBuilder.GetInsertBlock()->begin());
+    IRBuilder<> latchBuilder(task->getCloneOfOriginalBasicBlock(
+        *LDI->getLoopStructure()->getLatches().begin()));
+    latchBuilder.SetInsertPoint(latchBuilder.GetInsertBlock()->getTerminator());
+
+    /*
+     * PeriodicVariableSCC will use the absolute iteration as part of our handling for them:
+     * get the counter for that or inject it
+     */
+
+    if (getOrInjectIterCounter == nullptr) {
+      /*
+       * Determine value of the start of this core's next chunk
+       * from the beginning of the next core's chunk.
+       * Formula: (next_chunk_initialValue + (step_size * (num_cores - 1) *
+       * chunk_size)) % period
+       */
+
+      // build absolute iteration counter
+      getOrInjectIterCounter = headerBuilder.CreatePHI(
+          llvm::Type::getInt64Ty(headerBuilder.getContext()),
+          2,
+          "iterCounter");
+      getOrInjectIterCounter->addIncoming(
+          task->coreArg,
+          preheaderClone); // start value for iter counter.
+      auto iterIncrement = latchBuilder.CreateAdd(
+          getOrInjectIterCounter,
+          task->numCoresArg); // when we increment iter it is always by numcores
+                              // because HELIX.
+      getOrInjectIterCounter->addIncoming(iterIncrement,
+                                          latchBuilder.GetInsertBlock());
+    }
+
     /*
      * Determine start value of the periodic variable for the task
-     *   core_start = original_start + (original_step_size * core_id % period)
+     *   core_start = original_start + (original_step_size * (core_id % period))
      */
     auto initialValue = periodicInfo->getInitialValue();
-    auto stepSize = periodicInfo->getStepValue();
+    auto step = periodicInfo->getStepValue();
     auto period = periodicInfo->getPeriod();
     auto taskPHI = cast<PHINode>(this->fetchCloneInTask(task, accumulatorPHI));
 
-    IRBuilder<> preheaderBuilder(preheaderClone->getTerminator());
-
-    auto stepXiteration = preheaderBuilder.CreateMul(
-        preheaderBuilder.CreateZExtOrTrunc(stepSize, task->coreArg->getType()),
-        task->coreArg,
-        "stepXiteration");
-    auto stepsModPeriod = preheaderBuilder.CreateSRem(
-        stepXiteration,
-        preheaderBuilder.CreateZExtOrTrunc(period, stepXiteration->getType()),
-        "stepsModPeriod");
-    auto offsetStartValue = preheaderBuilder.CreateAdd(
-        initialValue,
-        preheaderBuilder.CreateZExtOrTrunc(stepsModPeriod,
-                                           initialValue->getType()));
-
-    taskPHI->setIncomingValueForBlock(preheaderClone, offsetStartValue);
-
     /*
-     * Replace update of the periodic variable with the following update:
-     *  new_val = (prev_val + step_size * num_cores) % period
+     * Rather than track the PVSCC with a phi and update the phi we just
+     * calculate the PVSCC val directly from the absolute iteration counter.
      */
-    assert(taskPHI->getNumIncomingValues() == 2
-           && "periodic variable accumulatorPHI more than 2 values!\n");
-    BasicBlock *computationBlock = nullptr;
-    if (taskPHI->getIncomingBlock(0) == preheaderClone)
-      computationBlock = taskPHI->getIncomingBlock(1);
-    else
-      computationBlock = taskPHI->getIncomingBlock(0);
 
-    IRBuilder<> computationBuilder(computationBlock->getTerminator());
-
-    auto stepXcores = computationBuilder.CreateMul(
-        computationBuilder.CreateZExtOrTrunc(stepSize,
-                                             task->numCoresArg->getType()),
-        task->numCoresArg,
-        "stepXnumCores");
-    auto offsetIncomingValue = computationBuilder.CreateAdd(
-        computationBuilder.CreateZExtOrTrunc(taskPHI, stepXcores->getType()),
-        stepXcores);
-    auto offsetIncomingValueModPeriod = computationBuilder.CreateSRem(
-        offsetIncomingValue,
-        computationBuilder.CreateZExtOrTrunc(period,
-                                             offsetIncomingValue->getType()));
-
-    taskPHI->setIncomingValueForBlock(
-        computationBlock,
-        computationBuilder.CreateZExtOrTrunc(offsetIncomingValueModPeriod,
-                                             taskPHI->getType()));
+    headerBuilder.SetInsertPoint(
+        &*headerBuilder.GetInsertBlock()->getFirstInsertionPt());
+    auto period64 =
+        headerBuilder.CreateSExt(period, getOrInjectIterCounter->getType());
+    auto pvIter =
+        headerBuilder.CreateSRem(getOrInjectIterCounter, period64, "pvIter");
+    auto step64 =
+        headerBuilder.CreateSExt(step, getOrInjectIterCounter->getType());
+    auto pvStepXpvIter =
+        headerBuilder.CreateMul(step64, pvIter, "pvStepXpvIter");
+    auto pvSITrunc =
+        headerBuilder.CreateTrunc(pvStepXpvIter, initialValue->getType());
+    auto pvCurr = headerBuilder.CreateAdd(pvSITrunc, initialValue, "pvCurr");
+    assert((taskPHI->getType() == pvCurr->getType())
+           && "issue with typing periodic variables in doall_chunking\n");
+    taskPHI->replaceAllUsesWith(pvCurr);
   }
 }
 
