@@ -5,7 +5,7 @@ RUNTIME_VERSION="2.0.0"
 all: regression performance
 
 condor: download
-	cd condor ; make ; make submit ;
+	source ../enable ; cd condor ; make ; make submit ;
 
 condor_autotuner:
 	cd condor ; make performance_autotuner.con ; make submit ;
