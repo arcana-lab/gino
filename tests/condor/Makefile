@@ -7,10 +7,10 @@ regression:
 	./scripts/generateRegressions.sh scripts/$(CONDOR_FILE) $(EMAIL)
 
 performance.con:
-	python2 scripts/generateCondorScript.py scripts/$@ ./$@ "$@" " " " -gino-parallelizer-force" "-O0 -Xclang -disable-O0-optnone" "-O0" " " ${EMAIL};
+	python2 scripts/generateCondorScript.py scripts/$@ ./$@ "$@" " " " -gino-force" "-O0 -Xclang -disable-O0-optnone" "-O0" " " ${EMAIL};
 
 performance_autotuner.con:
-	python2 scripts/generateCondorScript.py scripts/$@ ./$@ "$@" " " " -gino-parallelizer-force" "-O0 -Xclang -disable-O0-optnone" "-O0" " " ${EMAIL};
+	python2 scripts/generateCondorScript.py scripts/$@ ./$@ "$@" " " " -gino-force" "-O0 -Xclang -disable-O0-optnone" "-O0" " " ${EMAIL};
 
 submit:
 	scripts/submit.sh 

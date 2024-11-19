@@ -115,8 +115,7 @@ for ((i=0; i<numLoops; i++)); do
   gino-loops $inputBC \
     -o ${outputName}.bc \
     -gino-loops-white-list=$i \
-    -gino-parallelizer-force \
-    -alloc-aa-verbose=1 \
+    -gino-force \
     > ${outputName}.log 2>&1
 
   showReturnCode $prefix $?

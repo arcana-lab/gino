@@ -112,15 +112,15 @@ fi
 # Generate the condor jobs
 feOptions="-O0 -Xclang -disable-O0-optnone" ;
 meOptions="-O0" ;
-parOptions="-gino-parallelizer-force";
+parOptions="-gino-force";
 generateAllCondorJobs ;
 
 feOptions="-O1 -Xclang -disable-llvm-passes " ;
 meOptions="-O0" ;
-parOptions="-gino-parallelizer-force";
+parOptions="-gino-force";
 generateAllCondorJobs ;
 
 feOptions="-O1 -Xclang -disable-llvm-passes " ;
 meOptions="-O1" ;
-parOptions="-gino-parallelizer-force";
+parOptions="-gino-force";
 generateAllCondorJobs ;

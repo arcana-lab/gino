@@ -27,7 +27,7 @@ namespace arcana::gino {
  * Options of the Planner pass.
  */
 static cl::opt<bool> ForceParallelizationPlanner(
-    "gino-planner-force",
+    "gino-force",
     cl::ZeroOrMore,
     cl::Hidden,
     cl::desc("Force the parallelization"));
