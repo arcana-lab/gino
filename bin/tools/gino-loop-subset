@@ -105,7 +105,8 @@ outputName="parallelized.loop.subset.${listName}.${loops}"
 gino-loops $inputBC \
   -o ${outputName}.bc \
   -gino-loops-${listName}-list="\"$list\"" \
-  -gino-force \
+  -gino-parallelizer-force \
+  -gino-planner-force \
   > ${outputName}.log 2>&1
 
 showReturnCode $prefix $?

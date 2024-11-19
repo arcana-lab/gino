@@ -85,20 +85,20 @@ runningTestsWrapper -noelle-disable-helix -noelle-disable-dswp -noelle-disable-d
 # Test parallelization techniques
 runningTestsWrapper 
 
-runningTestsWrapper -gino-force -noelle-disable-helix ;
-runningTestsWrapper -gino-force -noelle-disable-helix -gino-dswp-no-scc-merge ;
+runningTestsWrapper -gino-parallelizer-force -gino-planner-force -noelle-disable-helix ;
+runningTestsWrapper -gino-parallelizer-force -gino-planner-force -noelle-disable-helix -gino-dswp-no-scc-merge ;
 
-runningTestsWrapper -gino-force -noelle-disable-dswp ;
-runningTestsWrapper -gino-force -noelle-disable-dswp -gino-dswp-no-scc-merge ;
+runningTestsWrapper -gino-parallelizer-force -gino-planner-force -noelle-disable-dswp ;
+runningTestsWrapper -gino-parallelizer-force -gino-planner-force -noelle-disable-dswp -gino-dswp-no-scc-merge ;
 
-runningTestsWrapper -gino-force -noelle-disable-doall ;
-runningTestsWrapper -gino-force -noelle-disable-doall -gino-dswp-no-scc-merge ;
+runningTestsWrapper -gino-parallelizer-force -gino-planner-force -noelle-disable-doall ;
+runningTestsWrapper -gino-parallelizer-force -gino-planner-force -noelle-disable-doall -gino-dswp-no-scc-merge ;
 
-runningTestsWrapper -gino-force -noelle-disable-doall -noelle-disable-helix ;
-runningTestsWrapper -gino-force -noelle-disable-doall -noelle-disable-helix -gino-dswp-no-scc-merge ;
+runningTestsWrapper -gino-parallelizer-force -gino-planner-force -noelle-disable-doall -noelle-disable-helix ;
+runningTestsWrapper -gino-parallelizer-force -gino-planner-force -noelle-disable-doall -noelle-disable-helix -gino-dswp-no-scc-merge ;
 
-runningTestsWrapper -gino-force -noelle-disable-doall -noelle-disable-dswp ;
-runningTestsWrapper -gino-force -noelle-disable-doall -noelle-disable-dswp -gino-dswp-no-scc-merge ;
+runningTestsWrapper -gino-parallelizer-force -gino-planner-force -noelle-disable-doall -noelle-disable-dswp ;
+runningTestsWrapper -gino-parallelizer-force -gino-planner-force -noelle-disable-doall -noelle-disable-dswp -gino-dswp-no-scc-merge ;
 
 cd ../ ;
 
