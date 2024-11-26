@@ -84,7 +84,6 @@ bool PlanInfo::runOnModule(Module &M) {
       errs() << *LS->getHeader() << "\n";
     }
   }
-  errs() << "\n";
 
   return false;
 }
