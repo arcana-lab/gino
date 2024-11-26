@@ -63,25 +63,24 @@ bool PlanInfo::runOnModule(Module &M) {
     tree->visitPreOrder(collector);
   }
 
-  errs() << this->prefix << "Number of loops: " << forest->getNumberOfLoops()
-         << "\n";
   errs() << this->prefix
-         << "Number of loops with a parallel plan: " << order2LS.size() << "\n";
+         << "Loops in the program: " << forest->getNumberOfLoops() << "\n";
+  errs() << this->prefix << "Loops in the parallel plan: " << order2LS.size()
+         << "\n";
 
   const auto shouldPrint = [&](int order) {
     const auto &PH = this->printHeaders;
     return std::find(PH.begin(), PH.end(), order) != std::end(PH);
   };
 
-  // If user didn't choose a subset we print all headers
-  bool printAll = this->printHeaders.size() == 0;
-
   for (const auto &[order, LS] : order2LS) {
-    if (printAll || shouldPrint(order)) {
-      errs() << this->prefix << "Loop order "
-             << "\e[1m" << order << "\e[0m";
-      errs() << " in function ";
-      errs() << "\e[0;32m" << LS->getFunction()->getName().str() << "\e[0m\n";
+    std::printf(
+        "%sLoop (order=\e[1m%3d\e[0m, id=\e[1m%3lu\e[0m) in function \e[0;32m%s\e[0m\n",
+        this->prefix.c_str(),
+        order,
+        LS->getID().value(),
+        LS->getFunction()->getName().str().c_str());
+    if (this->printAllHeaders || shouldPrint(order)) {
       errs() << *LS->getHeader() << "\n";
     }
   }

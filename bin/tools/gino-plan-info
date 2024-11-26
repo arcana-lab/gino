@@ -2,17 +2,50 @@
 
 trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
 
-if test $# -lt 1 ; then
+installDir=$(gino-config --prefix)
+
+usage() {
   echo "USAGE: `basename $0` IR_FILE [OPTIONS]..."
   echo
   echo "Print information about loops in a parallel plan."
   echo
   echo "IR_FILE                     Input bitcode with an embedded parallel plan."
   echo
-  echo "--info-print-headers        Comma separated values. Print the headers of some loops."
+  echo "--print-only                Comma separated order ids. Print the headers of some loops."
+  echo "--print-all                 Print headers of all loops."
+}
+
+if test $# -lt 1 ; then
+  usage
   exit 1
 fi
 
-installDir=$(gino-config --prefix)
+printHeaders=""
+printAll=""
 
-noelle-load -load $installDir/lib/PlanInfo.so -PlanInfo -disable-output $@
+for arg in "$@"; do
+  case ${arg} in
+    --print-only=*)
+      printHeaders="--plan-print-headers=${arg#*=}"
+      shift
+      ;;
+    --print-all)
+      printAll="--plan-print-all-headers"
+      shift
+      ;;
+    --help)
+      usage
+      exit 0
+      ;;
+    -*|--*)
+      echo "ERROR: Unknown option $arg"
+      usage
+      exit 1
+      ;;
+    *)
+      input=$arg
+      ;;
+  esac
+done
+
+noelle-load -load $installDir/lib/PlanInfo.so -PlanInfo -disable-output $printHeaders $printAll $input

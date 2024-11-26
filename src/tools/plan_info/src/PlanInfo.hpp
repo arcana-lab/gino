@@ -44,6 +44,7 @@ public:
 
 private:
   std::vector<int> printHeaders;
+  bool printAllHeaders;
   std::string prefix;
 };
 
