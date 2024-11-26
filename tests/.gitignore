@@ -17,6 +17,7 @@ include
 **/Parallelizer_utils.cpp
 performance/*/Makefile
 **.profraw
+regression_*/**
 regression/*/Makefile
 **.tmp
 **.txt
