@@ -125,7 +125,7 @@ void AutotunerDoallFilter::getAnalysisUsage(AnalysisUsage &AU) const {
 // Next there is code to register your pass to "opt"
 char arcana::gino::AutotunerDoallFilter::ID = 0;
 static RegisterPass<arcana::gino::AutotunerDoallFilter> X(
-    "autotunerdoallfilter",
+    "AutotunerDoallFilter",
     "Reduce search space of DOALL loops.");
 
 // Next there is code to register your pass to "clang"

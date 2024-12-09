@@ -1,27 +1,50 @@
-all: hooks src
+BUILD_DIR ?= build
+export GENERATOR ?= Unix Makefiles
+export JOBS ?= 16
+export NOELLE_INSTALL_DIR = $(shell noelle-config --prefix)
+export MAKEFLAGS += --no-print-directory
+export KCONFIG_CONFIG = .config
+export MENUCONFIG_STYLE = aquatic
 
-src:
-	cd src ; make ; 
+all: install
 
-tests: src
-	cd tests ; make ;
+install: check_noelle compile
+	cmake --install $(BUILD_DIR) 
 
-hooks:
-	make -C .githooks
+compile: $(BUILD_DIR)
+	cmake --build $(BUILD_DIR) -j$(JOBS) 
+
+build:
+	cmake -S . -B $(BUILD_DIR) -G "$(GENERATOR)" \
+		-DCMAKE_INSTALL_MESSAGE=LAZY \
+		-DCMAKE_INSTALL_PREFIX=install \
+		-DNOELLE_INSTALL_DIR=$(NOELLE_INSTALL_DIR)
+
+check_noelle:
+	@if ! noelle-config > /dev/null 2>&1; then \
+		echo -e "\e[1;1mNOELLE not found\e[0m. \e[32mDid you forget to source it?\e[0m" ;\
+		exit 1; \
+	fi
+
+tests: install
+	$(MAKE) -C tests
 
 format:
-	cd src ; ./scripts/format_source_code.sh
+	find ./src -regex '.*\.[c|h]pp' | xargs clang-format -i
 
-clean:
-	cd src ; make $@ ; 
-	cd tests ; make $@ ;
-	find ./ -name .clangd -exec rm -rv {} +
-	find ./ -name .cache -exec rm -rv {} +
+menuconfig:
+	@python3 bin/menuconfig.py
 
-uninstall: clean
-	cd src ; make $@ ;
-	rm -f enable ;
-	rm -rf install ;
-	if test -d .githooks ; then cd .githooks ; make clean ; fi;
+clean: uninstall
+	rm -rf $(BUILD_DIR)
+	rm -rf .config
+	$(MAKE) -C tests clean > /dev/null
+	rm -f compile_commands.json
+	rm -f config.cmake
 
-.PHONY: src tests hooks format clean uninstall
+uninstall:
+	-cat $(BUILD_DIR)/install_manifest.txt | xargs rm -f
+	rm -f enable
+	rm -f .git/hooks/pre-commit
+
+.PHONY: all build install compile check_noelle external tests format clean uninstall

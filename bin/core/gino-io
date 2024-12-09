@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
+
+# set the command to execute
+gino-load -InputOutput $1 -o $1

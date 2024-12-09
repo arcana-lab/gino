@@ -85,11 +85,11 @@ bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
                         LoopTree *n,
                         uint32_t treeLevel) -> bool {
       auto ls = n->getLoop();
-      if (!mm->doesHaveMetadata(ls, "noelle.parallelizer.looporder")) {
+      if (!mm->doesHaveMetadata(ls, "gino.looporder")) {
         return false;
       }
       auto parallelizationOrderIndex =
-          std::stoi(mm->getMetadata(ls, "noelle.parallelizer.looporder"));
+          std::stoi(mm->getMetadata(ls, "gino.looporder"));
       if (!isSelected(parallelizationOrderIndex)) {
         return false;
       }

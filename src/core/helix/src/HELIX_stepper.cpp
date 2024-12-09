@@ -530,8 +530,8 @@ void HELIX::rewireLoopForPeriodicVariables(LoopContent *LDI) {
     latchBuilder.SetInsertPoint(latchBuilder.GetInsertBlock()->getTerminator());
 
     /*
-     * PeriodicVariableSCC will use the absolute iteration as part of our handling for them:
-     * get the counter for that or inject it
+     * PeriodicVariableSCC will use the absolute iteration as part of our
+     * handling for them: get the counter for that or inject it
      */
 
     if (getOrInjectIterCounter == nullptr) {

@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+trap 'echo "error: $(basename $0): line $LINENO"; exit 1' ERR
+
+# delete dead functions until a fixed point is reached
+echo "GINO: Inliner: Start"
+noelle-fixedpoint $1 $1 "gino-load" -Inliner ${@:2}
+echo "GINO: Inliner: Exit"

@@ -1,1 +1,0 @@
-../../core/scripts/installGINO.sh

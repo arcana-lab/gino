@@ -24,7 +24,7 @@
 
 namespace arcana::gino {
 
-static cl::opt<bool> DisableEnablers("noelle-disable-enablers",
+static cl::opt<bool> DisableEnablers("gino-disable-enablers",
                                      cl::ZeroOrMore,
                                      cl::Hidden,
                                      cl::desc("Disable all enablers"));
@@ -57,7 +57,7 @@ void EnablersManager::getAnalysisUsage(AnalysisUsage &AU) const {
 // Next there is code to register your pass to "opt"
 char EnablersManager::ID = 0;
 static RegisterPass<EnablersManager> X(
-    "enablers",
+    "Enablers",
     "Transformations designed to enable automatic parallelization of sequential code",
     false,
     false);

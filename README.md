@@ -1,27 +1,33 @@
-# Gino 
+# Gino: An (automatic) parallelizing compiler
 
 [![Active Development](https://img.shields.io/badge/Maintenance%20Level-Actively%20Developed-brightgreen.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
 
 <p><img src="doc/figs/arcana_logo.jpg" align="right" width="350" height="120"/></p>
 
 - [Description](#description)
+- [Mascot](#mascot)
 - [Version](#version)
 - [Status](#status)
 - [Prerequisites](#prerequisites)
-- [Building Gino](#building-gino)
-- [Testing Gino](#testing-gino)
+- [Building and Installing](#building-and-installing)
+- [Testing](#testing)
+- [Uninstalling](#uninstalling)
 - [Repository structure](#repository-structure)
 - [Projects built upon Gino](#Projects-built-upon-Gino)
-- [Contributions](#contributions)
+- [Contributing](#contributing)
 - [License](#license)
-- [Logo](#logo)
-
 
 ## Description
-Gino is a parallelizing compiler for LLVM IR.
-Gino is built upon [NOELLE](https://github.com/arcana-lab/noelle), [VIRGIL](https://github.com/arcana-lab/virgil), and [LLVM](http://llvm.org).
+GINO is an automatic parallelizing compiler that works at the LLVM IR level.
+It relies on the abstractions provided by [NOELLE](https://github.com/arcana-lab/noelle) (e.g. PDG, SCCDAG, ecc), [VIRGIL](https://github.com/arcana-lab/virgil), and [LLVM](http://llvm.org).
+GINO supports DOALL and provides an implementation of [DSWP](https://liberty.princeton.edu/Publications/micro05_dswp.pdf) and [HELIX](https://users.cs.northwestern.edu/~simonec/files/Research/papers/HELIX_CGO_2012.pdf).
 
-We release Gino's source code in the hope of benefiting others. 
+The following material composes the **documentation** available at the moment:
+- An introductory [video](https://www.youtube.com/watch?v=whORNUUWIjI)
+- The [CGO 2022 Paper](http://www.cs.northwestern.edu/~simonec/files/Research/papers/HELIX_CGO_2022.pdf)
+- The slides used during [Advanced Topics in Compilers](http://www.cs.northwestern.edu/~simonec/ATC.html) at Northwestern
+
+[We](https://users.cs.northwestern.edu/~simonec/Team.html) released GINO's source code in the hope of enriching the resources available to the research community and compiler developers.
 You are kindly asked to acknowledge usage of the tool by citing the following paper:
 ```
 @inproceedings{NOELLE,
@@ -32,23 +38,26 @@ You are kindly asked to acknowledge usage of the tool by citing the following pa
 }
 ```
 
-The only documentation available for Gino is:
-- a [video](https://www.youtube.com/watch?v=whORNUUWIjI&t=7s) introducing NOELLE and Gino
-- the [paper](http://www.cs.northwestern.edu/~simonec/files/Research/papers/HELIX_CGO_2022.pdf)
-- the comments within the code
-- the slides we use in the class [Advanced Topics in Compilers](http://www.cs.northwestern.edu/~simonec/ATC.html)
+## Mascot
+Gino is the name of the cat Simone and his wife adopted from [Tree House Cat Shelter](https://treehouseanimals.org) when they moved to Chicago.
+It was surprisingly hard to find a picture of Gino by himself. 
+He's always playing and cuddling with his brother Gigi.
 
+<div align="center">
+    <img src="doc/figs/gino.jpg" align="center" width="45%" height="auto"/>
+    <img src="doc/figs/gino_gigi.jpg" align="center" width="45%" height="auto"/>
+</div>
+<br>
+A future project may or may not be called Gigi...
 
 ## Version
 The latest stable version is 14.1.0 (tag = `v14.1.0`).
-
 
 ### Version Numbering Scheme
 The version number is in the form of \[v _Major.Minor.Revision_ \]
 - **Major**: Each major version matches a specific LLVM version (e.g., version 9 matches LLVM 9, version 11 matches LLVM 11)
 - **Minor**: Starts from 0, each minor version represents either one or more API replacements/removals that might impact the users OR a forced update every six months (the minimum minor update frequency)
 - **Revision**: Starts from 0; each revision version may include bug fixes or incremental improvements
-
 
 #### Update Frequency
 - **Major**: Matches the LLVM releases on a best-effort basis
@@ -68,79 +77,77 @@ Next is the status of Gino for different LLVM versions.
 - LLVM 14.0.6
 - NOELLE 14.1.0
 
-### Northwestern
-Next is the information for those that have access to the [Zythos](https://users.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf) cluster at Northwestern.
-
-To enable the correct LLVM, run the following command from any node of the [Zythos](https://users.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf) cluster:
+### Northwestern users
+Those who have access to the Zythos cluster at Northwestern can source LLVM 14.0.6 from any node of the cluster with:
 ```
 source /project/extra/llvm/14.0.6/enable
 ```
-
-To enable the correct NOELLE, run the following command from any node of the [Zythos](https://users.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf) cluster:
+and Noelle with:
 ```
-source /project/extra/noelle/14.1.0/enable
+source /project/extra/noelle/9.14.1/enable
+```
+Check out the Zythos cluster guide [here](http://www.cs.northwestern.edu/~simonec/files/Research/manuals/Zythos_guide.pdf) for more.
+
+## Building and Installing
+
+To build and install GINO you need to configure it first, unless the [default configuration](config.default.cmake) is satisfactory.
+From the root directory:
+```
+source /path/to/noelle/enable   # make NOELLE available
+make menuconfig                 # to customize the installation
+make                            # set the number of jobs with JOBS=8 (default is 16)
 ```
 
-
-## Building Gino
-To build and install Gino: run `make` from the repository root directory.
-
-Run `make clean` from the root directory to clean the repository.
-
-Run `make uninstall` from the root directory to uninstall the Gino installation.
-
-
-## Testing Gino
-To run all tests in parallel using Condor, invoke the following commands:
+## Testing
+To run all tests in parallel using [Condor](https://htcondor.org/), invoke the following commands:
 ```
-make clean ; 
-cd tests ;
-make condor ;
+cd tests
+make clean
+make condor
 ```
-To monitor how tests are doing: `cd tests ; make condor_watch`
+To monitor test progress use `cd tests ; make condor_watch`.
 
-To find out if all tests passed: `cd tests ; make condor_check`
+To monitor test failures use `cd tests ; make condor_check`.
 
-To test Gino using condor to run all tests in parallel, go to "tests" and run "make condor".
-This creates one `regression_X` sub-directory per configuration where `X` is going to be a number (e.g., `regression_42`).
-Each single test within a given `regression_X` sub-directory will contain a `run_me.sh` script, which is automatically generated by `make condor`. 
-To re-produce the compilation for a specific test for a specific configuration (e.g., the one associated with the current `regression_X` sub-directory), then do the following:
+`make condor` creates a `regression_X` sub-directory per configuration (e.g., `regression_42`).
+Each single test within a given `regression_X` sub-directory will contain a `run_me.sh` script, which is automatically generated by `make condor`
+and can be used to re-produce the compilation for that specific configuration.
+
 ```
-cd tests/regression_42 ;
-cd THE_TEST_YOU_ARE_INTERESTED ;
-./run_me.sh ;
+cd tests/regression_42
+cd test_of_your_interest
+./run_me.sh
 ```
-where `regression_42` is the sub-directory of the configuration you are interested and `THE_TEST_YOU_ARE_INTERESTED` is the test you care.
 
 To run only the autotuned performance tests using Condor, invoke the following commands:
 ```
-make clean ;
-cd tests ;
-make condor_autotuner ;
+cd tests
+make clean
+make condor_autotuner
 ```
-The speedup results will be collected in the tests/performance/speedups_autotuner.txt file.
+The speedup results will be collected in `tests/performance/speedups_autotuner.txt`.
+
+## Uninstalling
+
+In this order:
+
+Run `make uninstall` to uninstall without cleaning the build files.
+
+Run `make clean` to reset the repository to its initial state.
+For generality, the install directory is not removed.
 
 ## Repository structure
-The directory `src` includes sources of the Gino parallelizer.
-Within this directory, `src/core` includes the analyses and transformations needed by Gino to parallelize the code.
-Also, `src/tools` includes tools that can be used to diagnose Gino (e.g., to understand the decisions Gino made to parallelize the code).
 
-The directory `tests` includes integration tests, and performance tests.
-Furthermore, this directory includes the scripts to run all these tests in parallel via condor.
-
-Finally, the directory `doc` includes the documentation of Gino.
-
-
-### Contributing to Gino
-Gino uses `clang-format` to ensure uniform styling across the project's source code.
-`clang-format` is run automatically as a pre-commit git hook, meaning that when you commit a file `clang-format` is automatically run on the file in-place.
-
-Since git doesn't allow for git hooks to be installed when you clone the repository we manage this with our top-level Makefile.
-To install the Gino git hooks, run `make hooks` at the root of the directory.
-This make rule is run at the start of the `make all` rule as well for ease of use.
+- `bin` contains the scripts through which the user will run all analyses and transformations
+- `doc` contains the documentation
+- `src` contains the C++ source of the framework
+- `src/core` contains all the main abstractions
+- `src/tools` contains a set of tools built on top of the core. All tools are independent from one another
+- `tests` contains regression and performance tests
 
 
 ## Projects built upon Gino
+
 Several projects have already been built successfully upon Gino.
 These projects are (in no particular order):
 - [HBC](https://github.com/arcana-lab/heartbeatcompiler)
@@ -148,24 +155,22 @@ These projects are (in no particular order):
 - [CCK](https://github.com/arcana-lab/cck)
 
 
+## Contributing
+We welcome contributions from the community to improve this framework and evolve it to cater for more users.
+
+GINO uses `clang-format` to ensure uniform styling across the project's source code.
+To format all `.cpp` and `.hpp` files in the repository run `make format` from the root.
+`clang-format` is run automatically as a pre-commit git hook, meaning that when you commit a file `clang-format` is automatically run on the file in-place.
+
+Since git doesn't allow for git hooks to be installed when you clone the repository,
+cmake will install the pre-commit git hook upon installation.
+
+
 ## Contributions
 We welcome contributions from the community to improve this framework and evolve it to cater for more users.
 If you have any trouble using this framework feel free to reach out to us for help (contact simone.campanoni@northwestern.edu).
 
-
 ## License
+
 Gino is licensed under the [MIT License](./LICENSE.md).
-
-
-## Logo
-![alt text](doc/figs/Gino.jpg)
-
-Gino is the name of our cat we have taken home from the [Tree house cat shelter](https://treehouseanimals.org) when we moved to Chicago.
-
-It was surprisingly hard to find a picture of Gino by himself. 
-He is always playing and cuddling with his brother Gigi like here:
-![alt text](doc/figs/GinoGigi.jpg)
-
-A future project may or may not be called Gigi.
-
 

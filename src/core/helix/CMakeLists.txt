@@ -1,20 +1,20 @@
-# Project
-cmake_minimum_required(VERSION 3.13)
-project(HELIX)
-
-# Dependences
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/DependencesCMake.txt)
-
-# Pass
-add_subdirectory(src)
-
-# Install
-install(
-  FILES
-  include/arcana/gino/core/HELIX.hpp 
-  include/arcana/gino/core/HELIXTask.hpp 
-  include/arcana/gino/core/SequentialSegment.hpp 
-  include/arcana/gino/core/SpilledLoopCarriedDependence.hpp
-  DESTINATION 
-  include/arcana/gino/core
-  )
+target_sources(
+  Gino # component name
+  PRIVATE
+  src/HELIX_applicabilityGuard.cpp
+  src/HELIX.cpp
+  src/HELIX_dependences.cpp
+  src/HELIX_inliner.cpp
+  src/HELIX_lastIteration.cpp
+  src/HELIX_linker.cpp
+  src/HELIX_parallelization.cpp
+  src/HELIX_prologue.cpp
+  src/HELIX_scheduler.cpp
+  src/HELIX_sequentialSegment.cpp
+  src/HELIX_sequentialSegments.cpp
+  src/HELIX_spiller.cpp
+  src/HELIX_stepper.cpp
+  src/HELIX_synchronization.cpp
+  src/HELIXTask.cpp
+  src/SpilledLoopCarriedDependence.cpp
+)

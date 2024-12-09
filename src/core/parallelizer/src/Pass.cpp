@@ -27,22 +27,22 @@ namespace arcana::gino {
  * Options of the Parallelizer pass.
  */
 static cl::opt<bool> ForceParallelization(
-    "noelle-parallelizer-force",
+    "gino-parallelizer-force",
     cl::ZeroOrMore,
     cl::Hidden,
     cl::desc("Force the parallelization"));
 static cl::opt<bool> ForceNoSCCPartition(
-    "dswp-no-scc-merge",
+    "gino-dswp-no-scc-merge",
     cl::ZeroOrMore,
     cl::Hidden,
     cl::desc("Force no SCC merging when parallelizing"));
 static cl::list<int> LoopIndexesWhiteList(
-    "noelle-loops-white-list",
+    "gino-loops-white-list",
     cl::ZeroOrMore,
     cl::CommaSeparated,
     cl::desc("Parallelize only a subset of loops"));
 static cl::list<int> LoopIndexesBlackList(
-    "noelle-loops-black-list",
+    "gino-loops-black-list",
     cl::ZeroOrMore,
     cl::CommaSeparated,
     cl::desc("Don't parallelize a subset of loops"));
@@ -95,7 +95,7 @@ void Parallelizer::getAnalysisUsage(AnalysisUsage &AU) const {
 // Next there is code to register your pass to "opt"
 char arcana::gino::Parallelizer::ID = 0;
 static RegisterPass<arcana::gino::Parallelizer> X(
-    "parallelizer",
+    "Parallelizer",
     "Automatic parallelization of sequential code");
 
 // Next there is code to register your pass to "clang"
