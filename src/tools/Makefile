@@ -1,4 +1,4 @@
-ALL=parallelizer_plan_info time_saved
+ALL=parallelizer_plan_info time_saved loop_analyze
 
 all: $(ALL) scripts
 
@@ -6,6 +6,9 @@ scripts:
 	./scripts/installGINOTools.sh
 
 parallelizer_plan_info:
+	cd $@ ; ../../scripts/run_me.sh
+
+loop_analyze:
 	cd $@ ; ../../scripts/run_me.sh
 
 time_saved:

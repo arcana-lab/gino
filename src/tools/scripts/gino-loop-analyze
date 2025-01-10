@@ -1,0 +1,56 @@
+#!/bin/bash
+
+SOURCE=${BASH_SOURCE[0]}
+while [ -L "${SOURCE}" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR=$( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd )
+  SOURCE=$(readlink "${SOURCE}")
+  # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+  [[ ${SOURCE} != /* ]] && SOURCE=$DIR/$SOURCE 
+done
+installDir=$(realpath $( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd )/..)
+
+usage() {
+  echo "USAGE: `basename $0` INPUT_BC [OPTIONS]..."
+  echo
+  echo "Analyze parallelizability of a set of loops."
+  echo
+  echo "Options:"
+  echo "--loop-ids            Comma-separated values indicating loop IDs."
+  echo "--help                Display this message."
+}
+
+if test $# -lt 1 ; then
+  usage
+  exit 1
+fi
+
+inputBC="$1"
+for arg in "$@"; do
+  case ${arg} in
+    --loop-ids=*)
+      ids="${arg#*=}"
+      shift
+      ;;
+    --help)
+      usage
+      exit 0
+      ;;
+    -*|--*)
+      echo "ERROR: Unknown option $arg"
+      usage
+      exit 1
+      ;;
+    *)
+      ;;
+  esac
+done
+
+if [[ -z $ids ]]; then
+  usage
+  echo
+  echo "Please specify at least one loop ID using '--loop-ids='"
+  exit 1
+fi
+
+gino-load -load ${installDir}/lib/LoopAnalyze.so -LoopAnalyze --loop-analyze-ids=$ids -disable-output $inputBC
+
