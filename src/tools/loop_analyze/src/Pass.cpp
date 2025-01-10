@@ -80,6 +80,7 @@ bool LoopAnalyze::runOnModule(Module &M) {
       errs() << "\e[32mYes\e[0m\n";
     } else {
       errs() << "\e[31mNo\e[0m\n";
+      size_t depCounter = 0;
       auto SCCs = DOALL::getSCCsThatBlockDOALLToBeApplicable(LC, noelle);
       for (auto scc : SCCs) {
         auto sccInfo = sccManager->getSCCAttrs(scc);
@@ -93,6 +94,7 @@ bool LoopAnalyze::runOnModule(Module &M) {
             auto src = dep->getSrc();
             auto dst = dep->getDst();
             LCDs.push_back({ src, dst });
+            depCounter++;
           }
 
           set<size_t> toSkip;
@@ -127,6 +129,8 @@ bool LoopAnalyze::runOnModule(Module &M) {
           }
         }
       }
+      errs() << prefix << "Loop \e[1m" << ID
+             << "\e[0m: LCDs count: " << depCounter << "\n";
     }
   }
 
