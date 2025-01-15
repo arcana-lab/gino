@@ -81,52 +81,62 @@ bool LoopAnalyze::runOnModule(Module &M) {
     } else {
       errs() << "\e[31mNo\e[0m\n";
       size_t depCounter = 0;
-      auto SCCs = DOALL::getSCCsThatBlockDOALLToBeApplicable(LC, noelle);
-      for (auto scc : SCCs) {
-        auto sccInfo = sccManager->getSCCAttrs(scc);
-        if (auto loopCarriedSCC = dyn_cast<LoopCarriedSCC>(sccInfo)) {
-          vector<pair<Value *, Value *>> LCDs;
-          // dependence set to dependence vector (I want indexes)
-          for (auto dep : loopCarriedSCC->getLoopCarriedDependences()) {
+      auto SCCNodes = DOALL::getSCCsThatBlockDOALLToBeApplicable(LC, noelle);
+      using dep_t = pair<Value *, Value *>;
+      set<size_t> toSkip;
+      vector<dep_t> LCDs_seen;
+      for (auto node : SCCNodes) {
+        auto SCC = sccManager->getSCCAttrs(node);
+        if (auto LCSCC = dyn_cast<LoopCarriedSCC>(SCC)) {
+          for (auto dep : LCSCC->getLoopCarriedDependences()) {
             if (isa<ControlDependence<Value, Value>>(dep)) {
               continue;
             }
             auto src = dep->getSrc();
             auto dst = dep->getDst();
-            LCDs.push_back({ src, dst });
-            depCounter++;
-          }
-
-          set<size_t> toSkip;
-          for (size_t i = 0; i < LCDs.size(); i++) {
-            if (toSkip.find(i) != toSkip.end()) {
-              continue;
+            bool depAlreadySeen = false;
+            for (auto [otherSrc, otherDst] : LCDs_seen) {
+              if (otherSrc == src && otherDst == dst) {
+                depAlreadySeen = true;
+                break;
+              }
             }
-            auto src = LCDs[i].first;
-            auto dst = LCDs[i].second;
-
-            if (src == dst) {
-              errs() << prefix << "\t \u21bb" << *src << "\n";
-            } else {
-              bool isSelf = false;
-              for (size_t j = 0; j < LCDs.size(); j++) {
-                auto otherSrc = LCDs[j].first;
-                auto otherDst = LCDs[j].second;
-                if (src == otherDst && dst == otherSrc) {
-                  toSkip.insert(j);
-                  isSelf = true;
-                  break;
-                }
-              }
-
-              if (isSelf) {
-                errs() << prefix << "\t\u250f\u2192" << *src << "\n";
-              } else {
-                errs() << prefix << "\t\u250f\u2501" << *src << "\n";
-              }
-              errs() << prefix << "\t\u2517\u2192" << *dst << "\n";
+            if (!depAlreadySeen) {
+              LCDs_seen.push_back({ src, dst });
             }
           }
+        }
+      }
+      for (size_t i = 0; i < LCDs_seen.size(); i++) {
+        if (toSkip.find(i) != toSkip.end()) {
+          continue;
+        }
+        auto src = LCDs_seen[i].first;
+        auto dst = LCDs_seen[i].second;
+
+        if (src == dst) {
+          errs() << prefix << "\t \u21bb" << *src << "\n";
+          depCounter += 1;
+        } else {
+          bool isSelf = false;
+          for (size_t j = 0; j < LCDs_seen.size(); j++) {
+            auto otherSrc = LCDs_seen[j].first;
+            auto otherDst = LCDs_seen[j].second;
+            if (src == otherDst && dst == otherSrc) {
+              toSkip.insert(j);
+              isSelf = true;
+              break;
+            }
+          }
+
+          if (isSelf) {
+            depCounter += 2;
+            errs() << prefix << "\t\u250f\u2192" << *src << "\n";
+          } else {
+            depCounter += 1;
+            errs() << prefix << "\t\u250f\u2501" << *src << "\n";
+          }
+          errs() << prefix << "\t\u2517\u2192" << *dst << "\n";
         }
       }
       errs() << prefix << "Loop \e[1m" << ID
