@@ -40,12 +40,6 @@ bool DOALL::apply(LoopContent *LDI, Heuristics *h) {
    */
   auto loopStructure = LDI->getLoopStructure();
   auto loopHeader = loopStructure->getHeader();
-  auto loopPreHeader = loopStructure->getPreHeader();
-
-  /*
-   * Fetch the loop function.
-   */
-  auto loopFunction = loopStructure->getFunction();
 
   /*
    * Fetch the environment of the loop.
@@ -130,9 +124,9 @@ bool DOALL::apply(LoopContent *LDI, Heuristics *h) {
 
     return true;
   };
-  auto isSkippable = [this, loopEnvironment, sccManager, doallTask](
-                         uint32_t id,
-                         bool isLiveOut) -> bool {
+  auto isSkippable = [loopEnvironment,
+                      sccManager,
+                      doallTask](uint32_t id, bool isLiveOut) -> bool {
     if (isLiveOut) {
       return false;
     }
