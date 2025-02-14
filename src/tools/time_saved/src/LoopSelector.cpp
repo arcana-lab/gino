@@ -33,11 +33,6 @@ std::vector<LoopContent *> TimeSaved::selectTheOrderOfLoopsToParallelize(
   std::vector<LoopContent *> selectedLoops{};
 
   /*
-   * Fetch the verbosity.
-   */
-  auto verbose = noelle.getVerbosity();
-
-  /*
    * Compute the amount of time that can be saved by a parallelization technique
    * per loop.
    */
@@ -102,14 +97,6 @@ std::vector<LoopContent *> TimeSaved::selectTheOrderOfLoopsToParallelize(
      */
     auto loopIDOpt = ls->getID();
     assert(loopIDOpt);
-    auto loopID = loopIDOpt.value();
-
-    /*
-     * Compute the total amount of time saved by parallelizing this loop.
-     */
-    auto savedTimeTotal = ((double)timeSavedLoops[ldi])
-                          / ((double)profiles->getTotalInstructions());
-    savedTimeTotal *= 100;
 
     /*
      * The loop is worth parallelizing it.
