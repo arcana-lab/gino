@@ -244,7 +244,7 @@ void Inliner::getFunctionsToInline(std::string filename) {
     std::string line;
     while (getline(infile, line)) {
       int fnInd = std::stoi(line);
-      assert(fnInd > 0 && fnInd < (int)depthOrderedFns.size());
+      assert(fnInd > 0 && (size_t)fnInd < depthOrderedFns.size());
       fnsToCheck.insert(depthOrderedFns[fnInd]);
     }
   } else {
