@@ -191,16 +191,6 @@ bool Inliner::inlineCallsInvolvedInLoopCarriedDataDependencesWithinLoop(
   auto hot = noelle.getProfiles();
 
   /*
-   * Fetch the SCC manager.
-   */
-  auto sccManager = LDI->getSCCManager();
-
-  /*
-   * Fetch the SCCDAG
-   */
-  auto SCCDAG = sccManager->getSCCDAG();
-
-  /*
    *inlineFunctionCall Fetch the loop structure.
    */
   auto loopStructure = LDI->getLoopStructure();
