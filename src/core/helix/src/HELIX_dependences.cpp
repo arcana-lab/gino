@@ -238,8 +238,7 @@ static void constructEdgesFromUseDefs(PDG *pdg) {
       auto user = U.getUser();
 
       if (isa<Instruction>(user) || isa<Argument>(user)) {
-        auto edge =
-            pdg->addVariableDataDependenceEdge(pdgValue, user, DG_DATA_RAW);
+        pdg->addVariableDataDependenceEdge(pdgValue, user, DG_DATA_RAW);
       }
     }
   }

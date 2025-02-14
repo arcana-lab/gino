@@ -42,7 +42,6 @@ void HELIX::squeezeSequentialSegment(LoopContent *LDI,
   auto loops = LDI->getLoopHierarchyStructures();
   auto rootLoop = loops->getLoop();
   auto taskFunction = rootLoop->getHeader()->getParent();
-  auto taskDG = LDI->getLoopDG();
   DominatorTree taskDT(*taskFunction);
   PostDominatorTree taskPDT(*taskFunction);
   DominatorSummary taskDS(taskDT, taskPDT);
