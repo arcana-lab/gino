@@ -36,21 +36,20 @@ void DSWP::registerQueue(Noelle &par,
   /*
    * Find/create the push queue in the producer stage
    */
-  int queueIndex = this->queues.size();
+  auto queueIndex = this->queues.size();
   QueueInfo *queueInfo = nullptr;
   for (auto queueI : fromStage->producerToQueues[producer]) {
-    if (this->queues[queueI]->toStage != toStage->getID())
+    if (this->queues[queueI]->toStage != (int)toStage->getID())
       continue;
     queueIndex = queueI;
     queueInfo = this->queues[queueIndex].get();
     break;
   }
   if (queueIndex == this->queues.size()) {
-    this->queues.push_back(
-        std::move(std::make_unique<QueueInfo>(producer,
-                                              consumer,
-                                              producer->getType(),
-                                              isMemoryDependence)));
+    this->queues.push_back(std::make_unique<QueueInfo>(producer,
+                                                       consumer,
+                                                       producer->getType(),
+                                                       isMemoryDependence));
     fromStage->producerToQueues[producer].insert(queueIndex);
     queueInfo = this->queues[queueIndex].get();
 
@@ -210,7 +209,7 @@ std::set<Task *> DSWP::collectTransitivelyControlledTasks(
   std::set<Task *> tasksControlledByCondition;
   auto sccManager = LDI->getSCCManager();
   SCCDAG *sccdag = sccManager->getSCCDAG();
-  auto getTaskOfNode = [this, sccManager, sccdag](DGNode<SCC> *node) -> Task * {
+  auto getTaskOfNode = [this, sccManager](DGNode<SCC> *node) -> Task * {
     auto sccAttrs = sccManager->getSCCAttrs(node->getT());
     if (this->canBeCloned(sccAttrs))
       return nullptr;
@@ -316,11 +315,11 @@ bool DSWP::areQueuesAcyclical() const {
    * 1) ensure that push queues do not loop back to a previous task
    * 2) ensure that pop queues do not loop forward to a following task
    */
-  for (int i = 0; i < this->tasks.size(); ++i) {
+  for (size_t i = 0; i < this->tasks.size(); ++i) {
     DSWPTask *task = (DSWPTask *)this->tasks[i];
 
     for (auto queueIdx : task->pushValueQueues) {
-      int toTaskIdx = this->queues[queueIdx]->toStage;
+      size_t toTaskIdx = this->queues[queueIdx]->toStage;
       if (toTaskIdx <= i) {
         errs() << "DSWP:  ERROR! Push queue " << queueIdx
                << " loops back from stage " << i << " to stage " << toTaskIdx;
@@ -329,7 +328,7 @@ bool DSWP::areQueuesAcyclical() const {
     }
 
     for (auto queueIdx : task->popValueQueues) {
-      int fromTaskIdx = this->queues[queueIdx]->fromStage;
+      size_t fromTaskIdx = this->queues[queueIdx]->fromStage;
       if (fromTaskIdx >= i) {
         errs() << "DSWP:  ERROR! Pop queue " << queueIdx << " goes from stage "
                << fromTaskIdx << " to stage " << i;
@@ -447,7 +446,6 @@ void DSWP::pushValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
      * Store the produced value immediately
      * Push the value immediately
      */
-    auto producerBlock = queueInfo->producer->getParent();
     auto producerClone =
         task->getCloneOfOriginalInstruction(queueInfo->producer);
     auto producerCloneBlock = producerClone->getParent();

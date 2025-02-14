@@ -30,7 +30,7 @@ void DSWP::partitionSCCDAG(LoopContent *LDI, Heuristics *h) {
    * Prepare the initial partition.
    */
   auto sccManager = LDI->getSCCManager();
-  auto skipSCC = [this, sccManager](GenericSCC *scc) -> bool {
+  auto skipSCC = [this](GenericSCC *scc) -> bool {
     auto skip = this->canBeCloned(scc);
     return skip;
   };
