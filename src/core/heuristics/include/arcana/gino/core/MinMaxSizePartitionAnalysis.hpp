@@ -46,7 +46,7 @@ public:
   void checkIfShouldMerge(
       SCCSet *sA,
       SCCSet *sB,
-      std::function<bool(GenericSCC *scc)> canBeRematerialized);
+      std::function<bool(GenericSCC *scc)> canBeRematerialized) override;
 };
 } // namespace arcana::gino
 

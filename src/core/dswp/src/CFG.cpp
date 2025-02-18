@@ -66,7 +66,6 @@ void DSWP::generateLoopSubsetForStage(LoopContent *LDI, int taskIndex) {
    * Create an empty basic block for all basic blocks in the loop to be
    * potentially used in the task
    */
-  auto &cxt = task->getTaskBody()->getContext();
   for (auto B : loopSummary->getBasicBlocks()) {
     if (!task->isAnOriginalBasicBlock(B)) {
       task->addBasicBlockStub(B);

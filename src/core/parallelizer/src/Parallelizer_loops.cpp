@@ -26,11 +26,6 @@ namespace arcana::gino {
 bool Parallelizer::parallelizeLoops(Noelle &noelle, Heuristics *heuristics) {
 
   /*
-   * Fetch the verbosity level.
-   */
-  auto verbosity = noelle.getVerbosity();
-
-  /*
    * Collect information about C++ code we link parallelized loops with.
    */
   auto M = noelle.getProgram();

@@ -31,7 +31,7 @@ void MinMaxSizePartitionAnalysis::checkIfShouldMerge(
   /*
    * Hard stop merging once we have fewer partitions than cores
    */
-  if (partitioner.getPartitionGraph()->numNodes() <= numCores)
+  if ((int)partitioner.getPartitionGraph()->numNodes() <= numCores)
     return;
 
   /*

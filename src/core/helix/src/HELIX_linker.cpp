@@ -32,12 +32,6 @@ void HELIX::invokeParallelizedLoop(LoopContent *LDI,
   auto cm = this->noelle.getConstantsManager();
 
   /*
-   * Fetch the loop function.
-   */
-  auto loopSummary = LDI->getLoopStructure();
-  auto loopFunction = loopSummary->getFunction();
-
-  /*
    * Create the environment.
    * This will append store instructions to entryPointOfParallelizedLoop to
    * initialize the environment array.

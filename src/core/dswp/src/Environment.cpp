@@ -61,7 +61,7 @@ void DSWP::collectLiveInEnvInfo(LoopContent *LDI) {
       auto consumerSCC = sccdag->sccOfValue(consumer);
       auto consumerSCCAttrs = sccManager->getSCCAttrs(consumerSCC);
       if (this->canBeCloned(consumerSCCAttrs)) {
-        for (auto i = 0; i < tasks.size(); ++i) {
+        for (size_t i = 0; i < tasks.size(); ++i) {
           auto task = (DSWPTask *)tasks[i];
           if (task->clonableSCCs.find(consumerSCC) == task->clonableSCCs.end())
             continue;
@@ -113,7 +113,7 @@ void DSWP::collectLiveOutEnvInfo(LoopContent *LDI) {
     auto producerSCC = sccdag->sccOfValue(producer);
     auto producerSCCAttrs = sccManager->getSCCAttrs(producerSCC);
     if (this->canBeCloned(producerSCCAttrs)) {
-      for (auto i = 0; i < tasks.size(); ++i) {
+      for (size_t i = 0; i < tasks.size(); ++i) {
         auto task = (DSWPTask *)tasks[i];
         if (task->clonableSCCs.find(producerSCC) == task->clonableSCCs.end())
           continue;

@@ -50,7 +50,6 @@ void Inliner::printFnLoopOrder(Function *F) {
     return;
   auto count = 1;
   for (auto summary : *preOrderedLoops[F]) {
-    auto headerBB = summary->getHeader();
     errs() << "Inliner:   Loop " << count++
            << ", depth: " << summary->getNestingLevel() << "\n";
     // headerBB->print(errs()); errs() << "\n";
