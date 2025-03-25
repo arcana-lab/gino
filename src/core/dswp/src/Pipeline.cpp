@@ -51,10 +51,16 @@ void DSWP::generateStagesFromPartitionedSCCs(LoopContent *LDI) {
 
     /*
      * Define its signature.
+     *
+     * Note: Since opaque pointers become mandatory, fetching the pointee
+     * function type from a function pointer argument seems to be impossible.
+     * Therefore taskSignature is hardcoded.
      */
-    auto taskArgType = taskExecuter->arg_begin()->getType();
-    auto taskSignature = cast<FunctionType>(
-        cast<PointerType>(taskArgType)->getPointerElementType());
+    auto &C = noelle.getProgramContext();
+    auto taskSignature = FunctionType::get(
+        Type::getVoidTy(C),
+        { PointerType::getVoidTy(C), PointerType::getVoidTy(C) },
+        false);
 
     /*
      * Create task (stage), populating its SCCs
@@ -209,15 +215,14 @@ Value *DSWP::createStagesArrayFromStages(LoopContent *LDI,
   auto cm = par.getConstantsManager();
   auto tm = par.getTypesManager();
 
-  auto stagesAlloca =
-      cast<Value>(funcBuilder.CreateAlloca(this->stageArrayType));
+  auto stagesAlloca = funcBuilder.CreateAlloca(this->stageArrayType);
   auto stageCastType =
       PointerType::getUnqual(this->tasks[0]->getTaskBody()->getType());
   for (size_t i = 0; i < this->numTaskInstances; ++i) {
     auto stage = this->tasks[i];
     auto stageIndex = cm->getIntegerConstant(i, 64);
     auto stagePtr = funcBuilder.CreateGEP(
-        stagesAlloca->getType()->getPointerElementType(),
+        stagesAlloca->getAllocatedType(),
         stagesAlloca,
         ArrayRef<Value *>({ this->zeroIndexForBaseArray, stageIndex }));
     auto stageCast = funcBuilder.CreateBitCast(stagePtr, stageCastType);
@@ -242,13 +247,13 @@ Value *DSWP::createQueueSizesArrayFromStages(LoopContent *LDI,
   auto tm = par.getTypesManager();
 
   auto int64Type = tm->getIntegerType(64);
-  auto queuesAlloca = cast<Value>(
-      funcBuilder.CreateAlloca(ArrayType::get(int64Type, this->queues.size())));
+  auto queuesAlloca =
+      funcBuilder.CreateAlloca(ArrayType::get(int64Type, this->queues.size()));
   for (size_t i = 0; i < this->queues.size(); ++i) {
     auto &queue = this->queues[i];
     auto queueIndex = cm->getIntegerConstant(i, 64);
     auto queuePtr = funcBuilder.CreateGEP(
-        queuesAlloca->getType()->getPointerElementType(),
+        queuesAlloca->getAllocatedType(),
         queuesAlloca,
         ArrayRef<Value *>({ this->zeroIndexForBaseArray, queueIndex }));
     auto queueCast =
