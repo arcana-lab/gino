@@ -27,20 +27,11 @@
 
 namespace arcana::gino {
 
-class AutotunerDoallFilter : public ModulePass {
+class AutotunerDoallFilter : public PassInfoMixin<AutotunerDoallFilter> {
 public:
   AutotunerDoallFilter();
 
-  bool doInitialization(Module &M) override;
-
-  bool runOnModule(Module &M) override;
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
-
-  /*
-   * Class fields
-   */
-  static char ID;
+  llvm::PreservedAnalyses run(Module &M, llvm::ModuleAnalysisManager &MAM);
 };
 
 } // namespace arcana::gino

@@ -26,20 +26,11 @@
 
 namespace arcana::gino {
 
-class AutotunerSearchSpace : public ModulePass {
+class AutotunerSearchSpace : public PassInfoMixin<AutotunerSearchSpace> {
 public:
   AutotunerSearchSpace();
 
-  bool doInitialization(Module &M) override;
-
-  bool runOnModule(Module &M) override;
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
-
-  /*
-   * Class fields
-   */
-  static char ID;
+  llvm::PreservedAnalyses run(Module &M, llvm::ModuleAnalysisManager &MAM);
 };
 
 } // namespace arcana::gino

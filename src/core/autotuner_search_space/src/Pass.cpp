@@ -29,19 +29,17 @@ using namespace arcana::noelle;
 
 namespace arcana::gino {
 
-AutotunerSearchSpace::AutotunerSearchSpace() : ModulePass(this->ID) {}
+AutotunerSearchSpace::AutotunerSearchSpace() {}
 
-bool AutotunerSearchSpace::doInitialization(Module &M) {
-  return false;
-}
-
-bool AutotunerSearchSpace::runOnModule(Module &M) {
+llvm::PreservedAnalyses AutotunerSearchSpace::run(
+    Module &M,
+    llvm::ModuleAnalysisManager &MAM) {
   errs() << "AutotunerSearchSpace: Start\n";
 
   /*
    * Fetch noelle.
    */
-  auto &noelle = getAnalysis<NoellePass>().getNoelle();
+  auto &noelle = MAM.getResult<NoellePass>(M);
 
   /*
    * Get autotuner_space.info file name
@@ -100,39 +98,36 @@ bool AutotunerSearchSpace::runOnModule(Module &M) {
 
   file.close();
 
-  return false;
+  return llvm::PreservedAnalyses::all();
 }
 
-void AutotunerSearchSpace::getAnalysisUsage(AnalysisUsage &AU) const {
-  /*
-   * Noelle.
-   */
-  AU.addRequired<NoellePass>();
+// Next there is code to register your pass to "opt"
+llvm::PassPluginLibraryInfo getPluginInfo() {
+  return { LLVM_PLUGIN_API_VERSION,
+           "AutotunerSearchSpace",
+           LLVM_VERSION_STRING,
+           [](PassBuilder &PB) {
+             PB.registerPipelineParsingCallback(
+                 [](StringRef Name,
+                    llvm::ModulePassManager &PM,
+                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
+                   if (Name == "autotunersearchspace") {
+                     PM.addPass(AutotunerSearchSpace());
+                     return true;
+                   }
+                   return false;
+                 });
 
-  return;
+             PB.registerAnalysisRegistrationCallback(
+                 [](ModuleAnalysisManager &AM) {
+                   AM.registerPass([&] { return NoellePass(); });
+                 });
+           } };
+}
+
+extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
+llvmGetPassPluginInfo() {
+  return getPluginInfo();
 }
 
 } // namespace arcana::gino
-
-// Next there is code to register your pass to "opt"
-char arcana::gino::AutotunerSearchSpace::ID = 0;
-static RegisterPass<arcana::gino::AutotunerSearchSpace> X(
-    "autotunersearchspace",
-    "Generate file with number of loops that can be parallelized");
-
-// Next there is code to register your pass to "clang"
-static arcana::gino::AutotunerSearchSpace *_PassMaker = NULL;
-static RegisterStandardPasses _RegPass1(
-    PassManagerBuilder::EP_OptimizerLast,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::gino::AutotunerSearchSpace());
-      }
-    }); // ** for -Ox
-static RegisterStandardPasses _RegPass2(
-    PassManagerBuilder::EP_EnabledOnOptLevel0,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::gino::AutotunerSearchSpace());
-      }
-    }); // ** for -O0

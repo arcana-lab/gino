@@ -26,19 +26,17 @@
 
 namespace arcana::gino {
 
-AutotunerDoallFilter::AutotunerDoallFilter() : ModulePass(this->ID) {}
+AutotunerDoallFilter::AutotunerDoallFilter() {}
 
-bool AutotunerDoallFilter::doInitialization(Module &M) {
-  return false;
-}
-
-bool AutotunerDoallFilter::runOnModule(Module &M) {
+llvm::PreservedAnalyses AutotunerDoallFilter::run(
+    Module &M,
+    llvm::ModuleAnalysisManager &MAM) {
   errs() << "AutotunerDoallFilter: Start\n";
 
   /*
    * Fetch noelle.
    */
-  auto &noelle = getAnalysis<NoellePass>().getNoelle();
+  auto &noelle = MAM.getResult<NoellePass>(M);
 
   /*
    * Get autotuner_space.info file name
@@ -108,39 +106,36 @@ bool AutotunerDoallFilter::runOnModule(Module &M) {
 
   file.close();
 
-  return false;
+  return llvm::PreservedAnalyses::all();
 }
 
-void AutotunerDoallFilter::getAnalysisUsage(AnalysisUsage &AU) const {
-  /*
-   * Noelle.
-   */
-  AU.addRequired<NoellePass>();
+// Next there is code to register your pass to "opt"
+llvm::PassPluginLibraryInfo getPluginInfo() {
+  return { LLVM_PLUGIN_API_VERSION,
+           "AutotunerDoallFilter",
+           LLVM_VERSION_STRING,
+           [](PassBuilder &PB) {
+             PB.registerPipelineParsingCallback(
+                 [](StringRef Name,
+                    llvm::ModulePassManager &PM,
+                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
+                   if (Name == "autotunerdoallfilter") {
+                     PM.addPass(AutotunerDoallFilter());
+                     return true;
+                   }
+                   return false;
+                 });
 
-  return;
+             PB.registerAnalysisRegistrationCallback(
+                 [](ModuleAnalysisManager &AM) {
+                   AM.registerPass([&] { return NoellePass(); });
+                 });
+           } };
+}
+
+extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
+llvmGetPassPluginInfo() {
+  return getPluginInfo();
 }
 
 } // namespace arcana::gino
-
-// Next there is code to register your pass to "opt"
-char arcana::gino::AutotunerDoallFilter::ID = 0;
-static RegisterPass<arcana::gino::AutotunerDoallFilter> X(
-    "autotunerdoallfilter",
-    "Reduce search space of DOALL loops.");
-
-// Next there is code to register your pass to "clang"
-static arcana::gino::AutotunerDoallFilter *_PassMaker = NULL;
-static RegisterStandardPasses _RegPass1(
-    PassManagerBuilder::EP_OptimizerLast,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::gino::AutotunerDoallFilter());
-      }
-    }); // ** for -Ox
-static RegisterStandardPasses _RegPass2(
-    PassManagerBuilder::EP_EnabledOnOptLevel0,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::gino::AutotunerDoallFilter());
-      }
-    }); // ** for -O0
