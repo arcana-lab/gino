@@ -22,29 +22,21 @@
 #ifndef NOELLE_SRC_TOOLS_INPUT_OUTPUT_INPUTOUTPUT_H_
 #define NOELLE_SRC_TOOLS_INPUT_OUTPUT_INPUTOUTPUT_H_
 
+#include "arcana/noelle/core/NoellePass.hpp"
 #include "arcana/noelle/core/SystemHeaders.hpp"
 
 using namespace arcana::noelle;
 
 namespace arcana::gino {
 
-class InputOutput : public ModulePass {
+class InputOutput : public PassInfoMixin<InputOutput> {
 public:
-  /*
-   * Class fields
-   */
-  static char ID;
-
   /*
    * Methods
    */
   InputOutput();
 
-  bool doInitialization(Module &M) override;
-
-  bool runOnModule(Module &M) override;
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
+  PreservedAnalyses run(Module &M, ModuleAnalysisManager &MAM);
 
 private:
   static std::unordered_map<std::string, std::string>

@@ -1,6 +1,5 @@
 # Sources
 set(Srcs 
-  Pass.cpp
   InputOutput.cpp
 )
 
