@@ -24,25 +24,28 @@
 
 namespace arcana::gino {
 
-EnablersManager::EnablersManager() : ModulePass{ ID } {
+static cl::opt<bool> DisableEnablers("noelle-disable-enablers",
+                                     cl::ZeroOrMore,
+                                     cl::Hidden,
+                                     cl::desc("Disable all enablers"));
 
-  return;
-}
+EnablersManager::EnablersManager() {}
 
-bool EnablersManager::runOnModule(Module &M) {
-
+PreservedAnalyses EnablersManager::run(Module &M, ModuleAnalysisManager &MAM) {
   /*
    * Check if enablers have been enabled.
    */
+  this->enableEnablers =
+      (DisableEnablers.getNumOccurrences() == 0) ? true : false;
   if (!this->enableEnablers) {
-    return false;
+    return PreservedAnalyses::all();
   }
   errs() << "EnablersManager: Start\n";
 
   /*
    * Fetch the outputs of the passes we rely on.
    */
-  auto &noelle = getAnalysis<NoellePass>().getNoelle();
+  auto &noelle = MAM.getResult<NoellePass>(M);
 
   /*
    * Create the enablers.
@@ -160,7 +163,36 @@ bool EnablersManager::runOnModule(Module &M) {
   delete loopsToParallelize;
 
   errs() << "EnablersManager: Exit\n";
-  return modified;
+  return modified ? PreservedAnalyses::none() : PreservedAnalyses::all();
+}
+
+// Next there is code to register your pass to "opt"
+llvm::PassPluginLibraryInfo getPluginInfo() {
+  return { LLVM_PLUGIN_API_VERSION,
+           "EnablersManager",
+           LLVM_VERSION_STRING,
+           [](PassBuilder &PB) {
+             PB.registerPipelineParsingCallback(
+                 [](StringRef Name,
+                    llvm::ModulePassManager &PM,
+                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
+                   if (Name == "enablers") {
+                     PM.addPass(EnablersManager());
+                     return true;
+                   }
+                   return false;
+                 });
+
+             PB.registerAnalysisRegistrationCallback(
+                 [](ModuleAnalysisManager &AM) {
+                   AM.registerPass([&] { return NoellePass(); });
+                 });
+           } };
+}
+
+extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
+llvmGetPassPluginInfo() {
+  return getPluginInfo();
 }
 
 } // namespace arcana::gino

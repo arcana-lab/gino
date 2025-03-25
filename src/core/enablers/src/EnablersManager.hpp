@@ -30,7 +30,7 @@ using namespace arcana::noelle;
 
 namespace arcana::gino {
 
-class EnablersManager : public ModulePass {
+class EnablersManager : public PassInfoMixin<EnablersManager> {
 public:
   /*
    * Class fields
@@ -41,9 +41,7 @@ public:
    * Methods
    */
   EnablersManager();
-  bool doInitialization(Module &M) override;
-  bool runOnModule(Module &M) override;
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
+  PreservedAnalyses run(Module &M, ModuleAnalysisManager &MAM);
 
 private:
   /*

@@ -1,6 +1,5 @@
 # Sources
 set(Srcs 
-  Pass.cpp
   Enablers.cpp
   EnablersManager.cpp
 )
