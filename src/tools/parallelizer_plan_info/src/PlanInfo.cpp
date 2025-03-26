@@ -24,13 +24,27 @@
 
 namespace arcana::gino {
 
-PlanInfo::PlanInfo() : ModulePass{ ID }, printAllHeaders{ false } {
+static cl::opt<bool> PrintAllHeaders(
+    "info-print-all-headers",
+    cl::ZeroOrMore,
+    cl::Hidden,
+    cl::desc("Print the header of all loops with a parallel plan"));
+static cl::list<int> PrintHeaders(
+    "info-print-headers",
+    cl::ZeroOrMore,
+    cl::Hidden,
+    cl::CommaSeparated,
+    cl::desc("Print the headers of some loops with a parallel plan"));
+
+PlanInfo::PlanInfo() : printAllHeaders{ false } {
+  this->printAllHeaders = PrintAllHeaders.getValue();
+  this->printHeaders = PrintHeaders;
   return;
 }
 
-bool PlanInfo::runOnModule(Module &M) {
-  auto &noelle = getAnalysis<NoellePass>().getNoelle();
-  auto verbosity = noelle.getVerbosity();
+PreservedAnalyses PlanInfo::run(Module &M, ModuleAnalysisManager &MAM) {
+  auto &noelle = MAM.getResult<NoellePass>(M);
+  // auto verbosity = noelle.getVerbosity();
 
   errs() << "Parallelizer: PlanInfo: Start\n";
   /*
@@ -42,7 +56,7 @@ bool PlanInfo::runOnModule(Module &M) {
     delete forest;
 
     errs() << "Parallelizer: PlanInfo: Exit\n";
-    return false;
+    return PreservedAnalyses::all();
   }
 
   /*
@@ -88,7 +102,36 @@ bool PlanInfo::runOnModule(Module &M) {
   }
   errs() << "\n";
 
-  return false;
+  return PreservedAnalyses::all();
+}
+
+// Next there is code to register your pass to "opt"
+llvm::PassPluginLibraryInfo getPluginInfo() {
+  return { LLVM_PLUGIN_API_VERSION,
+           "ParallelizerPlanInfo",
+           LLVM_VERSION_STRING,
+           [](PassBuilder &PB) {
+             PB.registerPipelineParsingCallback(
+                 [](StringRef Name,
+                    llvm::ModulePassManager &PM,
+                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
+                   if (Name == "ParallelizerPlanInfo") {
+                     PM.addPass(PlanInfo());
+                     return true;
+                   }
+                   return false;
+                 });
+
+             PB.registerAnalysisRegistrationCallback(
+                 [](ModuleAnalysisManager &AM) {
+                   AM.registerPass([&] { return NoellePass(); });
+                 });
+           } };
+}
+
+extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
+llvmGetPassPluginInfo() {
+  return getPluginInfo();
 }
 
 } // namespace arcana::gino

@@ -28,20 +28,11 @@ using namespace arcana::noelle;
 
 namespace arcana::gino {
 
-class TimeSaved : public ModulePass {
+class TimeSaved : public PassInfoMixin<TimeSaved> {
 public:
   TimeSaved();
 
-  bool doInitialization(Module &M) override;
-
-  bool runOnModule(Module &M) override;
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
-
-  /*
-   * Class fields
-   */
-  static char ID;
+  PreservedAnalyses run(Module &M, ModuleAnalysisManager &MAM);
 
 private:
   /*

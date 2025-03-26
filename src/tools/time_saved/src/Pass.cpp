@@ -24,21 +24,17 @@
 
 namespace arcana::gino {
 
-TimeSaved::TimeSaved() : ModulePass{ ID }, forceParallelization{ true } {
+TimeSaved::TimeSaved() : forceParallelization{ true } {
   return;
 }
 
-bool TimeSaved::doInitialization(Module &M) {
-  return false;
-}
-
-bool TimeSaved::runOnModule(Module &M) {
+PreservedAnalyses TimeSaved::run(Module &M, ModuleAnalysisManager &MAM) {
   errs() << "TimeSaved: Start\n";
 
   /*
    * Fetch the outputs of the passes we rely on.
    */
-  auto &noelle = getAnalysis<NoellePass>().getNoelle();
+  auto &noelle = MAM.getResult<NoellePass>(M);
 
   /*
    * Fetch the profiles.
@@ -62,7 +58,7 @@ bool TimeSaved::runOnModule(Module &M) {
     delete forest;
 
     errs() << "TimeSaved: Exit\n";
-    return false;
+    return PreservedAnalyses::all();
   }
   errs() << "TimeSaved:    There are " << forest->getNumberOfLoops()
          << " loops in the program we are going to consider\n";
@@ -112,48 +108,36 @@ bool TimeSaved::runOnModule(Module &M) {
       << "% (" << programMaxTimeSavedWithDOALLOnly << ")\n";
 
   errs() << "TimeSaved: Exit\n";
-  return false;
+  return PreservedAnalyses::all();
 }
 
-void TimeSaved::getAnalysisUsage(AnalysisUsage &AU) const {
+// Next there is code to register your pass to "opt"
+llvm::PassPluginLibraryInfo getPluginInfo() {
+  return { LLVM_PLUGIN_API_VERSION,
+           "TimeSaved",
+           LLVM_VERSION_STRING,
+           [](PassBuilder &PB) {
+             PB.registerPipelineParsingCallback(
+                 [](StringRef Name,
+                    llvm::ModulePassManager &PM,
+                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
+                   if (Name == "TimeSaved") {
+                     PM.addPass(TimeSaved());
+                     return true;
+                   }
+                   return false;
+                 });
 
-  /*
-   * Analyses.
-   */
-  AU.addRequired<LoopInfoWrapperPass>();
-  AU.addRequired<ScalarEvolutionWrapperPass>();
-  AU.addRequired<DominatorTreeWrapperPass>();
-  AU.addRequired<PostDominatorTreeWrapperPass>();
+             PB.registerAnalysisRegistrationCallback(
+                 [](ModuleAnalysisManager &AM) {
+                   AM.registerPass([&] { return NoellePass(); });
+                 });
+           } };
+}
 
-  /*
-   * Noelle.
-   */
-  AU.addRequired<NoellePass>();
-
-  return;
+extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
+llvmGetPassPluginInfo() {
+  return getPluginInfo();
 }
 
 } // namespace arcana::gino
-
-// Next there is code to register your pass to "opt"
-char arcana::gino::TimeSaved::ID = 0;
-static RegisterPass<arcana::gino::TimeSaved> X(
-    "TimeSaved",
-    "Print estimated time saved by parallelization");
-
-// Next there is code to register your pass to "clang"
-static arcana::gino::TimeSaved *_PassMaker = NULL;
-static RegisterStandardPasses _RegPass1(
-    PassManagerBuilder::EP_OptimizerLast,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::gino::TimeSaved());
-      }
-    }); // ** for -Ox
-static RegisterStandardPasses _RegPass2(
-    PassManagerBuilder::EP_EnabledOnOptLevel0,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::gino::TimeSaved());
-      }
-    }); // ** for -O0

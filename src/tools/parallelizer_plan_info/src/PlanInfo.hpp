@@ -28,17 +28,11 @@ using namespace arcana::noelle;
 
 namespace arcana::gino {
 
-class PlanInfo : public ModulePass {
+class PlanInfo : public PassInfoMixin<PlanInfo> {
 public:
   PlanInfo();
 
-  bool doInitialization(Module &M) override;
-
-  bool runOnModule(Module &M) override;
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
-
-  static char ID;
+  PreservedAnalyses run(Module &M, ModuleAnalysisManager &MAM);
 
 private:
   bool printAllHeaders;
