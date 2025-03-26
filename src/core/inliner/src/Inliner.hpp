@@ -29,19 +29,13 @@ using namespace arcana::noelle;
 
 namespace arcana::gino {
 
-class Inliner : public ModulePass {
+class Inliner : public PassInfoMixin<Inliner> {
 public:
-  static char ID;
-
   Inliner();
 
   ~Inliner();
 
-  bool doInitialization(Module &M) override;
-
-  bool runOnModule(Module &M) override;
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
+  PreservedAnalyses run(Module &M, ModuleAnalysisManager &MAM);
 
 private:
   uint32_t maxNumberOfFunctionCallsToInlinePerLoop;
@@ -83,10 +77,11 @@ private:
   /*
    * Function and loop order tracking
    */
-  void collectFnGraph(Function *main);
+  void collectFnGraph(Function *main, ModuleAnalysisManager &MAM);
   void collectFnCallsAndCalled(llvm::CallGraph &CG, Function *parentF);
   void collectInDepthOrderFns(Function *main);
-  void createPreOrderedLoopSummariesFor(Function *F);
+  void createPreOrderedLoopSummariesFor(Function *F,
+                                        ModuleAnalysisManager &MAM);
   std::vector<Loop *> *collectPreOrderedLoopsFor(Function *F, LoopInfo &LI);
   void sortInDepthOrderFns(std::vector<Function *> &inOrder);
 

@@ -23,9 +23,14 @@
 
 namespace arcana::gino {
 
+static cl::opt<int> Verbose(
+    "noelle-inliner-verbose",
+    cl::ZeroOrMore,
+    cl::Hidden,
+    cl::desc("Verbose output (0: disabled, 1: minimal, 2: maximal"));
+
 Inliner::Inliner()
-  : ModulePass{ ID },
-    maxNumberOfFunctionCallsToInlinePerLoop{ 10 },
+  : maxNumberOfFunctionCallsToInlinePerLoop{ 10 },
     maxProgramInstructions{ 50000 },
     parentFns{},
     childrenFns{},
@@ -33,16 +38,16 @@ Inliner::Inliner()
     preOrderedLoops{},
     fnsAffected{},
     loopsToCheck{} {
-
+  this->verbose = static_cast<Verbosity>(Verbose.getValue());
   return;
 }
 
-bool Inliner::runOnModule(Module &M) {
+PreservedAnalyses Inliner::run(Module &M, ModuleAnalysisManager &MAM) {
 
   /*
    * Fetch NOELLE.
    */
-  auto &noelle = getAnalysis<NoellePass>().getNoelle();
+  auto &noelle = MAM.getResult<NoellePass>(M);
 
   /*
    * Check if the inliner has been enabled.
@@ -52,7 +57,7 @@ bool Inliner::runOnModule(Module &M) {
     /*
      * The function inliner has been disabled.
      */
-    return false;
+    return PreservedAnalyses::all();
   }
   errs() << "Inliner: Start\n";
 
@@ -64,7 +69,7 @@ bool Inliner::runOnModule(Module &M) {
   if (main == nullptr) {
     errs() << "Inliner:   No entry function\n";
     errs() << "Inliner: Exit\n";
-    return false;
+    return PreservedAnalyses::all();
   }
 
   /*
@@ -77,7 +82,7 @@ bool Inliner::runOnModule(Module &M) {
   if (programInstructions >= this->maxProgramInstructions) {
     errs() << "Inliner:     There are too many instructions. We'll not inline "
               "anything\n";
-    return false;
+    return PreservedAnalyses::all();
   }
 
   /*
@@ -88,10 +93,10 @@ bool Inliner::runOnModule(Module &M) {
   /*
    * Collect function and loop ordering to track inlining progress
    */
-  collectFnGraph(main);
+  collectFnGraph(main, MAM);
   collectInDepthOrderFns(main);
   for (auto func : depthOrderedFns) {
-    createPreOrderedLoopSummariesFor(func);
+    createPreOrderedLoopSummariesFor(func, MAM);
   }
 
   auto printFnInfo = [&]() -> void {
@@ -134,7 +139,7 @@ bool Inliner::runOnModule(Module &M) {
     delete pcg;
 
     errs() << "Inliner: Exit\n";
-    return true;
+    return PreservedAnalyses::none();
   }
 
   /*
@@ -159,7 +164,7 @@ bool Inliner::runOnModule(Module &M) {
     delete pcg;
 
     errs() << "Inliner: Exit\n";
-    return false;
+    return PreservedAnalyses::all();
   }
 
   /*
@@ -172,12 +177,12 @@ bool Inliner::runOnModule(Module &M) {
   if (inlined) {
     errs() << "Inliner:   Inlined functions to hoist loops to the entry "
               "funtion of the program\n";
-    getAnalysis<CallGraphWrapperPass>().runOnModule(M);
+    MAM.invalidate(M, PreservedAnalyses::none());
     parentFns.clear();
     childrenFns.clear();
     orderedCalled.clear();
     orderedCalls.clear();
-    collectFnGraph(main);
+    collectFnGraph(main, MAM);
     collectInDepthOrderFns(main);
     printFnOrder();
   }
@@ -194,15 +199,7 @@ bool Inliner::runOnModule(Module &M) {
   delete pcg;
 
   errs() << "Inliner: Exit\n";
-  return inlined;
-
-  /*
-   * Free the memory.
-   */
-  delete pcg;
-
-  errs() << "Inliner: Exit\n";
-  return false;
+  return inlined ? PreservedAnalyses::none() : PreservedAnalyses::all();
 }
 
 /*
@@ -520,7 +517,7 @@ void Inliner::adjustLoopOrdersAfterInline(Function *parentF,
   }
 
   // NOTE(angelo): Insert inlined loops from child function
-  for (size_t childIndex = nextLoopInd; childIndex < endInd; ++childIndex) {
+  for (int childIndex = nextLoopInd; childIndex < endInd; ++childIndex) {
     parentLoops[childIndex] = childLoops[childIndex - nextLoopInd];
   }
 }
@@ -569,8 +566,8 @@ void Inliner::adjustFnGraphAfterInline(Function *parentF,
   }
 }
 
-void Inliner::collectFnGraph(Function *main) {
-  auto &callGraph = getAnalysis<CallGraphWrapperPass>().getCallGraph();
+void Inliner::collectFnGraph(Function *main, ModuleAnalysisManager &MAM) {
+  auto &callGraph = MAM.getResult<llvm::CallGraphAnalysis>(*main->getParent());
   std::queue<Function *> funcToTraverse;
   std::set<Function *> reached;
 
@@ -731,14 +728,17 @@ void Inliner::collectInDepthOrderFns(Function *main) {
   delete deferred;
 }
 
-void Inliner::createPreOrderedLoopSummariesFor(Function *F) {
+void Inliner::createPreOrderedLoopSummariesFor(Function *F,
+                                               ModuleAnalysisManager &MAM) {
   // NOTE(angelo): Enforce managing order instead of recalculating it entirely
   if (preOrderedLoops.find(F) != preOrderedLoops.end()) {
     errs() << "Inliner:   Misuse! Do not collect ordered loops more than once. "
               "Manage current ordering.\n";
   }
 
-  auto &LI = getAnalysis<LoopInfoWrapperPass>(*F).getLoopInfo();
+  auto &FAM = MAM.getResult<FunctionAnalysisManagerModuleProxy>(*F->getParent())
+                  .getManager();
+  auto &LI = FAM.getResult<LoopAnalysis>(*F);
   if (LI.empty())
     return;
   auto loops = collectPreOrderedLoopsFor(F, LI);
@@ -793,6 +793,35 @@ Inliner::~Inliner() {
   for (auto l : loopSummaries) {
     delete l;
   }
+}
+
+// Next there is code to register your pass to "opt"
+llvm::PassPluginLibraryInfo getPluginInfo() {
+  return { LLVM_PLUGIN_API_VERSION,
+           "Inliner",
+           LLVM_VERSION_STRING,
+           [](PassBuilder &PB) {
+             PB.registerPipelineParsingCallback(
+                 [](StringRef Name,
+                    llvm::ModulePassManager &PM,
+                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
+                   if (Name == "inliner") {
+                     PM.addPass(Inliner());
+                     return true;
+                   }
+                   return false;
+                 });
+
+             PB.registerAnalysisRegistrationCallback(
+                 [](ModuleAnalysisManager &AM) {
+                   AM.registerPass([&] { return NoellePass(); });
+                 });
+           } };
+}
+
+extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
+llvmGetPassPluginInfo() {
+  return getPluginInfo();
 }
 
 } // namespace arcana::gino
