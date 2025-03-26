@@ -30,20 +30,11 @@
 
 namespace arcana::gino {
 
-class Parallelizer : public ModulePass {
+class Parallelizer : public PassInfoMixin<Parallelizer> {
 public:
   Parallelizer();
 
-  bool doInitialization(Module &M) override;
-
-  bool runOnModule(Module &M) override;
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
-
-  /*
-   * Class fields
-   */
-  static char ID;
+  PreservedAnalyses run(Module &M, ModuleAnalysisManager &MAM);
 
 private:
   /*

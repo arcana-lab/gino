@@ -48,69 +48,61 @@ static cl::list<int> LoopIndexesBlackList(
     cl::desc("Don't parallelize a subset of loops"));
 
 Parallelizer::Parallelizer()
-  : ModulePass{ ID },
-    forceParallelization{ false },
+  : forceParallelization{ false },
     forceNoSCCPartition{ false } {
 
   return;
 }
 
-bool Parallelizer::doInitialization(Module &M) {
+PreservedAnalyses Parallelizer::run(Module &M, ModuleAnalysisManager &MAM) {
+  errs() << "Parallelizer: Start\n";
+
   this->forceParallelization = (ForceParallelization.getNumOccurrences() > 0);
   this->forceNoSCCPartition = (ForceNoSCCPartition.getNumOccurrences() > 0);
   this->loopIndexesWhiteList = LoopIndexesWhiteList;
   this->loopIndexesBlackList = LoopIndexesBlackList;
 
-  return false;
-}
-
-bool Parallelizer::runOnModule(Module &M) {
-  errs() << "Parallelizer: Start\n";
-
   /*
    * Fetch the outputs of the passes we rely on.
    */
-  auto &noelle = getAnalysis<NoellePass>().getNoelle();
-  auto heuristics = getAnalysis<HeuristicsPass>().getHeuristics(noelle);
+  auto &noelle = MAM.getResult<NoellePass>(M);
+  auto heuristics = MAM.getResult<HeuristicsPass>(M);
 
   /*
    * Parallelize the loops of the target program.
    */
-  auto modified = this->parallelizeLoops(noelle, heuristics);
+  auto modified = this->parallelizeLoops(noelle, &heuristics);
 
-  return modified;
+  return modified ? PreservedAnalyses::none() : PreservedAnalyses::all();
 }
 
-void Parallelizer::getAnalysisUsage(AnalysisUsage &AU) const {
+// Next there is code to register your pass to "opt"
+llvm::PassPluginLibraryInfo getPluginInfo() {
+  return { LLVM_PLUGIN_API_VERSION,
+           "Parallelizer",
+           LLVM_VERSION_STRING,
+           [](PassBuilder &PB) {
+             PB.registerPipelineParsingCallback(
+                 [](StringRef Name,
+                    llvm::ModulePassManager &PM,
+                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
+                   if (Name == "parallelizer") {
+                     PM.addPass(Parallelizer());
+                     return true;
+                   }
+                   return false;
+                 });
 
-  /*
-   * Noelle.
-   */
-  AU.addRequired<NoellePass>();
-  AU.addRequired<HeuristicsPass>();
+             PB.registerAnalysisRegistrationCallback(
+                 [](ModuleAnalysisManager &AM) {
+                   AM.registerPass([&] { return NoellePass(); });
+                 });
+           } };
+}
+
+extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
+llvmGetPassPluginInfo() {
+  return getPluginInfo();
 }
 
 } // namespace arcana::gino
-
-// Next there is code to register your pass to "opt"
-char arcana::gino::Parallelizer::ID = 0;
-static RegisterPass<arcana::gino::Parallelizer> X(
-    "parallelizer",
-    "Automatic parallelization of sequential code");
-
-// Next there is code to register your pass to "clang"
-static arcana::gino::Parallelizer *_PassMaker = NULL;
-static RegisterStandardPasses _RegPass1(
-    PassManagerBuilder::EP_OptimizerLast,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::gino::Parallelizer());
-      }
-    }); // ** for -Ox
-static RegisterStandardPasses _RegPass2(
-    PassManagerBuilder::EP_EnabledOnOptLevel0,
-    [](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-      if (!_PassMaker) {
-        PM.add(_PassMaker = new arcana::gino::Parallelizer());
-      }
-    }); // ** for -O0
