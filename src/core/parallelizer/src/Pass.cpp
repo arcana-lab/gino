@@ -47,20 +47,17 @@ static cl::list<int> LoopIndexesBlackList(
     cl::CommaSeparated,
     cl::desc("Don't parallelize a subset of loops"));
 
-Parallelizer::Parallelizer()
-  : forceParallelization{ false },
-    forceNoSCCPartition{ false } {
+Parallelizer::Parallelizer() {
+  this->forceParallelization = (ForceParallelization.getNumOccurrences() > 0);
+  this->forceNoSCCPartition = (ForceNoSCCPartition.getNumOccurrences() > 0);
+  this->loopIndexesWhiteList = LoopIndexesWhiteList;
+  this->loopIndexesBlackList = LoopIndexesBlackList;
 
   return;
 }
 
 PreservedAnalyses Parallelizer::run(Module &M, ModuleAnalysisManager &MAM) {
   errs() << "Parallelizer: Start\n";
-
-  this->forceParallelization = (ForceParallelization.getNumOccurrences() > 0);
-  this->forceNoSCCPartition = (ForceNoSCCPartition.getNumOccurrences() > 0);
-  this->loopIndexesWhiteList = LoopIndexesWhiteList;
-  this->loopIndexesBlackList = LoopIndexesBlackList;
 
   /*
    * Fetch the outputs of the passes we rely on.

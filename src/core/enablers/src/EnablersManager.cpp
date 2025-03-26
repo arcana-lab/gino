@@ -29,14 +29,15 @@ static cl::opt<bool> DisableEnablers("noelle-disable-enablers",
                                      cl::Hidden,
                                      cl::desc("Disable all enablers"));
 
-EnablersManager::EnablersManager() {}
+EnablersManager::EnablersManager() {
+  this->enableEnablers =
+      (DisableEnablers.getNumOccurrences() == 0) ? true : false;
+}
 
 PreservedAnalyses EnablersManager::run(Module &M, ModuleAnalysisManager &MAM) {
   /*
    * Check if enablers have been enabled.
    */
-  this->enableEnablers =
-      (DisableEnablers.getNumOccurrences() == 0) ? true : false;
   if (!this->enableEnablers) {
     return PreservedAnalyses::all();
   }

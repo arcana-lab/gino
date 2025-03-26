@@ -33,15 +33,13 @@ static cl::opt<bool> ForceParallelizationPlanner(
     cl::desc("Force the parallelization"));
 
 Planner::Planner() {
-
+  this->forceParallelization =
+      (ForceParallelizationPlanner.getNumOccurrences() > 0);
   return;
 }
 
 PreservedAnalyses Planner::run(Module &M, ModuleAnalysisManager &MAM) {
   errs() << "Planner: Start\n";
-
-  this->forceParallelization =
-      (ForceParallelizationPlanner.getNumOccurrences() > 0);
 
   /*
    * Fetch the outputs of the passes we rely on.
