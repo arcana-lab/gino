@@ -36,8 +36,6 @@ public:
 
   Result run(Module &M, ModuleAnalysisManager &MAM);
 
-  Heuristics *getHeuristics(Noelle &noelle);
-
 private:
   friend llvm::AnalysisInfoMixin<HeuristicsPass>;
   static llvm::AnalysisKey Key;
