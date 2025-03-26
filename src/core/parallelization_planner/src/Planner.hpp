@@ -27,20 +27,11 @@
 
 namespace arcana::gino {
 
-class Planner : public ModulePass {
+class Planner : public PassInfoMixin<Planner> {
 public:
   Planner();
 
-  bool doInitialization(Module &M) override;
-
-  bool runOnModule(Module &M) override;
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
-
-  /*
-   * Class fields
-   */
-  static char ID;
+  PreservedAnalyses run(Module &M, ModuleAnalysisManager &MAM);
 
 private:
   /*
