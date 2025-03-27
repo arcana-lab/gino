@@ -149,7 +149,8 @@ void ParallelizationTechnique::initializeLoopEnvironmentUsers(void) {
         task->getEnvironment(),
         PointerType::getUnqual(envBuilder->getEnvironmentArrayType()),
         "noelle.environment_variable.pointer");
-    envUser->setEnvironmentArray(bitcastInst);
+    envUser->setEnvironmentArray(bitcastInst,
+                                 envBuilder->getEnvironmentArrayType());
   }
 }
 
@@ -320,10 +321,9 @@ BasicBlock *ParallelizationTechnique::
     if (isReduced) {
       envVar = envBuilder->getAccumulatedReducedEnvironmentVariable(envID);
     } else {
-      auto envVarDescriptor = envBuilder->getEnvironmentVariable(envID);
       envVar = afterReductionBuilder->CreateLoad(
-          envVarDescriptor->getType()->getPointerElementType(),
-          envVarDescriptor,
+          envBuilder->getEnvironmentVariableType(envID),
+          envBuilder->getEnvironmentVariable(envID),
           "noelle.environment_variable.live_out.reduction");
     }
     assert(envVar != nullptr);
@@ -686,10 +686,10 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
               envUser->createEnvironmentVariablePointer(entryBuilder,
                                                         newLiveInEnvironmentID,
                                                         opJ->getType());
-          auto environmentLocationLoad = entryBuilder.CreateLoad(
-              envVarPtr->getType()->getPointerElementType(),
-              envVarPtr,
-              "noelle.environment_variable.live_in");
+          auto environmentLocationLoad =
+              entryBuilder.CreateLoad(opJ->getType(),
+                                      envVarPtr,
+                                      "noelle.environment_variable.live_in");
 
           /*
            * Make the task aware that the new load represents the live-in value.
@@ -755,7 +755,7 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
                                                       newLiveInEnvironmentID,
                                                       alloca->getType());
         auto environmentLocationLoad = entryBuilderAtTheEnd.CreateLoad(
-            envVarPtr->getType()->getPointerElementType(),
+            alloca->getType(),
             envVarPtr,
             "noelle.environment_variable.live_in");
 
@@ -784,8 +784,8 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
       auto &DL = allocaClone->getFunction()->getParent()->getDataLayout();
       auto sizeInBits = alloca->getAllocationSizeInBits(DL);
       uint64_t bytes = 0;
-      if (sizeInBits.hasValue()) {
-        bytes = sizeInBits.getValue() / 8;
+      if (sizeInBits.has_value()) {
+        bytes = sizeInBits.value() / 8;
       } else {
         bytes = typesManager->getSizeOfType(t);
       }
@@ -865,9 +865,7 @@ void ParallelizationTechnique::generateCodeToLoadLiveInVariables(
     auto metaString = std::string{ "noelle_environment_variable_" };
     metaString.append(std::to_string(envID));
     auto envLoad =
-        builder.CreateLoad(envPointer->getType()->getPointerElementType(),
-                           envPointer,
-                           metaString);
+        builder.CreateLoad(producer->getType(), envPointer, metaString);
 
     /*
      * Register the load as a "clone" of the original producer
@@ -1039,11 +1037,11 @@ void ParallelizationTechnique::generateCodeToStoreLiveOutVariables(
         auto producerValueToStore =
             isReduced
                 ? this->fetchOrCreatePHIForIntermediateProducerValueOfReducibleLiveOutVariable(
-                    loopContent,
-                    taskIndex,
-                    envID,
-                    BB,
-                    *taskDS)
+                      loopContent,
+                      taskIndex,
+                      envID,
+                      BB,
+                      *taskDS)
                 : producerClone;
 
         /*
