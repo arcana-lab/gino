@@ -80,7 +80,7 @@ void HELIX::addSynchronizations(LoopContent *LDI,
    * Fetch sequential segments entry in the past and future array
    * Allocate space to track sequential segment entry state
    */
-  std::vector<Value *> ssStates{};
+  std::vector<AllocaInst *> ssStates{};
   for (auto ss : *sss) {
     this->computeAndCachePointerOfPastSequentialSegment(helixTask, ss->getID());
     this->computeAndCachePointerOfFutureSequentialSegment(helixTask,
@@ -153,9 +153,8 @@ void HELIX::addSynchronizations(LoopContent *LDI,
      * HELIX_wait.
      */
     IRBuilder<> beforeEntryBuilder(beforeEntryBB);
-    auto ssStateLoad = beforeEntryBuilder.CreateLoad(
-        ssState->getType()->getPointerElementType(),
-        ssState);
+    auto ssStateLoad =
+        beforeEntryBuilder.CreateLoad(ssState->getAllocatedType(), ssState);
     auto needToWait = beforeEntryBuilder.CreateICmpEQ(ssStateLoad, const0);
     beforeEntryBuilder.CreateCondBr(needToWait, ssWaitBB, ssEntryBB);
 
@@ -263,7 +262,7 @@ void HELIX::addSynchronizations(LoopContent *LDI,
 
     IRBuilder<> checkFlagBuilder(beforeCheckBB);
     auto flagValue = checkFlagBuilder.CreateLoad(
-        helixTask->loopIsOverFlagArg->getType()->getPointerElementType(),
+        IntegerType::get(checkFlagBuilder.getContext(), 64),
         helixTask->loopIsOverFlagArg);
     auto isFlagSet = checkFlagBuilder.CreateICmpEQ(const1, flagValue);
     checkFlagBuilder.CreateCondBr(isFlagSet, failedCheckBB, afterCheckBB);
