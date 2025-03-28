@@ -41,6 +41,8 @@ public:
 
   virtual Value *getEnvArray(void) const;
 
+  virtual Type *getEnvArrayType(void) const;
+
   virtual uint32_t getIndexOfEnvironmentVariable(uint32_t id) const;
 
   virtual BasicBlock *getParLoopEntryPoint(void) const;

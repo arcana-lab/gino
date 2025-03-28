@@ -41,6 +41,11 @@ Value *ParallelizationTechnique::getEnvArray(void) const {
   return this->envBuilder->getEnvironmentArray();
 }
 
+Type *ParallelizationTechnique::getEnvArrayType(void) const {
+  assert(this->envBuilder != nullptr);
+  return this->envBuilder->getEnvironmentArrayType();
+}
+
 uint32_t ParallelizationTechnique::getIndexOfEnvironmentVariable(
     uint32_t id) const {
   assert(this->envBuilder != nullptr);
