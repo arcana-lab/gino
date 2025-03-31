@@ -12,14 +12,9 @@ installDir=$(realpath $( cd -P "$( dirname "${SOURCE}" )" >/dev/null 2>&1 && pwd
 # Fetch the install directory of NOELLE
 noelleInstallDir="`noelle-config --prefix`" ;
 
-# NOELLE tools
-ENABLERS="-load-pass-plugin ${noelleInstallDir}/lib/LoopInvariantCodeMotion.so \
-          -load-pass-plugin ${noelleInstallDir}/lib/SCEVSimplification.so \
-          "
-
 # Run the enablers until a fixed point is reached
 echo "GINO: Enablers: Start" ;
-cmdToExecute="noelle-fixedpoint $1 $2 \"gino-load\" ${ENABLERS} -passes='enablers' ${@:3}"
+cmdToExecute="noelle-fixedpoint $1 $2 \"gino-load\" -passes='enablers' ${@:3}"
 echo $cmdToExecute ;
 eval $cmdToExecute ;
 echo "GINO: Enablers: Exit" ;

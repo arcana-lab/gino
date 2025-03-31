@@ -9,6 +9,14 @@ add_subdirectory(core)
 
 add_subdirectory(tools)
 
+# Note: temporary solution.
+# Hopefully this won't be needed if noelle is packed into a single .so file.
+target_link_libraries(Gino
+  PUBLIC
+  ${NOELLE_INSTALL_PREFIX}/lib/LoopInvariantCodeMotion.so
+  ${NOELLE_INSTALL_PREFIX}/lib/SCEVSimplification.so
+  )
+
 install(
   TARGETS Gino
   LIBRARY
