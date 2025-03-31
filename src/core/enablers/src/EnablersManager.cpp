@@ -20,7 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcana/noelle/core/NoellePass.hpp"
-#include "EnablersManager.hpp"
+#include "arcana/gino/core/EnablersManager.hpp"
 
 namespace arcana::gino {
 
@@ -165,35 +165,6 @@ PreservedAnalyses EnablersManager::run(Module &M, ModuleAnalysisManager &MAM) {
 
   errs() << "EnablersManager: Exit\n";
   return modified ? PreservedAnalyses::none() : PreservedAnalyses::all();
-}
-
-// Next there is code to register your pass to "opt"
-llvm::PassPluginLibraryInfo getPluginInfo() {
-  return { LLVM_PLUGIN_API_VERSION,
-           "EnablersManager",
-           LLVM_VERSION_STRING,
-           [](PassBuilder &PB) {
-             PB.registerPipelineParsingCallback(
-                 [](StringRef Name,
-                    llvm::ModulePassManager &PM,
-                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
-                   if (Name == "enablers") {
-                     PM.addPass(EnablersManager());
-                     return true;
-                   }
-                   return false;
-                 });
-
-             PB.registerAnalysisRegistrationCallback(
-                 [](ModuleAnalysisManager &AM) {
-                   AM.registerPass([&] { return NoellePass(); });
-                 });
-           } };
-}
-
-extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
-llvmGetPassPluginInfo() {
-  return getPluginInfo();
 }
 
 } // namespace arcana::gino

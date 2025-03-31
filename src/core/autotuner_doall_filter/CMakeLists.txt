@@ -1,9 +1,19 @@
-# Project
-cmake_minimum_required(VERSION 3.13)
-project(AutotunerDoallFilter)
 
-# Dependences
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/DependencesCMake.txt)
+file(GLOB SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+target_sources(Gino
+  PRIVATE
+  ${SOURCE_FILES})
 
-# Pass
-add_subdirectory(src)
+target_include_directories(Gino
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+install(
+  DIRECTORY
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  DESTINATION
+  ${CMAKE_INSTALL_PREFIX}
+  FILES_MATCHING PATTERN "*.hpp")
+
+

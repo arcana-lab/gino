@@ -20,7 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "PlanInfo.hpp"
+#include "arcana/gino/tools/PlanInfo.hpp"
 
 namespace arcana::gino {
 
@@ -103,35 +103,6 @@ PreservedAnalyses PlanInfo::run(Module &M, ModuleAnalysisManager &MAM) {
   errs() << "\n";
 
   return PreservedAnalyses::all();
-}
-
-// Next there is code to register your pass to "opt"
-llvm::PassPluginLibraryInfo getPluginInfo() {
-  return { LLVM_PLUGIN_API_VERSION,
-           "ParallelizerPlanInfo",
-           LLVM_VERSION_STRING,
-           [](PassBuilder &PB) {
-             PB.registerPipelineParsingCallback(
-                 [](StringRef Name,
-                    llvm::ModulePassManager &PM,
-                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
-                   if (Name == "ParallelizerPlanInfo") {
-                     PM.addPass(PlanInfo());
-                     return true;
-                   }
-                   return false;
-                 });
-
-             PB.registerAnalysisRegistrationCallback(
-                 [](ModuleAnalysisManager &AM) {
-                   AM.registerPass([&] { return NoellePass(); });
-                 });
-           } };
-}
-
-extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
-llvmGetPassPluginInfo() {
-  return getPluginInfo();
 }
 
 } // namespace arcana::gino

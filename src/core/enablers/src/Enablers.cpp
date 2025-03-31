@@ -19,7 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "EnablersManager.hpp"
+#include "arcana/gino/core/EnablersManager.hpp"
 #include "arcana/noelle/core/LoopCarriedUnknownSCC.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 

@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "TimeSaved.hpp"
-#include "TimingModel.hpp"
+#include "arcana/gino/tools/TimeSaved.hpp"
+#include "TimeSavedTimingModel.hpp"
 
 namespace arcana::gino {
 
@@ -55,7 +55,7 @@ std::vector<LoopContent *> TimeSaved::selectTheOrderOfLoopsToParallelize(
     /*
      * Compute the timing model for this loop.
      */
-    auto loopTimeModel = new LoopTimingModel(noelle, *ldi);
+    auto loopTimeModel = new TimeSavedLoopTimingModel(noelle, *ldi);
 
     /*
      * Tag DOALL loops.

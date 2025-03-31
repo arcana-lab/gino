@@ -23,6 +23,6 @@ if test $# -lt 1 ; then
   exit 1
 fi
 
-cmdToExecute="noelle-load -noelle-verbose=0 -load-pass-plugin ${installDir}/lib/ParallelizerPlanInfo.so -passes='ParallelizerPlanInfo' -disable-output $@" 
+cmdToExecute="gino-load -noelle-verbose=0 -passes='ParallelizerPlanInfo' -disable-output $@" 
 echo $cmdToExecute
 eval $cmdToExecute 

@@ -19,8 +19,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "Planner.hpp"
-#include "TimingModel.hpp"
+#include "arcana/gino/core/Planner.hpp"
+#include "PlannerTimingModel.hpp"
 #include "arcana/gino/core/DOALL.hpp"
 
 namespace arcana::gino {
@@ -229,7 +229,7 @@ std::vector<LoopContent *> Planner::selectTheOrderOfLoopsToParallelize(
     /*
      * Compute the timing model for this loop.
      */
-    auto loopTimeModel = new LoopTimingModel(noelle, *ldi);
+    auto loopTimeModel = new PlannerLoopTimingModel(noelle, *ldi);
 
     /*
      * Tag DOALL loops.

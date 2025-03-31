@@ -19,7 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "Inliner.hpp"
+#include "arcana/gino/core/Inliner.hpp"
 
 namespace arcana::gino {
 
@@ -793,35 +793,6 @@ Inliner::~Inliner() {
   for (auto l : loopSummaries) {
     delete l;
   }
-}
-
-// Next there is code to register your pass to "opt"
-llvm::PassPluginLibraryInfo getPluginInfo() {
-  return { LLVM_PLUGIN_API_VERSION,
-           "Inliner",
-           LLVM_VERSION_STRING,
-           [](PassBuilder &PB) {
-             PB.registerPipelineParsingCallback(
-                 [](StringRef Name,
-                    llvm::ModulePassManager &PM,
-                    ArrayRef<llvm::PassBuilder::PipelineElement>) {
-                   if (Name == "inliner") {
-                     PM.addPass(Inliner());
-                     return true;
-                   }
-                   return false;
-                 });
-
-             PB.registerAnalysisRegistrationCallback(
-                 [](ModuleAnalysisManager &AM) {
-                   AM.registerPass([&] { return NoellePass(); });
-                 });
-           } };
-}
-
-extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
-llvmGetPassPluginInfo() {
-  return getPluginInfo();
 }
 
 } // namespace arcana::gino
