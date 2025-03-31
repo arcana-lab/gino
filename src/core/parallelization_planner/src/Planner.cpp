@@ -27,7 +27,7 @@ namespace arcana::gino {
  * Options of the Planner pass.
  */
 static cl::opt<bool> ForceParallelizationPlanner(
-    "noelle-parallelizer-force",
+    "noelle-planner-parallelizer-force",
     cl::ZeroOrMore,
     cl::Hidden,
     cl::desc("Force the parallelization"));
