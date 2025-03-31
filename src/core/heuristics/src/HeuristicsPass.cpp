@@ -33,6 +33,8 @@ Heuristics HeuristicsPass::run(Module &M, ModuleAnalysisManager &MAM) {
   return Heuristics(MAM.getResult<NoellePass>(M));
 }
 
+llvm::AnalysisKey HeuristicsPass::Key;
+
 // Next there is code to register your pass to "opt"
 llvm::PassPluginLibraryInfo getPluginInfo() {
   return { LLVM_PLUGIN_API_VERSION,
