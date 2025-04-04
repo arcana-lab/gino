@@ -177,7 +177,9 @@ PreservedAnalyses Inliner::run(Module &M, ModuleAnalysisManager &MAM) {
   if (inlined) {
     errs() << "Inliner:   Inlined functions to hoist loops to the entry "
               "funtion of the program\n";
-    MAM.invalidate(M, PreservedAnalyses::none());
+    PreservedAnalyses PA = PreservedAnalyses::all();
+    PA.abandon<llvm::CallGraphAnalysis>();
+    MAM.invalidate(M, PA);
     parentFns.clear();
     childrenFns.clear();
     orderedCalled.clear();
