@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <math.h>
 
-int main (int argc, char *argv[]){
+int main(int argc, char *argv[]) {
 
-  if (argc <= 1){
+  if (argc <= 1) {
     fprintf(stderr, "USAGE: %s ITERATIONS\n", argv[0]);
     return 1;
   }
@@ -11,7 +13,7 @@ int main (int argc, char *argv[]){
 
   int winner = rand() % 100;
   long long int t = 0;
-  for (long long int i=0; i < iterations; i++){
+  for (long long int i = 0; i < iterations; i++) {
     long long int a[100];
     memset(a, 0, sizeof(long long int) * 100);
     int index = i % 100;
