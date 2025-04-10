@@ -59,7 +59,7 @@ void DSWP::generateStagesFromPartitionedSCCs(LoopContent *LDI) {
     auto &C = noelle.getProgramContext();
     auto taskSignature = FunctionType::get(
         Type::getVoidTy(C),
-        { PointerType::getVoidTy(C), PointerType::getVoidTy(C) },
+        { PointerType::getUnqual(C), PointerType::getUnqual(C) },
         false);
 
     /*
