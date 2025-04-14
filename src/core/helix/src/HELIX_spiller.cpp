@@ -110,10 +110,9 @@ void HELIX::spillLoopCarriedDataDependencies(LoopContent *LDI,
    */
   auto envUser = this->loopCarriedLoopEnvironmentBuilder->getUser(0);
 
-  envUser->setEnvironmentArray(entryBuilder.CreateBitCast(
+  envUser->setEnvironmentArray(
       helixTask->loopCarriedArrayArg,
-      PointerType::getUnqual(
-          loopCarriedLoopEnvironmentBuilder->getEnvironmentArrayType())));
+      loopCarriedLoopEnvironmentBuilder->getEnvironmentArrayType());
 
   /*
    * Allocate the environment array (64 byte aligned)
@@ -166,12 +165,14 @@ void HELIX::spillLoopCarriedDataDependencies(LoopContent *LDI,
     auto envPtr = envUser->createEnvironmentVariablePointer(entryBuilder,
                                                             phiI,
                                                             phiTypes[phiI]);
+    auto envType = envUser->getEnvPtrType(phiI);
 
     this->createLoadsAndStoresToSpilledLCD(LDI,
                                            reachabilityDFR,
                                            cloneToOriginalBlockMap,
                                            spilled,
-                                           envPtr);
+                                           envPtr,
+                                           envType);
   }
 }
 
@@ -180,7 +181,8 @@ void HELIX::createLoadsAndStoresToSpilledLCD(
     DataFlowResult *reachabilityDFR,
     std::unordered_map<BasicBlock *, BasicBlock *> &cloneToOriginalBlockMap,
     SpilledLoopCarriedDependence *spill,
-    Value *spillEnvPtr) {
+    Value *spillEnvPtr,
+    Type *spillEnvType) {
 
   /*
    * Fetch task and loop
@@ -218,6 +220,7 @@ void HELIX::createLoadsAndStoresToSpilledLCD(
                                          cloneToOriginalBlockMap,
                                          spill,
                                          spillEnvPtr,
+                                         spillEnvType,
                                          DS,
                                          originalFrontierBlocks);
 }
@@ -423,6 +426,8 @@ void HELIX::replaceUsesOfSpilledPHIWithLoads(
     std::unordered_map<BasicBlock *, BasicBlock *> &cloneToOriginalBlockMap,
     SpilledLoopCarriedDependence *spill,
     Value *spillEnvPtr,
+    Type *spillEnvType,
+
     DominatorSummary *originalLoopDS,
     std::unordered_set<BasicBlock *> &originalFrontierBlocks) {
 
@@ -459,10 +464,10 @@ void HELIX::replaceUsesOfSpilledPHIWithLoads(
     }
 
     IRBuilder<> spillValueBuilder(insertPoint);
-    auto spillLoad = spillValueBuilder.CreateLoad(
-        spillEnvPtr->getType()->getPointerElementType(),
-        spillEnvPtr,
-        "noelle.helix.spilled_variable");
+    auto spillLoad =
+        spillValueBuilder.CreateLoad(spillEnvType,
+                                     spillEnvPtr,
+                                     "noelle.helix.spilled_variable");
     spill->environmentLoads.insert(spillLoad);
 
     /*

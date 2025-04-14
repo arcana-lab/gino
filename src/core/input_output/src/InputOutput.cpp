@@ -20,7 +20,7 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcana/noelle/core/NoellePass.hpp"
-#include "InputOutput.hpp"
+#include "arcana/gino/core/InputOutput.hpp"
 
 namespace arcana::gino {
 
@@ -73,16 +73,16 @@ std::unordered_map<std::string, std::string> InputOutput::stdioUnlockedFunctionM
     "putwchar_unlocked" }, // https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib-putwchar-unlocked-1.html
 };
 
-InputOutput::InputOutput() : ModulePass{ ID } {}
+InputOutput::InputOutput() {}
 
-bool InputOutput::runOnModule(Module &M) {
+PreservedAnalyses InputOutput::run(Module &M, ModuleAnalysisManager &MAM) {
   for (auto [io, ioUnlocked] : stdioUnlockedFunctionMapping) {
     if (auto F = M.getFunction(io)) {
       F->setName(ioUnlocked);
     }
   }
 
-  return false;
+  return PreservedAnalyses::all();
 }
 
 } // namespace arcana::gino

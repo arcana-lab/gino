@@ -349,9 +349,6 @@ void DSWP::generateLoadsOfQueuePointers(Noelle &par, int taskIndex) {
 
   auto task = (DSWPTask *)this->tasks[taskIndex];
   IRBuilder<> entryBuilder(task->getEntry());
-  auto queuesArray =
-      entryBuilder.CreateBitCast(task->queueArg,
-                                 PointerType::getUnqual(this->queueArrayType));
 
   /*
    * Load this stage's relevant queues
@@ -360,19 +357,15 @@ void DSWP::generateLoadsOfQueuePointers(Noelle &par, int taskIndex) {
     auto queueInfo = this->queues[queueIndex].get();
     auto queueIndexValue = cm->getIntegerConstant(queueIndex, 64);
     auto queuePtr = entryBuilder.CreateGEP(
-        queuesArray->getType()->getPointerElementType(),
-        queuesArray,
+        this->queueArrayType,
+        task->queueArg,
         ArrayRef<Value *>({ this->zeroIndexForBaseArray, queueIndexValue }));
     auto parQueueIndex = par.queues.queueSizeToIndex[queueInfo->bitLength];
     auto queueType = par.queues.queueTypes[parQueueIndex];
     auto queueElemType = par.queues.queueElementTypes[parQueueIndex];
-    auto queueCast =
-        entryBuilder.CreateBitCast(queuePtr, PointerType::getUnqual(queueType));
 
     auto queueInstrs = std::make_unique<QueueInstrs>();
-    queueInstrs->queuePtr =
-        entryBuilder.CreateLoad(queueCast->getType()->getPointerElementType(),
-                                queueCast);
+    queueInstrs->queuePtr = entryBuilder.CreateLoad(queueType, queuePtr);
     auto allocaDataType = queueInfo->dependentType;
     if (queueInfo->dependentType->getPrimitiveSizeInBits() == 1) {
       allocaDataType = par.getTypesManager()->getIntegerType(8);
@@ -413,7 +406,7 @@ void DSWP::popValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
     queueInstrs->queueCall =
         builder.CreateCall(queuePopFunction, queueCallArgs);
     auto loadInst = builder.CreateLoad(
-        queueInstrs->alloca->getType()->getPointerElementType(),
+        cast<AllocaInst>(queueInstrs->alloca)->getAllocatedType(),
         queueInstrs->alloca);
     if (queueInfo->dependentType->getPrimitiveSizeInBits() == 1) {
       queueInstrs->load =
@@ -458,7 +451,7 @@ void DSWP::pushValueQueues(LoopContent *LDI, Noelle &par, int taskIndex) {
       builder.CreateStore(
           builder.CreateZExt(
               producerClone,
-              queueInstrs->alloca->getType()->getPointerElementType()),
+              cast<AllocaInst>(queueInstrs->alloca)->getAllocatedType()),
           queueInstrs->alloca);
     } else {
       builder.CreateStore(producerClone, queueInstrs->alloca);

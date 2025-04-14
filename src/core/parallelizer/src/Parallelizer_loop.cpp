@@ -19,7 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "Parallelizer.hpp"
+#include "arcana/gino/core/Parallelizer.hpp"
 
 namespace arcana::gino {
 
@@ -166,7 +166,9 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
    */
   assert(usedTechnique != nullptr);
   auto envArray = usedTechnique->getEnvArray();
+  auto envArrayType = usedTechnique->getEnvArrayType();
   assert(envArray != nullptr);
+  assert(envArrayType != nullptr);
 
   /*
    * Fetch entry and exit point executed by the parallelized loop.
@@ -197,6 +199,7 @@ bool Parallelizer::parallelizeLoop(LoopContent *loopContent,
       entryPoint,
       exitPoint,
       envArray,
+      envArrayType,
       exitIndex,
       loopExitBlocks,
       usedTechnique->getMinimumNumberOfIdleCores());

@@ -1,0 +1,15 @@
+
+add_subdirectory(autotuner_doall_filter)
+add_subdirectory(autotuner_search_space)
+add_subdirectory(doall)
+add_subdirectory(dswp)
+add_subdirectory(enablers)
+add_subdirectory(helix)
+add_subdirectory(heuristics)
+add_subdirectory(inliner)
+add_subdirectory(input_output)
+add_subdirectory(parallelization_planner)
+add_subdirectory(parallelization_technique)
+add_subdirectory(parallelizer)
+add_subdirectory(scripts)
+

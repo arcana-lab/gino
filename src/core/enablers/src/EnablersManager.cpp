@@ -20,29 +20,33 @@
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcana/noelle/core/NoellePass.hpp"
-#include "EnablersManager.hpp"
+#include "arcana/gino/core/EnablersManager.hpp"
 
 namespace arcana::gino {
 
-EnablersManager::EnablersManager() : ModulePass{ ID } {
+static cl::opt<bool> DisableEnablers("noelle-disable-enablers",
+                                     cl::ZeroOrMore,
+                                     cl::Hidden,
+                                     cl::desc("Disable all enablers"));
 
-  return;
+EnablersManager::EnablersManager() {
+  this->enableEnablers =
+      (DisableEnablers.getNumOccurrences() == 0) ? true : false;
 }
 
-bool EnablersManager::runOnModule(Module &M) {
-
+PreservedAnalyses EnablersManager::run(Module &M, ModuleAnalysisManager &MAM) {
   /*
    * Check if enablers have been enabled.
    */
   if (!this->enableEnablers) {
-    return false;
+    return PreservedAnalyses::all();
   }
   errs() << "EnablersManager: Start\n";
 
   /*
    * Fetch the outputs of the passes we rely on.
    */
-  auto &noelle = getAnalysis<NoellePass>().getNoelle();
+  auto &noelle = MAM.getResult<NoellePass>(M);
 
   /*
    * Create the enablers.
@@ -160,7 +164,7 @@ bool EnablersManager::runOnModule(Module &M) {
   delete loopsToParallelize;
 
   errs() << "EnablersManager: Exit\n";
-  return modified;
+  return modified ? PreservedAnalyses::none() : PreservedAnalyses::all();
 }
 
 } // namespace arcana::gino

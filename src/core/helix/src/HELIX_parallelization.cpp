@@ -419,6 +419,11 @@ bool HELIX::synchronizeTask(LoopContent *LDI,
   }
   this->addSynchronizations(LDI, &sequentialSegments, helixTask);
 
+  PreservedAnalyses PA = PreservedAnalyses::all();
+  PA.abandon<DominatorTreeAnalysis>();
+  noelle.getFunctionAnalysisManager()->invalidate(*helixTask->getTaskBody(),
+                                                  PA);
+
   /*
    * Store final results of loop live-out variables.
    *

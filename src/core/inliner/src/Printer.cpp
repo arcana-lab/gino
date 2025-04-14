@@ -19,7 +19,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
  OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "Inliner.hpp"
+#include "arcana/gino/core/Inliner.hpp"
 
 using namespace llvm;
 using namespace arcana::gino;

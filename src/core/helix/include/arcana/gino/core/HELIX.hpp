@@ -81,7 +81,8 @@ protected:
       DataFlowResult *reachabilityDFR,
       std::unordered_map<BasicBlock *, BasicBlock *> &cloneToOriginalBlockMap,
       SpilledLoopCarriedDependence *spill,
-      Value *spillEnvPtr);
+      Value *spillEnvPtr,
+      Type *spillEnvType);
 
   void insertStoresToSpilledLCD(
       LoopContent *LDI,
@@ -102,6 +103,7 @@ protected:
       std::unordered_map<BasicBlock *, BasicBlock *> &cloneToOriginalBlockMap,
       SpilledLoopCarriedDependence *spill,
       Value *spillEnvPtr,
+      Type *spillEnvType,
       DominatorSummary *originalLoopDS,
       std::unordered_set<BasicBlock *> &originalFrontierBlocks);
 

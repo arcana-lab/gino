@@ -3,11 +3,14 @@
 #include <math.h>
 #include <assert.h>
 
-long long int computation (long long int iters, int *values, unsigned int numberOfValues, long long int valueToSet){
+long long int computation(long long int iters,
+                          int *values,
+                          unsigned int numberOfValues,
+                          long long int valueToSet) {
   long long int t = 0;
 
-  for (auto i=0; i < iters; ++i){
-    if (values[i % numberOfValues] >= 5){
+  for (long long int i = 0; i < iters; ++i) {
+    if (values[i % numberOfValues] >= 5) {
       t = valueToSet;
     }
   }
@@ -15,12 +18,12 @@ long long int computation (long long int iters, int *values, unsigned int number
   return t;
 }
 
-int main (int argc, char *argv[]){
+int main(int argc, char *argv[]) {
 
   /*
    * Check the inputs.
    */
-  if (argc < 3){
+  if (argc < 3) {
     fprintf(stderr, "USAGE: %s LOOP_ITERATIONS VALUE+\n", argv[0]);
     return -1;
   }
@@ -31,7 +34,7 @@ int main (int argc, char *argv[]){
   printf("Number of values = %u\n", numberOfValues);
   assert(numberOfValues > 0);
   int *values = (int *)malloc(sizeof(int) * numberOfValues);
-  for (auto i=0; i < numberOfValues; i++){
+  for (unsigned int i = 0; i < numberOfValues; i++) {
     values[i] = atoi(argv[i + 2]);
   }
   long long int valueToSet = atoi(argv[2]);

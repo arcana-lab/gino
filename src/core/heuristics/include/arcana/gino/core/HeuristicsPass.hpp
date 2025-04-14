@@ -28,19 +28,17 @@ using namespace llvm;
 
 namespace arcana::gino {
 
-class HeuristicsPass : public ModulePass {
+class HeuristicsPass : public AnalysisInfoMixin<HeuristicsPass> {
 public:
-  static char ID;
+  using Result = Heuristics;
 
   HeuristicsPass();
 
-  bool doInitialization(Module &M) override;
+  Result run(Module &M, ModuleAnalysisManager &MAM);
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
-
-  bool runOnModule(Module &M) override;
-
-  Heuristics *getHeuristics(Noelle &noelle);
+private:
+  friend llvm::AnalysisInfoMixin<HeuristicsPass>;
+  static llvm::AnalysisKey Key;
 };
 
 } // namespace arcana::gino

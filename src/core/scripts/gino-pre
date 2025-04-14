@@ -48,7 +48,7 @@ for var in "$@" ; do
 done
 
 # Strip debugging symbols 
-cmdToExecute="opt --strip-debug --strip-debug-declare $notOptions -o $notOptions"
+cmdToExecute="opt --strip-debug $notOptions -o $notOptions"
 echo $cmdToExecute ;
 eval $cmdToExecute ;
 
