@@ -10,9 +10,9 @@ install
 regression_*
 tests/tmp.*
 tests/include
+tests/compiler_output_performance.txt
 tests/condor/*.con
-tests/condor/log/*.txt
-tests/condor/log/condor_performance.log
+tests/condor/log/*
 
 tests/regression/**/*
 !tests/regression/**/
