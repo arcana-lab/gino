@@ -105,7 +105,7 @@ add_definitions(
 )
 
 add_custom_target(
-  CompileCommands ALL
+  GinoCompileCommands ALL
   COMMAND ${CMAKE_COMMAND} -E create_symlink
     ${CMAKE_BINARY_DIR}/compile_commands.json
     ${GINO_CMAKE_ROOT}/compile_commands.json
