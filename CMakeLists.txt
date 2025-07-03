@@ -46,7 +46,22 @@ message(STATUS "${Purple}Install directory${ColorReset} is ${CMAKE_INSTALL_PREFI
 gino_acquire_option(GINO_TOOLS)
 
 if(NOT DEFINED NOELLE_INSTALL_DIR OR (NOELLE_INSTALL_DIR STREQUAL ""))
-  message(FATAL_ERROR "Missing value for NOELLE_INSTALL_DIR")
+  include(FetchContent)
+  FetchContent_Declare(
+      noelle
+      GIT_REPOSITORY  "https://github.com/arcana-lab/noelle.git"
+      GIT_TAG         master
+  )
+  FetchContent_MakeAvailable(noelle)
+  FetchContent_GetProperties(noelle)
+  file(GLOB_RECURSE NOELLE_CORE_DIRS LIST_DIRECTORIES true "${noelle_SOURCE_DIR}/src/core/*")
+  foreach(dir ${NOELLE_CORE_DIRS})
+    if(IS_DIRECTORY ${dir} AND EXISTS "${dir}/include")
+      include_directories(${dir}/include)
+    endif()
+  endforeach()
+else()
+  include_directories(${NOELLE_INSTALL_DIR}/include)
 endif()
 
 set(GINO_CMAKE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
@@ -91,7 +106,6 @@ include(HandleLLVMOptions)
 
 include_directories(
   ${LLVM_INCLUDE_DIRS}
-  ${NOELLE_INSTALL_DIR}/include
 )
 
 set(LLVM_RUNTIME_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/)
