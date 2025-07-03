@@ -93,8 +93,6 @@ SCC *HELIX::getTheSequentialSCCThatCreatesTheSequentialPrologue(
      * If it doesn't, then we don't have a preamble.
      */
     auto loopStructure = LDI->getLoopStructure();
-    auto loopHeader = loopStructure->getHeader();
-    auto foundHeader = false;
     for (auto instNode : preambleSCC->getNodes()) {
       auto inst = cast<Instruction>(instNode->getT());
       if (loopStructure->isALoopExit(inst)) {

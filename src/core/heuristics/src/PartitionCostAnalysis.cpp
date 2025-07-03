@@ -32,14 +32,14 @@ PartitionCostAnalysis::PartitionCostAnalysis(
     int cores,
     std::function<bool(GenericSCC *scc)> canBeRematerialized,
     Verbosity v)
-  : costIfAllSetsRunOnSeparateCores{ 0 },
-    totalInstructionCount{ 0 },
-    IL{ il },
-    sccToInstructionCountMap{},
+  : IL{ il },
     partitioner{ p },
     dagAttrs{ attrs },
     numCores{ cores },
     canBeRematerialized{ canBeRematerialized },
+    sccToInstructionCountMap{},
+    costIfAllSetsRunOnSeparateCores{ 0 },
+    totalInstructionCount{ 0 },
     verbose{ v } {
 
   /*

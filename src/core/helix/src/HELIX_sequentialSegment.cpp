@@ -38,7 +38,6 @@ SequentialSegment::SequentialSegment(Noelle &noelle,
    */
   auto loopStructure = LDI->getLoopStructure();
   auto loopFunction = loopStructure->getFunction();
-  auto loopHeader = loopStructure->getHeader();
   this->ID = ID;
   this->sccs = sccs;
 
@@ -442,17 +441,16 @@ DataFlowResult *HELIX::computeReachabilityFromInstructions(LoopContent *LDI) {
     gen.insert(i);
     return;
   };
-  auto computeOUT = [LDI, loopHeader](Instruction *inst,
-                                      Instruction *succ,
-                                      std::set<Value *> &OUT,
-                                      DataFlowResult *df) {
+  auto computeOUT = [loopHeader](Instruction *inst,
+                                 Instruction *succ,
+                                 std::set<Value *> &OUT,
+                                 DataFlowResult *df) {
     /*
      * Check if the successor is the header.
      * In this case, we do not propagate the reachable instructions.
      * We do this because we are interested in understanding the reachability of
      * instructions within a single iteration.
      */
-    auto succBB = succ->getParent();
     if (succ == &*loopHeader->begin()) {
       return;
     }

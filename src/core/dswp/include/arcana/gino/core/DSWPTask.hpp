@@ -84,9 +84,9 @@ struct QueueInfo {
   std::unordered_map<Instruction *, int> consumerToPushIndex;
 
   QueueInfo(Instruction *p, Instruction *c, Type *type, bool isMemoryDependence)
-    : producer{ p },
-      dependentType{ type },
-      isMemoryDependence{ isMemoryDependence } {
+    : dependentType{ type },
+      isMemoryDependence{ isMemoryDependence },
+      producer{ p } {
     consumers.insert(c);
     if (isMemoryDependence) {
       dependentType = IntegerType::get(c->getContext(), 1);

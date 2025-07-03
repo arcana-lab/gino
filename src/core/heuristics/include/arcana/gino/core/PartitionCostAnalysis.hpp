@@ -40,6 +40,8 @@ public:
       std::function<bool(GenericSCC *scc)> canBeRematerialized,
       Verbosity verbose);
 
+  virtual ~PartitionCostAnalysis() = default;
+
   void traverseAllPartitionSubsets();
 
   virtual void checkIfShouldMerge(

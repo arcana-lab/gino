@@ -36,7 +36,6 @@ BasicBlock *HELIX::getBasicBlockExecutedOnlyByLastIterationBeforeExitingTask(
    */
   auto task = (HELIXTask *)this->tasks[taskIndex];
   assert(task != nullptr);
-  auto taskFunction = task->getTaskBody();
 
   /*
    * Check if we have a sequential prologue

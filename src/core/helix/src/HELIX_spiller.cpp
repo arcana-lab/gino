@@ -78,7 +78,7 @@ void HELIX::spillLoopCarriedDataDependencies(LoopContent *LDI,
    */
   std::vector<Type *> phiTypes;
   std::set<uint32_t> nonReducablePHIs;
-  for (auto i = 0; i < clonedLoopCarriedPHIs.size(); ++i) {
+  for (size_t i = 0; i < clonedLoopCarriedPHIs.size(); ++i) {
     auto phiType = clonedLoopCarriedPHIs[i]->getType();
     phiTypes.push_back(phiType);
     nonReducablePHIs.insert(i);
@@ -125,7 +125,7 @@ void HELIX::spillLoopCarriedDataDependencies(LoopContent *LDI,
   loopCarriedLoopEnvironmentBuilder->generateEnvVariables(loopFunctionBuilder);
 
   IRBuilder<> builder(this->entryPointOfParallelizedLoop);
-  for (auto envVariableID = 0; envVariableID < originalLoopCarriedPHIs.size();
+  for (size_t envVariableID = 0; envVariableID < originalLoopCarriedPHIs.size();
        ++envVariableID) {
     auto phi = originalLoopCarriedPHIs[envVariableID];
     auto preHeaderIndex = phi->getBasicBlockIndex(loopPreHeader);
@@ -148,7 +148,7 @@ void HELIX::spillLoopCarriedDataDependencies(LoopContent *LDI,
    * For the pre header edge case, store this initial value at time of
    * allocation of the environment
    */
-  for (auto phiI = 0; phiI < clonedLoopCarriedPHIs.size(); phiI++) {
+  for (size_t phiI = 0; phiI < clonedLoopCarriedPHIs.size(); phiI++) {
     auto originalPHI = originalLoopCarriedPHIs[phiI];
     auto clonePHI = clonedLoopCarriedPHIs[phiI];
     auto spilled = new SpilledLoopCarriedDependence(originalPHI, clonePHI);
@@ -185,7 +185,6 @@ void HELIX::createLoadsAndStoresToSpilledLCD(
   /*
    * Fetch task and loop
    */
-  auto helixTask = static_cast<HELIXTask *>(this->tasks[0]);
   auto loopStructure = LDI->getLoopStructure();
   auto loopHeader = loopStructure->getHeader();
   auto originalLoopFunction = loopHeader->getParent();
@@ -231,15 +230,13 @@ void HELIX::insertStoresToSpilledLCD(
 
   auto helixTask = static_cast<HELIXTask *>(this->tasks[0]);
   auto loopStructure = LDI->getLoopStructure();
-  auto loopHeader = loopStructure->getHeader();
   auto loopPreHeader = loopStructure->getPreHeader();
-  auto headerClone = helixTask->getCloneOfOriginalBasicBlock(loopHeader);
   auto preHeaderClone = helixTask->getCloneOfOriginalBasicBlock(loopPreHeader);
 
   /*
    * Store loop carried values of the PHI into the environment
    */
-  for (auto inInd = 0; inInd < spill->getClone()->getNumIncomingValues();
+  for (uint32_t inInd = 0; inInd < spill->getClone()->getNumIncomingValues();
        ++inInd) {
     auto incomingBB = spill->getClone()->getIncomingBlock(inInd);
     if (incomingBB == preHeaderClone) {
@@ -371,7 +368,7 @@ void HELIX::defineFrontierForLoadsToSpilledLCD(
      * identify a strictly dominating block of the user
      */
     if (auto userPHI = dyn_cast<PHINode>(user)) {
-      for (auto i = 0; i < userPHI->getNumIncomingValues(); ++i) {
+      for (uint32_t i = 0; i < userPHI->getNumIncomingValues(); ++i) {
         if (spill->getClone() != userPHI->getIncomingValue(i)) {
           continue;
         }

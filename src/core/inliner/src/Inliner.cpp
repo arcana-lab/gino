@@ -27,12 +27,12 @@ Inliner::Inliner()
   : ModulePass{ ID },
     maxNumberOfFunctionCallsToInlinePerLoop{ 10 },
     maxProgramInstructions{ 50000 },
-    fnsAffected{},
     parentFns{},
     childrenFns{},
-    loopsToCheck{},
     depthOrderedFns{},
-    preOrderedLoops{} {
+    preOrderedLoops{},
+    fnsAffected{},
+    loopsToCheck{} {
 
   return;
 }
@@ -244,7 +244,7 @@ void Inliner::getFunctionsToInline(std::string filename) {
     std::string line;
     while (getline(infile, line)) {
       int fnInd = std::stoi(line);
-      assert(fnInd > 0 && fnInd < depthOrderedFns.size());
+      assert(fnInd > 0 && (size_t)fnInd < depthOrderedFns.size());
       fnsToCheck.insert(depthOrderedFns[fnInd]);
     }
   } else {
@@ -291,7 +291,7 @@ bool Inliner::inlineFnsOfLoopsToCGRoot(Hot *hot) {
   }
   sortInDepthOrderFns(orderedFns);
 
-  int fnIndex = 0;
+  size_t fnIndex = 0;
   std::set<Function *> fnsWillCheck(orderedFns.begin(), orderedFns.end());
   std::set<Function *> fnsToAvoid;
   auto inlined = false;
@@ -371,12 +371,11 @@ bool Inliner::inlineFnsOfLoopsToCGRoot(Hot *hot) {
       if (fnsWillCheck.find(parentF) != fnsWillCheck.end())
         continue;
       fnsWillCheck.insert(parentF);
-      auto insertIndex = 0;
+      size_t insertIndex = 0;
       assert(fnOrders.find(parentF) != fnOrders.end());
       auto parentFnOrder = fnOrders[parentF];
-      for (auto insertIndex = 0; insertIndex < orderedFns.size();
-           insertIndex++) {
-        auto currentFunction = orderedFns[insertIndex];
+      for (size_t i = 0; i < orderedFns.size(); i++) {
+        auto currentFunction = orderedFns[i];
         auto currentFunctionFnOrder = fnOrders[currentFunction];
         if (currentFunctionFnOrder > parentFnOrder) {
           break;
@@ -472,7 +471,7 @@ int Inliner::getNextPreorderLoopAfter(Function *F, CallInst *call) {
 
   auto &summaries = *preOrderedLoops[F];
   auto getSummaryIfHeader = [&](BasicBlock *BB) -> int {
-    for (auto i = 0; i < summaries.size(); ++i) {
+    for (size_t i = 0; i < summaries.size(); ++i) {
       if (summaries[i]->getHeader() == BB)
         return i;
     }
@@ -510,18 +509,18 @@ void Inliner::adjustLoopOrdersAfterInline(Function *parentF,
    */
   auto &parentLoops = *preOrderedLoops[parentF];
   auto &childLoops = *preOrderedLoops[childF];
-  auto childLoopCount = childLoops.size();
-  auto endInd = nextLoopInd + childLoopCount;
+  int childLoopCount = childLoops.size();
+  int endInd = nextLoopInd + childLoopCount;
 
   // NOTE(angelo): Adjust parent loops after the call site
   parentLoops.resize(parentLoops.size() + childLoopCount);
-  for (auto shiftIndex = parentLoops.size() - 1; shiftIndex >= endInd;
+  for (int shiftIndex = parentLoops.size() - 1; shiftIndex >= endInd;
        --shiftIndex) {
     parentLoops[shiftIndex] = parentLoops[shiftIndex - childLoopCount];
   }
 
   // NOTE(angelo): Insert inlined loops from child function
-  for (auto childIndex = nextLoopInd; childIndex < endInd; ++childIndex) {
+  for (size_t childIndex = nextLoopInd; childIndex < endInd; ++childIndex) {
     parentLoops[childIndex] = childLoops[childIndex - nextLoopInd];
   }
 }
@@ -539,20 +538,20 @@ void Inliner::adjustFnGraphAfterInline(Function *parentF,
 
   parentCalled.erase(parentCalled.begin() + callInd);
   if (!childCalled.empty()) {
-    auto childCallCount = childCalled.size();
-    auto endInsertAt = callInd + childCallCount;
+    int childCallCount = childCalled.size();
+    int endInsertAt = callInd + childCallCount;
 
     // Shift over calls after the inlined call to make room for called
     // function's calls
     parentCalled.resize(parentCalled.size() + childCallCount);
-    for (auto shiftIndex = parentCalled.size() - 1; shiftIndex >= endInsertAt;
+    for (int shiftIndex = parentCalled.size() - 1; shiftIndex >= endInsertAt;
          --shiftIndex) {
       parentCalled[shiftIndex] = parentCalled[shiftIndex - childCallCount];
     }
 
     // Insert the called function's calls starting from the position of the
     // inlined call
-    for (auto childIndex = callInd; childIndex < endInsertAt; ++childIndex) {
+    for (int childIndex = callInd; childIndex < endInsertAt; ++childIndex) {
       parentCalled[childIndex] = childCalled[childIndex - callInd];
     }
   }
@@ -744,21 +743,11 @@ void Inliner::createPreOrderedLoopSummariesFor(Function *F) {
     return;
   auto loops = collectPreOrderedLoopsFor(F, LI);
 
-  /*
-   * Define the function to get the LLVM loop.
-   */
-  auto getLLVMLoopFunction = [this](BasicBlock *h) -> Loop * {
-    auto f = h->getParent();
-    auto &LI = getAnalysis<LoopInfoWrapperPass>(*f).getLoopInfo();
-    auto loop = LI.getLoopFor(h);
-    return loop;
-  };
-
   // Create summaries for the loops
   preOrderedLoops[F] = new std::vector<LoopStructure *>();
   auto &orderedLoops = *preOrderedLoops[F];
   std::unordered_map<Loop *, LoopStructure *> summaryMap;
-  for (auto i = 0; i < loops->size(); ++i) {
+  for (size_t i = 0; i < loops->size(); ++i) {
 
     /*
      * Create the summary loop

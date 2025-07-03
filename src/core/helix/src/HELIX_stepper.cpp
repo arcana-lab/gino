@@ -488,19 +488,12 @@ void HELIX::rewireLoopForIVsToIterateNthIterations(LoopContent *LDI) {
 void HELIX::rewireLoopForPeriodicVariables(LoopContent *LDI) {
 
   /*
-   * Fetch the loop environment.
-   */
-  auto loopEnvironment = LDI->getEnvironment();
-
-  /*
    * Fetch loop information.
    */
   auto task = static_cast<HELIXTask *>(this->tasks[0]);
   auto loopStructure = LDI->getLoopStructure();
-  auto loopHeader = loopStructure->getHeader();
   auto loopPreHeader = loopStructure->getPreHeader();
   auto preheaderClone = task->getCloneOfOriginalBasicBlock(loopPreHeader);
-  auto headerClone = task->getCloneOfOriginalBasicBlock(loopHeader);
 
   /*
    * Iterate through periodic variables.

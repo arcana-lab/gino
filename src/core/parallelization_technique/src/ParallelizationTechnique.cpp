@@ -29,9 +29,9 @@ namespace arcana::gino {
 ParallelizationTechnique::ParallelizationTechnique(Noelle &n)
   : noelle{ n },
     envBuilder{ nullptr },
-    tasks{},
     entryPointOfParallelizedLoop{ nullptr },
     exitPointOfParallelizedLoop{ nullptr },
+    tasks{},
     numTaskInstances{ 0 } {
   this->verbose = n.getVerbosity();
 }
@@ -235,11 +235,6 @@ BasicBlock *ParallelizationTechnique::
         Value *numberOfThreadsExecuted) {
 
   /*
-   * Fetch the loop structure.
-   */
-  auto loopSummary = loopContent->getLoopStructure();
-
-  /*
    * Fetch the SCCDAG.
    */
   auto sccManager = loopContent->getSCCManager();
@@ -381,7 +376,7 @@ void ParallelizationTechnique::addPredecessorAndSuccessorsBasicBlocksToTasks(
       BasicBlock::Create(cxt, "", loopFunction);
   this->exitPointOfParallelizedLoop = BasicBlock::Create(cxt, "", loopFunction);
 
-  for (auto i = 0; i < taskStructs.size(); ++i) {
+  for (size_t i = 0; i < taskStructs.size(); ++i) {
     auto task = taskStructs[i];
     tasks.push_back(task);
 
@@ -414,7 +409,7 @@ void ParallelizationTechnique::addPredecessorAndSuccessorsBasicBlocksToTasks(
 void ParallelizationTechnique::cloneSequentialLoop(LoopContent *loopContent,
                                                    int taskIndex) {
   assert(loopContent != nullptr);
-  assert(taskIndex < this->tasks.size());
+  assert(taskIndex < (int)this->tasks.size());
 
   /*
    * Fetch the task.
@@ -559,7 +554,6 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
      * adjustment later
      */
     auto &entryBlock = (*task->getTaskBody()->begin());
-    auto firstInstruction = &*entryBlock.begin();
     IRBuilder<> entryBuilder(&entryBlock);
     std::queue<Instruction *> instructionsToConvertOperandsOf;
     for (auto I : taskInstructions) {
@@ -573,7 +567,7 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
       auto I = instructionsToConvertOperandsOf.front();
       instructionsToConvertOperandsOf.pop();
 
-      for (auto i = 0; i < I->getNumOperands(); ++i) {
+      for (uint32_t i = 0; i < I->getNumOperands(); ++i) {
         auto op = I->getOperand(i);
 
         /*
@@ -629,7 +623,7 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
         /*
          * Check if there are new live-in values we need to pass to the task.
          */
-        for (auto j = 0; j < opI->getNumOperands(); ++j) {
+        for (uint32_t j = 0; j < opI->getNumOperands(); ++j) {
 
           /*
            * Fetch the current operand.
@@ -798,11 +792,11 @@ void ParallelizationTechnique::cloneMemoryLocationsLocallyAndRewireLoop(
       auto allocaCloneCasted = cast<Instruction>(
           entryBuilder.CreateBitCast(allocaClone,
                                      ptrOfOriginalStackObject->getType()));
-      auto initInst = entryBuilder.CreateMemCpy(allocaCloneCasted,
-                                                {},
-                                                ptrOfOriginalStackObject,
-                                                {},
-                                                bytes);
+      entryBuilder.CreateMemCpy(allocaCloneCasted,
+                                {},
+                                ptrOfOriginalStackObject,
+                                {},
+                                bytes);
       ptrOfOriginalStackObject->moveAfter(beforePtrOfOriginalStackObject);
       allocaCloneCasted->moveAfter(allocaClone);
 
@@ -1328,7 +1322,7 @@ void ParallelizationTechnique::setReducableVariablesToBeginAtIdentityValue(
   /*
    * Fetch the task.
    */
-  assert(taskIndex < this->tasks.size());
+  assert(taskIndex < (int)this->tasks.size());
   auto task = this->tasks[taskIndex];
   assert(task != nullptr);
 
@@ -1422,11 +1416,6 @@ void ParallelizationTechnique::generateCodeToStoreExitBlockIndex(
   auto tm = this->noelle.getTypesManager();
 
   /*
-   * Fetch the program.
-   */
-  auto program = this->noelle.getProgram();
-
-  /*
    * Check whether there are multiple exit blocks or not.
    * If there are more exit blocks, then we need to specify which one has been
    * taken.
@@ -1467,7 +1456,7 @@ void ParallelizationTechnique::generateCodeToStoreExitBlockIndex(
    * loop which exit block is taken.
    */
   auto int32 = tm->getIntegerType(32);
-  for (int i = 0; i < task->getNumberOfLastBlocks(); ++i) {
+  for (uint32_t i = 0; i < task->getNumberOfLastBlocks(); ++i) {
     auto bb = task->getLastBlock(i);
     auto term = bb->getTerminator();
 
@@ -1545,7 +1534,7 @@ std::unordered_map<InductionVariable *, Value *> ParallelizationTechnique::
   /*
    * Fetch the task
    */
-  assert(taskIndex < tasks.size());
+  assert(taskIndex < (int)tasks.size());
   auto task = tasks.at(taskIndex);
   assert(task != nullptr);
 
@@ -1714,7 +1703,7 @@ void ParallelizationTechnique::makePRVGsReentrant(void) {
    * Substitute PRVGs.
    */
   auto tm = this->noelle.getTypesManager();
-  for (auto i = 0; i < this->tasks.size(); ++i) {
+  for (size_t i = 0; i < this->tasks.size(); ++i) {
 
     /*
      * Fetch the task.

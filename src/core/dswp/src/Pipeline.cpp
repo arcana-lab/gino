@@ -53,8 +53,8 @@ void DSWP::generateStagesFromPartitionedSCCs(LoopContent *LDI) {
      * Define its signature.
      */
     auto taskArgType = taskExecuter->arg_begin()->getType();
-    auto taskSignature =
-        cast<FunctionType>(cast<PointerType>(taskArgType)->getElementType());
+    auto taskSignature = cast<FunctionType>(
+        cast<PointerType>(taskArgType)->getPointerElementType());
 
     /*
      * Create task (stage), populating its SCCs
@@ -152,17 +152,6 @@ void DSWP::createPipelineFromStages(LoopContent *LDI, Noelle &par) {
   auto cm = par.getConstantsManager();
 
   /*
-   * Fetch the loop function.
-   */
-  auto loopSummary = LDI->getLoopStructure();
-  auto loopFunction = loopSummary->getFunction();
-
-  /*
-   * Fetch the module.
-   */
-  auto M = loopFunction->getParent();
-
-  /*
    * Allocate the environment array and add its live-in values.
    */
   this->allocateEnvironmentArray(LDI);
@@ -224,7 +213,7 @@ Value *DSWP::createStagesArrayFromStages(LoopContent *LDI,
       cast<Value>(funcBuilder.CreateAlloca(this->stageArrayType));
   auto stageCastType =
       PointerType::getUnqual(this->tasks[0]->getTaskBody()->getType());
-  for (int i = 0; i < this->numTaskInstances; ++i) {
+  for (size_t i = 0; i < this->numTaskInstances; ++i) {
     auto stage = this->tasks[i];
     auto stageIndex = cm->getIntegerConstant(i, 64);
     auto stagePtr = funcBuilder.CreateGEP(
@@ -255,7 +244,7 @@ Value *DSWP::createQueueSizesArrayFromStages(LoopContent *LDI,
   auto int64Type = tm->getIntegerType(64);
   auto queuesAlloca = cast<Value>(
       funcBuilder.CreateAlloca(ArrayType::get(int64Type, this->queues.size())));
-  for (int i = 0; i < this->queues.size(); ++i) {
+  for (size_t i = 0; i < this->queues.size(); ++i) {
     auto &queue = this->queues[i];
     auto queueIndex = cm->getIntegerConstant(i, 64);
     auto queuePtr = funcBuilder.CreateGEP(

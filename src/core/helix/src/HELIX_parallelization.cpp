@@ -141,7 +141,6 @@ HELIXTask *HELIX::createParallelizableTask(LoopContent *LDI, Heuristics *h) {
    * dispatcher.
    */
   auto tm = noelle.getTypesManager();
-  auto int8 = tm->getIntegerType(8);
   auto int64 = tm->getIntegerType(64);
   auto ptrType = tm->getVoidPointerType();
   auto voidType = tm->getVoidType();
@@ -201,9 +200,9 @@ HELIXTask *HELIX::createParallelizableTask(LoopContent *LDI, Heuristics *h) {
 
     return false;
   };
-  auto isSkippable = [this, environment, sccManager, helixTask](
-                         uint32_t id,
-                         bool isLiveOut) -> bool {
+  auto isSkippable = [environment,
+                      sccManager,
+                      helixTask](uint32_t id, bool isLiveOut) -> bool {
     if (isLiveOut) {
       return false;
     }
@@ -486,7 +485,6 @@ bool HELIX::synchronizeTask(LoopContent *LDI,
   for (auto loopBodyExecutionInstPair : loopBodyExecutionMap) {
     auto originalI = loopBodyExecutionInstPair.first;
     auto loopBodyCloneI = loopBodyExecutionInstPair.second;
-    auto exitCloneI = helixTask->getCloneOfOriginalInstruction(originalI);
     helixTask->addInstruction(originalI, loopBodyCloneI);
   }
   if (this->lastIterationExecutionBlock) {

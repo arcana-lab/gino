@@ -30,9 +30,9 @@ DSWP::DSWP(Noelle &n, bool forceParallelization, bool enableSCCMerging)
                                                                     forceParallelization },
     minCores{ 0 },
     enableMergingSCC{ enableSCCMerging },
+    sccToStage{},
     queues{},
     queueArrayType{ nullptr },
-    sccToStage{},
     stageArrayType{ nullptr },
     zeroIndexForBaseArray{ nullptr } {
 
@@ -154,7 +154,7 @@ bool DSWP::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
   auto averageInstructionThreshold = 20;
   bool hasLittleExecution = averageInstructions < averageInstructionThreshold;
   auto minimumSequentialFraction = .5;
-  auto skipSCC = [this, sccManager](GenericSCC *scc) -> bool {
+  auto skipSCC = [this](GenericSCC *scc) -> bool {
     auto skip = this->canBeCloned(scc);
     return skip;
   };
@@ -294,7 +294,7 @@ bool DSWP::apply(LoopContent *LDI, Heuristics *h) {
   /*
    * Create the pipeline stages (technique tasks)
    */
-  for (auto i = 0; i < this->tasks.size(); ++i) {
+  for (size_t i = 0; i < this->tasks.size(); ++i) {
     auto task = (DSWPTask *)this->tasks[i];
 
     /*

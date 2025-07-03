@@ -38,7 +38,7 @@ void Planner::removeLoopsNotWorthParallelizing(Noelle &noelle,
      * Filter out loops that are not worth parallelizing.
      */
     errs() << "Planner:  Filter out loops not worth considering\n";
-    auto filter = [this, forest, profiles](LoopStructure *ls) -> bool {
+    auto filter = [profiles](LoopStructure *ls) -> bool {
       /*
        * Fetch the loop ID.
        */
@@ -148,7 +148,7 @@ void Planner::removeLoopsNotWorthParallelizing(Noelle &noelle,
        * Compute the print prefix.
        */
       std::string prefix{ "Planner:    " };
-      for (auto i = 1; i < treeLevel; i++) {
+      for (uint32_t i = 1; i < treeLevel; i++) {
         prefix.append("  ");
       }
 
@@ -215,11 +215,9 @@ std::vector<LoopContent *> Planner::selectTheOrderOfLoopsToParallelize(
   std::map<LoopContent *, uint64_t> timeSavedLoops;
   std::map<LoopStructure *, bool> doallLoops;
   std::map<LoopStructure *, uint64_t> timeSavedPerLoop;
-  auto selector = [&noelle,
-                   &timeSavedLoops,
-                   &timeSavedPerLoop,
-                   profiles,
-                   &doallLoops](LoopTree *n, uint32_t treeLevel) -> bool {
+  auto selector = [&noelle, &timeSavedLoops, &timeSavedPerLoop, &doallLoops](
+                      LoopTree *n,
+                      uint32_t treeLevel) -> bool {
     /*
      * Fetch the loop.
      */
