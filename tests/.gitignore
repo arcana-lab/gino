@@ -6,7 +6,7 @@
 **/compiler_output.txt
 **.con
 **.err
-**/GINO_APIs.c
+**/gino_runtime_decl.c
 include
 **/input.txt
 **.log
@@ -14,7 +14,7 @@ include
 **/output_baseline.txt
 **/output_parallelized.txt
 **/parallelized
-**/Parallelizer_utils.cpp
+**/gino_runtime_def.cpp
 performance/*/Makefile
 **.profraw
 regression_*/**

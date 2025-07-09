@@ -115,7 +115,7 @@ showReturnCode $prefix $?
 #
 echo "${prefix}   running clang++"
 clang++ ${outputName}.bc \
-  Parallelizer_utils.bc \
+  gino_runtime_def.bc \
   -o ${outputName} \
   -pthreads
 

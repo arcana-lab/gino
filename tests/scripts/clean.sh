@@ -12,7 +12,7 @@ function cleanTests {
 
     cd $i ;
     make clean ;
-    rm -f GINO_APIs.* *_utils.cpp Makefile *.log *.dot ;
+    rm -f gino_runtime_decl.c gino_runtime_def.cpp Makefile *.log *.dot ;
     cd ../ ;
   done
 

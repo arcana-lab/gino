@@ -5,9 +5,11 @@ function show_help() {
   echo
   echo "Options"
   echo "  --help              Print this help message"
+  echo "  --version           Print the library version"
   echo "  --flags             Print special options used during compilation"
   echo "  --prefix            Print the installation directory path"
-  echo "  --version           Print the library version"
+  echo "  --runtime-decl      Print the runtime declaration source file"
+  echo "  --runtime-def       Print the runtime definition source file"
   echo "  --include-dirs      Print the include directories one per line"
   echo "  --cxxflags          Print necessary C++ flags for using Gino headers"
   echo "  --core-libs         Print the shared libraries used by the Gino core"
@@ -37,6 +39,12 @@ for arg in "$@"; do
       ;;
     --prefix) 
       echo "@CMAKE_INSTALL_PREFIX@"
+      ;;
+    --runtime-decl)
+      echo "@gino_config_RUNTIME_DECL@"
+      ;;
+    --runtime-def)
+      echo "@gino_config_RUNTIME_DEF@"
       ;;
     --version)
       echo "@GINO_VERSION@"

@@ -20,8 +20,8 @@ noelle-meta-loop-embed ${inputIR} -o ${afterLoopMetadata}
 gino-planner ${afterLoopMetadata} -o ${intermediateResult} ${@:4}
 
 # step 2: include function prototypes needed by parallelization techniques
-clang -c -emit-llvm GINO_APIs.c
-llvm-link GINO_APIs.bc ${intermediateResult} -o code_with_prototypes.bc
+clang -c -emit-llvm gino_runtime_decl.c
+llvm-link gino_runtime_decl.bc ${intermediateResult} -o code_with_prototypes.bc
 noelle-rm-function -function-name=SIMONE_CAMPANONI_IS_GOING_TO_REMOVE_THIS_FUNCTION code_with_prototypes.bc -o code_to_parallelize.bc
 
 # step 3: run loop parallelization on bitcode with parallel plan
@@ -32,7 +32,7 @@ noelle-meta-clean ${intermediateResult_unoptimized} -o ${intermediateResult_unop
 clang -O3 -c -emit-llvm ${intermediateResult_unoptimized} -o ${outputIR}
 
 # step 6: link with the runtime
-llvm-link ${outputIR} Parallelizer_utils.bc -o ${outputIR}
+llvm-link ${outputIR} gino_runtime_def.bc -o ${outputIR}
 
 # step 7: conventional optimizations
 clang -O3 -c -emit-llvm ${outputIR} -o ${outputIR}

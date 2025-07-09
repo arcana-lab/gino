@@ -125,7 +125,7 @@ for ((i=0; i<numLoops; i++)); do
   #
   echo "${prefix}   running clang++"
   clang++ ${outputName}.bc \
-    Parallelizer_utils.bc \
+    gino_runtime_def.bc \
     -o ${outputName} \
     -pthreads
 

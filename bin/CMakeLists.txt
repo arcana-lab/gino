@@ -21,7 +21,7 @@ string(REPLACE ";" " " gino_config_CXX_FLAGS "${GINO_CXX_FLAGS}")
 get_target_property(GINO_LIBRARIES gino_libraries NAMES)
 set(gino_config_CORE_LIBS "")
 foreach(lib IN LISTS GINO_LIBRARIES)
-  list(APPEND gino_config_CORE_LIBS 
+  list(APPEND gino_config_CORE_LIBS
     "-load ${CMAKE_INSTALL_PREFIX}/lib/${lib}.so"
   )
 endforeach()
@@ -29,6 +29,8 @@ string(REPLACE ";" " " gino_config_CORE_LIBS "${gino_config_CORE_LIBS}")
 
 set(gino_config_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
 set(gino_config_CXXFLAGS "-I ${CMAKE_INSTALL_PREFIX}/include")
+set(gino_config_RUNTIME_DECL "${CMAKE_INSTALL_PREFIX}/runtime/gino_runtime_decl.c")
+set(gino_config_RUNTIME_DEF "${CMAKE_INSTALL_PREFIX}/runtime/gino_runtime_def.cpp")
 
 if(NOT "${NOELLE_INSTALL_DIR}" STREQUAL "${GINO_INSTALL_DIR}")
   list(APPEND gino_config_INCLUDE_DIRS
