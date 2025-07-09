@@ -46,7 +46,7 @@ message(STATUS "${Purple}Install directory${ColorReset} is ${CMAKE_INSTALL_PREFI
 gino_acquire_option(GINO_TOOLS)
 
 if(NOT DEFINED NOELLE_INSTALL_DIR OR (NOELLE_INSTALL_DIR STREQUAL ""))
-  message(STATUS "${Purple}NOELLE_INSTALL_DIR${ColorReset} is not defined. Trying to find it...")
+  message(STATUS "${Purple}NOELLE_INSTALL_DIR${ColorReset} is not defined. Trying noelle-config...")
   execute_process(
     COMMAND noelle-config --prefix
     OUTPUT_VARIABLE NOELLE_CONFIG_PREFIX
@@ -81,12 +81,8 @@ endif()
 
 set(GINO_CMAKE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
-get_filename_component(
-  CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} REALPATH
-)
-get_filename_component(
-  GINO_CMAKE_ROOT ${GINO_CMAKE_ROOT} REALPATH
-)
+get_filename_component(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} REALPATH)
+get_filename_component(GINO_CMAKE_ROOT ${GINO_CMAKE_ROOT} REALPATH)
 
 file(READ ${GINO_CMAKE_ROOT}/VERSION GINO_VERSION)
 string(STRIP ${GINO_VERSION} GINO_VERSION)
