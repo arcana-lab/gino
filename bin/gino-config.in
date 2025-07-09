@@ -8,7 +8,8 @@ function show_help() {
   echo "  --flags             Print special options used during compilation"
   echo "  --prefix            Print the installation directory path"
   echo "  --version           Print the library version"
-  echo "  --include           Print the include directory"
+  echo "  --include-dirs      Print the include directories one per line"
+  echo "  --cxxflags          Print necessary C++ flags for using Gino headers"
   echo "  --core-libs         Print the shared libraries used by the Gino core"
   echo "  --tool-libs         Print the shared libraries of the Gino tools"
   echo "  --git-commit        Print the git commit hash used at compilation time"
@@ -40,8 +41,11 @@ for arg in "$@"; do
     --version)
       echo "@GINO_VERSION@"
       ;;
-    --include)
-      echo "@CMAKE_INSTALL_PREFIX@/include"
+    --include-dirs)
+      echo "@gino_config_INCLUDE_DIRS@"
+      ;;
+    --cxxflags)
+      echo "@gino_config_CXXFLAGS@"
       ;;
     --core-libs)
       echo "@gino_config_CORE_LIBS@"

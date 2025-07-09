@@ -27,6 +27,18 @@ foreach(lib IN LISTS GINO_LIBRARIES)
 endforeach()
 string(REPLACE ";" " " gino_config_CORE_LIBS "${gino_config_CORE_LIBS}")
 
+set(gino_config_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
+set(gino_config_CXXFLAGS "-I ${CMAKE_INSTALL_PREFIX}/include")
+
+if(NOT "${NOELLE_INSTALL_DIR}" STREQUAL "${GINO_INSTALL_DIR}")
+  list(APPEND gino_config_INCLUDE_DIRS
+    "${NOELLE_INSTALL_DIR}/include"
+  )
+  list(APPEND gino_config_CXXFLAGS
+    "-I ${NOELLE_INSTALL_DIR}/include"
+  )
+endif()
+
 get_target_property(GINO_TOOL_LIBRARIES gino_tool_libraries NAMES)
 set(gino_config_TOOL_LIBS "")
 foreach(lib IN LISTS GINO_TOOL_LIBRARIES)
@@ -35,6 +47,8 @@ foreach(lib IN LISTS GINO_TOOL_LIBRARIES)
   )
 endforeach()
 string(REPLACE ";" " " gino_config_TOOL_LIBS "${gino_config_TOOL_LIBS}")
+string(REPLACE ";" "\n" gino_config_INCLUDE_DIRS "${gino_config_INCLUDE_DIRS}")
+string(REPLACE ";" " " gino_config_CXXFLAGS "${gino_config_CXXFLAGS}")
 
 configure_file(gino-config.in gino-config @ONLY)
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/gino-config DESTINATION bin)
