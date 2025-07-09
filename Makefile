@@ -7,7 +7,7 @@ export MENUCONFIG_STYLE = aquatic
 
 all: install
 
-install: check_noelle compile
+install: compile
 	cmake --install $(BUILD_DIR) 
 
 compile: $(BUILD_DIR)
@@ -39,4 +39,4 @@ uninstall:
 	rm -f enable
 	rm -f .git/hooks/pre-commit
 
-.PHONY: all build install compile check_noelle external tests format clean uninstall
+.PHONY: all build install compile tests format clean uninstall

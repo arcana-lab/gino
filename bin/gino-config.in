@@ -17,6 +17,7 @@ function show_help() {
   echo "  --llvm-build        Print the build type of the specific LLVM used by Gino"
   echo "  --llvm-prefix       Print the installation prefix of the specific LLVM used by Gino"
   echo "  --llvm-version      Print the version of the specific LLVM used by Gino"
+  echo "  --noelle-prefix     Print the installation directory path for Noelle"
 }
 
 if [[ $# < 1 ]]; then
@@ -65,6 +66,9 @@ for arg in "$@"; do
       ;;
     --llvm-version)
       echo "@LLVM_PACKAGE_VERSION@"
+      ;;
+    --noelle-prefix)
+      echo "@NOELLE_INSTALL_DIR@"
       ;;
     *)
     echo "Unknown argument: $arg"
