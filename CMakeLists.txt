@@ -46,21 +46,36 @@ message(STATUS "${Purple}Install directory${ColorReset} is ${CMAKE_INSTALL_PREFI
 gino_acquire_option(GINO_TOOLS)
 
 if(NOT DEFINED NOELLE_INSTALL_DIR OR (NOELLE_INSTALL_DIR STREQUAL ""))
-  include(FetchContent)
-  FetchContent_Declare(
-      noelle
-      GIT_REPOSITORY  "https://github.com/arcana-lab/noelle.git"
-      GIT_TAG         master
+  message(STATUS "${Purple}NOELLE_INSTALL_DIR${ColorReset} is not defined. Trying to find it...")
+  execute_process(
+    COMMAND noelle-config --prefix
+    OUTPUT_VARIABLE NOELLE_CONFIG_PREFIX
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
   )
-  FetchContent_MakeAvailable(noelle)
-  FetchContent_GetProperties(noelle)
-  file(GLOB_RECURSE NOELLE_CORE_DIRS LIST_DIRECTORIES true "${noelle_SOURCE_DIR}/src/core/*")
-  foreach(dir ${NOELLE_CORE_DIRS})
-    if(IS_DIRECTORY ${dir} AND EXISTS "${dir}/include")
-      include_directories(${dir}/include)
-    endif()
-  endforeach()
+  if(NOELLE_CONFIG_PREFIX)
+    message(STATUS "${Purple}NOELLE_INSTALL_DIR${ColorReset} found at ${NOELLE_CONFIG_PREFIX}")
+    set(NOELLE_INSTALL_DIR ${NOELLE_CONFIG_PREFIX})
+  else()
+    message(STATUS "Can't find Noelle. It will be fetched from GitHub.")
+    include(FetchContent)
+    set(NOELLE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+    FetchContent_Declare(
+        noelle
+        GIT_REPOSITORY  "https://github.com/arcana-lab/noelle.git"
+        GIT_TAG         master
+    )
+    FetchContent_MakeAvailable(noelle)
+    FetchContent_GetProperties(noelle)
+    file(GLOB_RECURSE NOELLE_CORE_DIRS LIST_DIRECTORIES true "${noelle_SOURCE_DIR}/src/core/*")
+    foreach(dir ${NOELLE_CORE_DIRS})
+      if(IS_DIRECTORY ${dir} AND EXISTS "${dir}/include")
+        include_directories(${dir}/include)
+      endif()
+    endforeach()
+  endif()
 else()
+  message(STATUS "${Purple}NOELLE_INSTALL_DIR${ColorReset} is ${NOELLE_INSTALL_DIR}")
   include_directories(${NOELLE_INSTALL_DIR}/include)
 endif()
 
