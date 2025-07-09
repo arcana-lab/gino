@@ -520,7 +520,7 @@ void Inliner::adjustLoopOrdersAfterInline(Function *parentF,
   }
 
   // NOTE(angelo): Insert inlined loops from child function
-  for (size_t childIndex = nextLoopInd; childIndex < endInd; ++childIndex) {
+  for (int childIndex = nextLoopInd; childIndex < endInd; ++childIndex) {
     parentLoops[childIndex] = childLoops[childIndex - nextLoopInd];
   }
 }
