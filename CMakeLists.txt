@@ -60,7 +60,11 @@ if(NOT DEFINED NOELLE_INSTALL_DIR OR (NOELLE_INSTALL_DIR STREQUAL ""))
   )
   FetchContent_MakeAvailable(noelle)
   FetchContent_GetProperties(noelle)
-  file(GLOB_RECURSE NOELLE_CORE_DIRS LIST_DIRECTORIES true "${noelle_SOURCE_DIR}/src/core/*")
+  file(
+    GLOB_RECURSE NOELLE_CORE_DIRS LIST_DIRECTORIES true
+    "${noelle_SOURCE_DIR}/src/core/*"
+    "${noelle_SOURCE_DIR}/src/tools/*"
+  )
   foreach(dir ${NOELLE_CORE_DIRS})
     if(IS_DIRECTORY ${dir} AND EXISTS "${dir}/include")
       include_directories(${dir}/include)
@@ -78,7 +82,6 @@ get_filename_component(GINO_CMAKE_ROOT ${GINO_CMAKE_ROOT} REALPATH)
 
 file(READ ${GINO_CMAKE_ROOT}/VERSION GINO_VERSION)
 string(STRIP ${GINO_VERSION} GINO_VERSION)
-set(GINO_EXTERNAL_DIR ${GINO_CMAKE_ROOT}/external)
 
 configure_file(enable.in enable @ONLY)
 install(
