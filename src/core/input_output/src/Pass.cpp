@@ -36,7 +36,7 @@ void InputOutput::getAnalysisUsage(AnalysisUsage &AU) const {
 // Next there is code to register your pass to "opt"
 char InputOutput::ID = 0;
 static RegisterPass<InputOutput> X(
-    "inputoutput",
+    "InputOutput",
     "Make file accesses more amenable for parallelizations",
     false,
     false);

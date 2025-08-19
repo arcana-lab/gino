@@ -40,7 +40,7 @@ DSWP::DSWP(Noelle &n, bool forceParallelization, bool enableSCCMerging)
    * Fetch the function that dispatch the parallelized loop.
    */
   auto program = this->noelle.getProgram();
-  this->taskDispatcher = program->getFunction("NOELLE_DSWPDispatcher");
+  this->taskDispatcher = program->getFunction("GINO_DSWPDispatcher");
   assert(this->taskDispatcher != nullptr);
 
   return;

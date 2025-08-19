@@ -27,13 +27,12 @@ namespace arcana::gino {
  * Options of the Planner pass.
  */
 static cl::opt<bool> ForceParallelizationPlanner(
-    "noelle-parallelizer-force",
+    "gino-planner-force",
     cl::ZeroOrMore,
     cl::Hidden,
     cl::desc("Force the parallelization"));
 
 Planner::Planner() : ModulePass{ ID }, forceParallelization{ false } {
-
   return;
 }
 
@@ -121,9 +120,7 @@ bool Planner::runOnModule(Module &M) {
       auto ls = ldi->getLoopStructure();
       auto ldiParallelizationOrderIndex =
           std::to_string(parallelizationOrderIndex++);
-      mm->addMetadata(ls,
-                      "noelle.parallelizer.looporder",
-                      ldiParallelizationOrderIndex);
+      mm->addMetadata(ls, "gino.looporder", ldiParallelizationOrderIndex);
       modified = true;
     }
 
@@ -176,7 +173,7 @@ void Planner::getAnalysisUsage(AnalysisUsage &AU) const {
 // Next there is code to register your pass to "opt"
 char arcana::gino::Planner::ID = 0;
 static RegisterPass<arcana::gino::Planner> X(
-    "planner",
+    "Planner",
     "Automatic parallelization planner");
 
 // Next there is code to register your pass to "clang"

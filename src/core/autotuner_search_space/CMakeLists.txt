@@ -1,9 +1,5 @@
-# Project
-cmake_minimum_required(VERSION 3.13)
-project(AutotunerSearchSpace)
-
-# Dependences
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/DependencesCMake.txt)
-
-# Pass
-add_subdirectory(src)
+target_sources(
+  Gino # component name
+  PRIVATE
+  src/Pass.cpp
+)

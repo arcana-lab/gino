@@ -14,7 +14,7 @@ RUNTIME_CFLAGS="-DDEBUG"
 
 # Parallelization options
 # 	- To dump the PDG: -noelle-pdg-dump
-PARALLELIZATION_OPTIONS=-noelle-parallelizer-force
+PARALLELIZATION_OPTIONS=-gino-parallelizer-force -gino-planner-force
 NOELLE_OPTIONS=-noelle-pdg-verbose=1 -noelle-verbose=2 -noelle-min-hot=0 -noelle-inliner-avoid-hoist-to-main
 TOOLS_OPTIONS=
 OPT_LEVEL=-O3
@@ -58,7 +58,7 @@ all: baseline $(OPTIMIZED)
 baseline: baseline.bc
 	$(CPP) $(OPT_LEVEL) $^ -o $@
 
-Parallelizer_utils.bc: Parallelizer_utils.cpp
+gino_runtime_def.bc: gino_runtime_def.cpp
 	$(CPP) $(RUNTIME_CFLAGS) $(INCLUDES) -std=c++14 -emit-llvm $(OPT_LEVEL) -c $^ -o $@
 
 $(OPTIMIZED): test_parallelized.bc
@@ -67,10 +67,10 @@ $(OPTIMIZED): test_parallelized.bc
 $(OPTIMIZED_AUTOTUNED): test_parallelized_autotuned.bc
 	$(CPP) -std=c++14 -pthreads $(OPT_LEVEL) $< $(LIBS) -o $@
 
-test_parallelized.bc: baseline_with_metadata.bc Parallelizer_utils.bc
+test_parallelized.bc: baseline_with_metadata.bc gino_runtime_def.bc
 	gino $< -o $@ $(NOELLE_OPTIONS) $(PARALLELIZATION_OPTIONS)
 
-test_parallelized_autotuned.bc: baseline_with_metadata.bc input.txt Parallelizer_utils.bc
+test_parallelized_autotuned.bc: baseline_with_metadata.bc input.txt gino_runtime_def.bc
 	gino-autotuner --parallelizer-args="$< -o $@ $(NOELLE_OPTIONS) $(PARALLELIZATION_OPTIONS)" --libs="$(LIBS)" --input="$(INPUT)" --autotuner-time="$(TIME)" --autotuner-numconf="$(NUM_CONF)" --autotuner-seedconf="$(SEED_CONF)" $(NOSEARCHSPACE) $(NODOALLFILTERING) $(NODOALLTIMEFILTERING)
 
 baseline.bc: test.bc

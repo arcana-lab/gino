@@ -164,7 +164,7 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
      * vals in their phis, so determine which is from the entry and which is
      * from the latch
      */
-     
+
     uint64_t loopBlock = 0;
     if (phi->getIncomingValue(0) == initialValue) {
       loopBlock = 1;
@@ -198,8 +198,8 @@ void DOALL::rewireLoopToIterateChunks(LoopContent *LDI, DOALLTask *task) {
         *LDI->getLoopStructure()->getLatches().begin()));
     latchBuilder.SetInsertPoint(latchBuilder.GetInsertBlock()->getTerminator());
 
-    // PeriodicVariableSCC will use the absolute iteration as part of our handling for them:
-    // get the counter for that or inject it
+    // PeriodicVariableSCC will use the absolute iteration as part of our
+    // handling for them: get the counter for that or inject it
     if (getOrInjectIterCounter == nullptr) {
       /*
        * Determine value of the start of this core's next chunk
