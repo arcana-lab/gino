@@ -27,7 +27,7 @@ namespace arcana::gino {
 bool DOALL::canBeAppliedToLoop(LoopContent *LDI, Heuristics *h) const {
   auto MM = this->n.getMetadataManager();
   auto loopStructure = LDI->getLoopStructure();
-  auto LO = MM->getMetadata(loopStructure, "noelle.parallelizer.looporder");
+  auto LO = MM->getMetadata(loopStructure, "gino.looporder");
 
   if (this->verbose != Verbosity::Disabled) {
     auto ID = loopStructure->getID().value();
